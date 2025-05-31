@@ -22,15 +22,15 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang='en'>
       <body className={`${montserrat.variable} antialiased`}>
-        <div className="flex flex-col items-stretch h-full">
-          <main className="flex-1">
+        <div className='flex flex-col items-stretch h-full'>
+          <main className='flex-1'>
             <MainAppContextProvider>{children}</MainAppContextProvider>
           </main>
           <footer>
-            <nav className="flex flex-row justify-evenly items-center h-20">
-              <Link href="/">Grid</Link>
+            <nav className='flex flex-row justify-evenly items-center h-4'>
+              <Link href='/'>Grid</Link>
             </nav>
           </footer>
         </div>

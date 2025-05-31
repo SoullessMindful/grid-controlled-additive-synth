@@ -1,9 +1,13 @@
 'use client'
-import { createContext, useState } from 'react'
+import { createContext, Dispatch, SetStateAction, useState } from 'react'
 
 export type MainAppContextType = {
-  state: number,
-  setState: (value: number) => void,
+  noteOffset: number
+  setNoteOffset: Dispatch<SetStateAction<number>>
+  rowsCount: number
+  setRowsCount: Dispatch<SetStateAction<number>>
+  columnsCount: number
+  setColumnsCount: Dispatch<SetStateAction<number>>
 }
 
 export const MainAppContext = createContext<MainAppContextType | undefined>(
@@ -15,11 +19,22 @@ export default function MainAppContextProvider({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const [state, setState] = useState(0)
+  const [noteOffset, setNoteOffset] = useState(45)
+  const [rowsCount, setRowsCount] = useState(8)
+  const [columnsCount, setColumnsCount] = useState(13)
+
   return (
-    <MainAppContext.Provider value={{
-      state,
-      setState,
-    }}>{children}</MainAppContext.Provider>
+    <MainAppContext.Provider
+      value={{
+        noteOffset,
+        setNoteOffset,
+        rowsCount,
+        setRowsCount,
+        columnsCount,
+        setColumnsCount,
+      }}
+    >
+      {children}
+    </MainAppContext.Provider>
   )
 }

@@ -9,6 +9,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-montserrat-sans);
+  --spacing: 1rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,6 +25,7 @@ body {
   height: 100%;
   overflow-x: hidden;
   overflow-y: hidden;
+  font-size: calc(1vmin + 5px);
 }
 
 body {

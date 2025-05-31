@@ -8,5 +8,8 @@
   "printWidth": 80,
   "bracketSpacing": true,
   "bracketSameLine": false,
-  "endOfLine": "lf"
+  "endOfLine": "lf",
+  "jsxSingleQuote": true,
+  "singleAttributePerLine": true,
+  "experimentalTernaries": true
 }

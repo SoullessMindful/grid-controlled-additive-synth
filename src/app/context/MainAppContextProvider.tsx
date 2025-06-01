@@ -21,7 +21,7 @@ export default function MainAppContextProvider({
 }>) {
   const [noteOffset, setNoteOffset] = useState(45)
   const [rowsCount, setRowsCount] = useState(8)
-  const [columnsCount, setColumnsCount] = useState(13)
+  const [columnsCount, setColumnsCount] = useState(8)
 
   return (
     <MainAppContext.Provider

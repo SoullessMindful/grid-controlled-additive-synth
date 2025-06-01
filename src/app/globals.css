@@ -26,6 +26,7 @@ body {
   overflow-x: hidden;
   overflow-y: hidden;
   font-size: calc(1vmin + 5px);
+  touch-action: none;
 }
 
 body {

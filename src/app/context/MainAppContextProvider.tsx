@@ -1,5 +1,8 @@
 'use client'
 import { createContext, Dispatch, SetStateAction, useState } from 'react'
+import SoundEngineContextProvider, {
+  SoundEngineContext,
+} from './SoundEngineContextProvider'
 
 export type MainAppContextType = {
   noteOffset: number
@@ -34,7 +37,7 @@ export default function MainAppContextProvider({
         setColumnsCount,
       }}
     >
-      {children}
+      <SoundEngineContextProvider>{children}</SoundEngineContextProvider>
     </MainAppContext.Provider>
   )
 }

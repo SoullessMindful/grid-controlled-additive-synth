@@ -7,11 +7,17 @@ import {
 } from '../context/MainAppContextProvider'
 import { range2dFlat } from '@/lib/range'
 import useStatePrev from '@/hooks/useStatePrev'
+import {
+  SoundEngineContext,
+  SoundEngineContextType,
+} from '../context/SoundEngineContextProvider'
 
 export default function GridController() {
   const { noteOffset, rowsCount, columnsCount } = useContext(
     MainAppContext
   ) as MainAppContextType
+
+  const { noteOnOff } = useContext(SoundEngineContext) as SoundEngineContextType
 
   const [touches, setTouches] = useState<Touch[]>([])
   const [isPadPressed, _isPadPressedPrev, setIsPadPressed] = useStatePrev<
@@ -62,6 +68,7 @@ export default function GridController() {
 
         if (isPadPressed[row][column] !== updatedIsPadPressed[row][column]) {
           isUpdated = true
+          noteOnOff(updatedIsPadPressed[row][column], row, column)
         }
       }
     }

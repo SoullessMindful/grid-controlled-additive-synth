@@ -31,6 +31,7 @@ export default function RootLayout({
           <footer>
             <nav className='flex flex-row justify-evenly items-center h-4'>
               <Link href='/'>Grid</Link>
+              <Link href='/synth'>Synth</Link>
             </nav>
           </footer>
         </div>

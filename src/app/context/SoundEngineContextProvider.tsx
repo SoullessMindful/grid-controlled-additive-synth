@@ -5,11 +5,14 @@ import { MainAppContext, MainAppContextType } from './MainAppContextProvider'
 import { range2d } from '@/lib/range'
 
 let ctx: AudioContext | undefined = undefined
+let globalGainNode: GainNode | undefined = undefined
 
 export type SoundEngineContextType = {
   noteOn: (row: number, column: number) => void
   noteOff: (row: number, column: number) => void
   noteOnOff: (on: boolean, row: number, column: number) => void
+  volume: number
+  setVolume: (volume: number) => void
 }
 
 export const SoundEngineContext = createContext<
@@ -29,6 +32,7 @@ export default function SoundEngineContextProvider({
       arr.map(([row, column]) => ({ note: noteOffset + row * 5 + column }))
     )
   )
+  const [volume, setVolume] = useState(0.5)
 
   useEffect(() => {
     if (!ctx) {
@@ -36,7 +40,18 @@ export default function SoundEngineContextProvider({
         latencyHint: 'interactive',
       })
     }
+    if (!globalGainNode) {
+      globalGainNode = ctx.createGain()
+      globalGainNode.gain.setValueAtTime(volume, ctx.currentTime)
+      globalGainNode.connect(ctx.destination)
+    }
   }, [])
+
+  useEffect(() => {
+    if (!ctx || !globalGainNode) return
+
+    globalGainNode.gain.setValueAtTime(volume, ctx.currentTime)
+  }, [volume])
 
   useEffect(() => {
     setPadNodes(
@@ -47,7 +62,7 @@ export default function SoundEngineContextProvider({
   }, [noteOffset, rowsCount, columnsCount])
 
   const noteOn = (row: number, column: number) => {
-    if (!ctx) return
+    if (!ctx || !globalGainNode) return
 
     const padNode = padNodes[row][column]
     if (!padNode.osc) {
@@ -56,14 +71,14 @@ export default function SoundEngineContextProvider({
         440 * Math.pow(2, (padNode.note - 69) / 12),
         ctx.currentTime
       )
-      osc.connect(ctx.destination)
+      osc.connect(globalGainNode)
       osc.start()
       padNode.osc = osc
     }
   }
 
   const noteOff = (row: number, column: number) => {
-    if (!ctx) return
+    if (!ctx || !globalGainNode) return
 
     const padNode = padNodes[row][column]
     if (padNode.osc) {
@@ -87,6 +102,8 @@ export default function SoundEngineContextProvider({
         noteOn,
         noteOff,
         noteOnOff,
+        volume,
+        setVolume,
       }}
     >
       {children}

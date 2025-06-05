@@ -13,7 +13,7 @@ import {
 } from '../context/SoundEngineContextProvider'
 
 export default function GridController() {
-  const { noteOffset, rowsCount, columnsCount } = useContext(
+  const { noteOffset, rowsCount, columnsCount, padSize } = useContext(
     MainAppContext
   ) as MainAppContextType
 
@@ -22,20 +22,13 @@ export default function GridController() {
   const [touches, setTouches] = useState<Touch[]>([])
   const [isPadPressed, _isPadPressedPrev, setIsPadPressed] = useStatePrev<
     boolean[][]
-  >(
-    Array(rowsCount)
-      .fill(false)
-      .map(() => Array(columnsCount).fill(false))
-  )
-  const [padSize, _setPadSize] = useState(6) // Size of each pad in rem
+  >([...Array(rowsCount)].map(() => Array(columnsCount).fill(false)))
 
   const selfRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setIsPadPressed(
-      Array(rowsCount)
-        .fill(false)
-        .map(() => Array(columnsCount).fill(false))
+      [...Array(rowsCount)].map(() => Array(columnsCount).fill(false))
     )
   }, [rowsCount, columnsCount])
 
@@ -130,7 +123,7 @@ export default function GridController() {
     >
       {range2dFlat([0, rowsCount], [0, columnsCount]).map(([row, column]) => {
         const note = noteOffset + row * 5 + column
-        const isPressed = isPadPressed[row][column]
+        const isPressed = isPadPressed[row]?.[column] ?? false
 
         return (
           <div

@@ -1,8 +1,6 @@
 'use client'
 import { createContext, Dispatch, SetStateAction, useState } from 'react'
-import SoundEngineContextProvider, {
-  SoundEngineContext,
-} from './SoundEngineContextProvider'
+import SoundEngineContextProvider from './SoundEngineContextProvider'
 
 export type MainAppContextType = {
   noteOffset: number
@@ -11,6 +9,8 @@ export type MainAppContextType = {
   setRowsCount: Dispatch<SetStateAction<number>>
   columnsCount: number
   setColumnsCount: Dispatch<SetStateAction<number>>
+  padSize: number
+  setPadSize: Dispatch<SetStateAction<number>>
 }
 
 export const MainAppContext = createContext<MainAppContextType | undefined>(
@@ -25,6 +25,7 @@ export default function MainAppContextProvider({
   const [noteOffset, setNoteOffset] = useState(45)
   const [rowsCount, setRowsCount] = useState(8)
   const [columnsCount, setColumnsCount] = useState(8)
+  const [padSize, setPadSize] = useState(6)
 
   return (
     <MainAppContext.Provider
@@ -35,6 +36,8 @@ export default function MainAppContextProvider({
         setRowsCount,
         columnsCount,
         setColumnsCount,
+        padSize,
+        setPadSize,
       }}
     >
       <SoundEngineContextProvider>{children}</SoundEngineContextProvider>

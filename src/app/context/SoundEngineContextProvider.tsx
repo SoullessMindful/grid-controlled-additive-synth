@@ -122,6 +122,7 @@ export default function SoundEngineContextProvider({
     mainGain.gain.linearRampToValueAtTime(sustain, now + attack + decay)
 
     osc.connect(mainGain)
+    mainGain.connect(globalGainNode)
     osc.start(now)
     padNode.osc = osc
   }

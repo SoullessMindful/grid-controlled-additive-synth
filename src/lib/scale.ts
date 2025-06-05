@@ -1,5 +1,14 @@
 type RootNote = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
 
+export function rootNoteToString(note: RootNote): string {
+  return ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'][note]
+}
+export function noteToString(note: number): string {
+  const rootNote = (Math.floor(note) % 12) as RootNote
+  const octave = Math.floor(note / 12) - 1
+  return `${rootNoteToString(rootNote)}${octave}`
+}
+
 type Scale = {
   name: string
   notes: (rootNote: RootNote) => boolean

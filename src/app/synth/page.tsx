@@ -18,12 +18,42 @@ export default function SynthPage() {
     setSustain,
     release,
     setRelease,
+    waveform,
+    setWaveform,
+    availableWaveforms,
   } = useContext(SoundEngineContext) as SoundEngineContextType
 
   return (
     <div className='flex flex-col justify-center items-stretch w-full h-full'>
-      <div className='flex-1 m-1 bg-gray-100 dark:bg-gray-900 rounded-md flex flex-col items-center justify-center'>
-        <div className='flex flex-row justify-center items-center w-full p-2'>
+      <div className='flex-1 m-1 bg-gray-100 dark:bg-gray-900 text-black dark:text-white rounded-md flex flex-col items-center justify-center'>
+        <div className='mb-1'>
+          <label className='block'>Waveform</label>
+          <select
+            value={waveform.name}
+            onChange={(e) => {
+              const selected = availableWaveforms.find(
+                (wf) => wf.name === e.target.value
+              )
+              if (selected) setWaveform(selected)
+            }}
+            className='w-15 rounded bg-gray-200 dark:bg-gray-800 text-black dark:text-white'
+          >
+            {availableWaveforms.map((wf) => (
+              <option
+                key={wf.name}
+                value={wf.name}
+                className={`${
+                  wf.__type__ === 'BasicWaveform'
+                    ? 'bg-gray-200 dark:bg-gray-800'
+                    : 'bg-gray-300 dark:bg-gray-700'
+                } text-black dark:text-white`}
+              >
+                {wf.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className='flex flex-row justify-center items-center w-full mb-1'>
           <div className='w-5 text-center'>
             <div>Attack</div>
             <div>{attack * 1000}ms</div>
@@ -97,8 +127,8 @@ export default function SynthPage() {
             </div>
           </div>
         </div>
-        <div>
-          <div>Volume</div>
+        <div className='mb-1'>
+          <label className='block'>Volume</label>
           <div>
             <input
               type='range'

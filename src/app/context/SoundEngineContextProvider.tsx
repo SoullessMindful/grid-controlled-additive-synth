@@ -1,8 +1,14 @@
 'use client'
 
-import { createContext, use, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { MainAppContext, MainAppContextType } from './MainAppContextProvider'
 import { range2d } from '@/lib/range'
+import {
+  BasicWaveform,
+  basicWaveforms,
+  customWaveforms,
+  ProcessedWaveform,
+} from '@/lib/waveform'
 
 let ctx: AudioContext | undefined = undefined
 let globalGainNode: GainNode | undefined = undefined
@@ -21,11 +27,15 @@ export type SoundEngineContextType = {
   setSustain: (sustain: number) => void
   release: number
   setRelease: (release: number) => void
+  waveform: ProcessedWaveform
+  setWaveform: (waveform: ProcessedWaveform) => void
+  availableWaveforms: ProcessedWaveform[]
 }
 
 export const SoundEngineContext = createContext<
   SoundEngineContextType | undefined
 >(undefined)
+
 export default function SoundEngineContextProvider({
   children,
 }: Readonly<{
@@ -46,17 +56,32 @@ export default function SoundEngineContextProvider({
   const [sustain, setSustain] = useState(0.5)
   const [release, setRelease] = useState(0.01)
 
+  const [availableWaveforms, setAvailableWaveforms] =
+    useState<ProcessedWaveform[]>(basicWaveforms)
+  const [waveform, setWaveform] = useState<ProcessedWaveform>(basicWaveforms[0])
+
   useEffect(() => {
     if (!ctx) {
       ctx = new AudioContext({
         latencyHint: 'interactive',
       })
     }
+
     if (!globalGainNode) {
       globalGainNode = ctx.createGain()
       globalGainNode.gain.setValueAtTime(volume, ctx.currentTime)
       globalGainNode.connect(ctx.destination)
     }
+
+    const processedCustom = customWaveforms.map(
+      (wf) =>
+        ({
+          __type__: 'CustomWaveform' as const,
+          name: wf.name,
+          waveform: ctx!.createPeriodicWave(wf.data[0], wf.data[1]),
+        } as ProcessedWaveform)
+    )
+    setAvailableWaveforms([...basicWaveforms, ...processedCustom])
   }, [])
 
   useEffect(() => {
@@ -110,6 +135,11 @@ export default function SoundEngineContextProvider({
 
     // Create oscillator
     const osc = ctx.createOscillator()
+    if (waveform.__type__ === 'BasicWaveform') {
+      osc.type = waveform.waveform
+    } else {
+      osc.setPeriodicWave(waveform.waveform)
+    }
     osc.frequency.setValueAtTime(
       440 * Math.pow(2, (padNode.note - 69) / 12),
       now
@@ -179,6 +209,9 @@ export default function SoundEngineContextProvider({
         setSustain,
         release,
         setRelease,
+        waveform,
+        setWaveform,
+        availableWaveforms,
       }}
     >
       {children}

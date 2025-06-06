@@ -1,6 +1,6 @@
 'use client'
 
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import {
   SoundEngineContext,
   SoundEngineContextType,
@@ -25,9 +25,9 @@ export default function SynthPage() {
 
   return (
     <div className='flex flex-col justify-center items-stretch w-full h-full'>
-      <div className='flex-1 m-1 bg-gray-100 dark:bg-gray-900 text-black dark:text-white rounded-md flex flex-col items-center justify-center'>
-        <div className='mb-1'>
-          <label className='block'>Waveform</label>
+      <div className='flex-1 m-1 bg-gray-100 dark:bg-gray-900 rounded-md flex flex-col items-center justify-center'>
+        <div className='mb-2'>
+          <label className='block mb-0.5'>Waveform</label>
           <select
             value={waveform.name}
             onChange={(e) => {
@@ -36,27 +36,24 @@ export default function SynthPage() {
               )
               if (selected) setWaveform(selected)
             }}
-            className='w-15 rounded bg-gray-200 dark:bg-gray-800 text-black dark:text-white'
+            className='w-20 px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
           >
             {availableWaveforms.map((wf) => (
               <option
                 key={wf.name}
                 value={wf.name}
-                className={`${
-                  wf.__type__ === 'BasicWaveform'
-                    ? 'bg-gray-200 dark:bg-gray-800'
-                    : 'bg-gray-300 dark:bg-gray-700'
-                } text-black dark:text-white`}
               >
                 {wf.name}
               </option>
             ))}
           </select>
         </div>
-        <div className='flex flex-row justify-center items-center w-full mb-1'>
+        <div className='flex flex-row justify-center items-center w-full mb-2'>
           <div className='w-5 text-center'>
-            <div>Attack</div>
-            <div>{attack * 1000}ms</div>
+            <label className='block mb-0.5'>
+              <div>Attack</div>
+              <div>{attack * 1000}ms</div>
+            </label>
             <div>
               <input
                 type='range'
@@ -74,8 +71,10 @@ export default function SynthPage() {
             </div>
           </div>
           <div className='w-5 text-center'>
-            <div>Decay</div>
-            <div>{decay * 1000}ms</div>
+            <label className='block mb-0.5'>
+              <div>Decay</div>
+              <div>{decay * 1000}ms</div>
+            </label>
             <div>
               <input
                 type='range'
@@ -93,8 +92,10 @@ export default function SynthPage() {
             </div>
           </div>
           <div className='w-5 text-center'>
-            <div>Sustain</div>
-            <div>{sustain}</div>
+            <label className='block mb-0.5'>
+              <div>Sustain</div>
+              <div>{sustain}</div>
+            </label>
             <div>
               <input
                 type='range'
@@ -108,8 +109,10 @@ export default function SynthPage() {
             </div>
           </div>
           <div className='w-5 text-center'>
-            <div>Release</div>
-            <div>{release * 1000}ms</div>
+            <label className='block mb-0.5'>
+              <div>Release</div>
+              <div>{release * 1000}ms</div>
+            </label>
             <div>
               <input
                 type='range'
@@ -127,8 +130,8 @@ export default function SynthPage() {
             </div>
           </div>
         </div>
-        <div className='mb-1'>
-          <label className='block'>Volume</label>
+        <div className='mb-2'>
+          <label className='block mb-0.5'>Volume</label>
           <div>
             <input
               type='range'

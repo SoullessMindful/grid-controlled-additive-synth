@@ -22,6 +22,7 @@ export default function GridController() {
     scale,
     scaleRoot,
     lockToScale,
+    highlightRootNote,
   } = useContext(MainAppContext) as MainAppContextType
 
   const { noteOn, noteOff } = useContext(
@@ -143,11 +144,16 @@ export default function GridController() {
 
         const isInScale = isNoteInScale(note, scale, scaleRoot)
         const isGreyed = !isInScale && (!isPressed || lockToScale)
+        const isRootNote = (note - scaleRoot) % 12 === 0
 
         return (
           <div
             key={`${row}-${column}`}
-            className='pointer-events-none p-0 m-0'
+            className={`pointer-events-none p-0 m-0${
+              highlightRootNote && isRootNote
+                ? ' inset-ring-3 inset-ring-amber-400/50'
+                : ''
+            }`}
             style={{
               gridRow: rowsCount - row,
               gridColumn: column + 1,

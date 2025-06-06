@@ -36,6 +36,8 @@ export default function SideMenu({ open, onClose, children }: SideMenuProps) {
     setScaleRoot,
     lockToScale,
     setLockToScale,
+    highlightRootNote,
+    setHighlightRootNote,
   } = useContext(MainAppContext) as MainAppContextType
 
   return (
@@ -162,14 +164,28 @@ export default function SideMenu({ open, onClose, children }: SideMenuProps) {
               </option>
             ))}
           </select>
-          <input
-            type='checkbox'
-            checked={lockToScale}
-            onChange={(e) => setLockToScale(e.target.checked)}
-            id='lockToScale'
-            className='mr-2'
-          />
-          <label htmlFor='lockToScale'>Lock to scale</label>
+          <div className='flex items-center justify-between mt-0.5'>
+            <div>
+              <input
+                type='checkbox'
+                checked={lockToScale}
+                onChange={(e) => setLockToScale(e.target.checked)}
+                id='lockToScale'
+                className='mr-1'
+              />
+              <label htmlFor='lockToScale'>Lock to scale</label>
+            </div>
+            <div>
+              <input
+                type='checkbox'
+                checked={highlightRootNote}
+                onChange={(e) => setHighlightRootNote(e.target.checked)}
+                id='highlightRootNote'
+                className='mr-1'
+              />
+              <label htmlFor='highlightRootNote'>Highlight root note</label>
+            </div>
+          </div>
         </div>
         {children}
       </div>

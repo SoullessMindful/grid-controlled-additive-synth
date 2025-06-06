@@ -1,5 +1,6 @@
 'use client'
 import { createContext, Dispatch, SetStateAction, useState } from 'react'
+import { chromaticScale, RootNote, Scale } from '../../lib/scale'
 import SoundEngineContextProvider from './SoundEngineContextProvider'
 
 export type MainAppContextType = {
@@ -11,6 +12,12 @@ export type MainAppContextType = {
   setColumnsCount: Dispatch<SetStateAction<number>>
   padSize: number
   setPadSize: Dispatch<SetStateAction<number>>
+  scale: Scale
+  setScale: Dispatch<SetStateAction<Scale>>
+  scaleRoot: RootNote
+  setScaleRoot: Dispatch<SetStateAction<RootNote>>
+  lockToScale: boolean
+  setLockToScale: Dispatch<SetStateAction<boolean>>
 }
 
 export const MainAppContext = createContext<MainAppContextType | undefined>(
@@ -26,6 +33,9 @@ export default function MainAppContextProvider({
   const [rowsCount, setRowsCount] = useState(8)
   const [columnsCount, setColumnsCount] = useState(8)
   const [padSize, setPadSize] = useState(6)
+  const [scale, setScale] = useState(chromaticScale)
+  const [scaleRoot, setScaleRoot] = useState<RootNote>(0)
+  const [lockToScale, setLockToScale] = useState(false)
 
   return (
     <MainAppContext.Provider
@@ -38,6 +48,12 @@ export default function MainAppContextProvider({
         setColumnsCount,
         padSize,
         setPadSize,
+        scale,
+        setScale,
+        scaleRoot,
+        setScaleRoot,
+        lockToScale,
+        setLockToScale,
       }}
     >
       <SoundEngineContextProvider>{children}</SoundEngineContextProvider>

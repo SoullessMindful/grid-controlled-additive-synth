@@ -11,13 +11,22 @@ import {
   SoundEngineContext,
   SoundEngineContextType,
 } from '../context/SoundEngineContextProvider'
+import { isNoteInScale } from '../../lib/scale'
 
 export default function GridController() {
-  const { noteOffset, rowsCount, columnsCount, padSize } = useContext(
-    MainAppContext
-  ) as MainAppContextType
+  const {
+    noteOffset,
+    rowsCount,
+    columnsCount,
+    padSize,
+    scale,
+    scaleRoot,
+    lockToScale,
+  } = useContext(MainAppContext) as MainAppContextType
 
-  const { noteOnOff } = useContext(SoundEngineContext) as SoundEngineContextType
+  const { noteOn, noteOff } = useContext(
+    SoundEngineContext
+  ) as SoundEngineContextType
 
   const [touches, setTouches] = useState<Touch[]>([])
   const [isPadPressed, _isPadPressedPrev, setIsPadPressed] = useStatePrev<
@@ -61,7 +70,14 @@ export default function GridController() {
 
         if (isPadPressed[row][column] !== updatedIsPadPressed[row][column]) {
           isUpdated = true
-          noteOnOff(updatedIsPadPressed[row][column], row, column)
+          const note = noteOffset + row * 5 + column
+          const isPressed = updatedIsPadPressed[row][column]
+          const canPlay = isNoteInScale(note, scale, scaleRoot) || !lockToScale
+          if (isPressed && canPlay) {
+            noteOn(row, column)
+          } else {
+            noteOff(row, column)
+          }
         }
       }
     }
@@ -125,6 +141,9 @@ export default function GridController() {
         const note = noteOffset + row * 5 + column
         const isPressed = isPadPressed[row]?.[column] ?? false
 
+        const isInScale = isNoteInScale(note, scale, scaleRoot)
+        const isGreyed = !isInScale && (!isPressed || lockToScale)
+
         return (
           <div
             key={`${row}-${column}`}
@@ -132,9 +151,10 @@ export default function GridController() {
             style={{
               gridRow: rowsCount - row,
               gridColumn: column + 1,
-              backgroundColor: `hsl(${(note * 30) % 360}, ${
-                isPressed ? 100 : 20
-              }%, ${isPressed ? 70 : 50}%)`,
+              backgroundColor: `hsl(
+                ${(note * 30) % 360},
+                ${isGreyed ? 0 : isPressed ? 100 : 20}%,
+                ${isPressed && !isGreyed ? 70 : 50}%)`,
             }}
           ></div>
         )

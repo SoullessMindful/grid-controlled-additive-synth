@@ -7,7 +7,12 @@ import {
   MainAppContext,
   MainAppContextType,
 } from '../context/MainAppContextProvider'
-import { noteToString } from '../../lib/scale'
+import {
+  noteToString,
+  availableScales,
+  rootNoteToString,
+  RootNote,
+} from '../../lib/scale'
 
 type SideMenuProps = {
   open: boolean
@@ -25,6 +30,12 @@ export default function SideMenu({ open, onClose, children }: SideMenuProps) {
     setPadSize,
     noteOffset,
     setNoteOffset,
+    scale,
+    setScale,
+    scaleRoot,
+    setScaleRoot,
+    lockToScale,
+    setLockToScale,
   } = useContext(MainAppContext) as MainAppContextType
 
   return (
@@ -113,6 +124,52 @@ export default function SideMenu({ open, onClose, children }: SideMenuProps) {
               </option>
             ))}
           </select>
+        </div>
+        <div className='mb-4'>
+          <label className='block mb-1'>Scale</label>
+          <select
+            value={scaleRoot}
+            onChange={(e) => setScaleRoot(Number(e.target.value) as RootNote)}
+            className='w-1/2 text-white px-2 py-1 rounded'
+          >
+            {Array.from({ length: 12 }, (_, i) => i as RootNote).map((n) => (
+              <option
+                key={n}
+                value={n}
+                className='text-black'
+              >
+                {rootNoteToString(n)}
+              </option>
+            ))}
+          </select>
+          <select
+            value={scale.name}
+            onChange={(e) => {
+              const selected = availableScales.find(
+                (s) => s.name === e.target.value
+              )
+              if (selected) setScale(selected)
+            }}
+            className='w-1/2 text-white px-2 py-1 rounded'
+          >
+            {availableScales.map((s) => (
+              <option
+                key={s.name}
+                value={s.name}
+                className='text-black'
+              >
+                {s.name}
+              </option>
+            ))}
+          </select>
+          <input
+            type='checkbox'
+            checked={lockToScale}
+            onChange={(e) => setLockToScale(e.target.checked)}
+            id='lockToScale'
+            className='mr-2'
+          />
+          <label htmlFor='lockToScale'>Lock to scale</label>
         </div>
         {children}
       </div>

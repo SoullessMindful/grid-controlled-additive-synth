@@ -11,7 +11,7 @@ export default function Home() {
       <GridController />
       <SideMenu open={isMenuOpen} onClose={() => setIsMenuOpen(false)}/>
       <button
-        className='fixed top-0 right-0 z-29 bg-gray-900 text-white text-3xl p-1 rounded-md'
+        className='absolute top-0 right-0 z-29 bg-gray-900 text-white text-3xl p-1 rounded-md'
         onClick={() => setIsMenuOpen(true)}
       >
         ☰

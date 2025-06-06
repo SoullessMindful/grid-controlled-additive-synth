@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { Montserrat } from 'next/font/google'
 import './globals.css'
-import Link from 'next/link'
 import MainAppContextProvider from './context/MainAppContextProvider'
+import Navigation from './ui/Navigation'
 
 const montserrat = Montserrat({
   variable: '--font-montserrat-sans',
@@ -29,10 +29,7 @@ export default function RootLayout({
             <MainAppContextProvider>{children}</MainAppContextProvider>
           </main>
           <footer>
-            <nav className='flex flex-row justify-evenly items-center h-4'>
-              <Link href='/'>Grid</Link>
-              <Link href='/synth'>Synth</Link>
-            </nav>
+            <Navigation />
           </footer>
         </div>
       </body>

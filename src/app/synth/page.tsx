@@ -30,6 +30,9 @@ export default function SynthPage() {
     setOvertonesCount,
   } = useContext(SoundEngineContext) as SoundEngineContextType
 
+  // Define allowed overtone counts
+  const overtoneOptions = Array.from({ length: 64 }, (_, i) => i + 1)
+
   return (
     <div className='flex flex-col justify-center items-stretch w-full h-full'>
       <div className='flex-1 m-1 bg-gray-100 dark:bg-gray-900 rounded-md flex flex-col items-center justify-center'>
@@ -50,26 +53,46 @@ export default function SynthPage() {
             <button className='bg-gray-100 dark:bg-gray-900 p-1 cursor-pointer'>
               Release
             </button>
-            <div className='flex-1 flex justify-end items-center'>
-              <label className='block p-1'>Overtones </label>
-              <input
-                type='number'
-                min={1}
-                max={64}
+            <div className='flex-1 flex justify-end items-center gap-1'>
+              <label className='block p-1'>Overtones</label>
+              <button
+                type='button'
+                className={`px-1 py-0.25 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 cursor-pointer ${
+                  overtonesCount <= 1 ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+                onClick={() =>
+                  setOvertonesCount(Math.max(1, overtonesCount - 1))
+                }
+                aria-label='Decrease overtones'
+              >
+                –
+              </button>
+              <select
                 value={overtonesCount}
-                onChange={(e) => {
-                  const newOvertonesCount = Number(e.target.value)
-                  if (
-                    !Number.isInteger(newOvertonesCount) ||
-                    newOvertonesCount < 1 ||
-                    newOvertonesCount > 64
-                  )
-                    return
-
-                  setOvertonesCount(newOvertonesCount)
-                }}
-                className='w-6 h-2.5 px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-center'
-              />
+                onChange={(e) => setOvertonesCount(Number(e.target.value))}
+                className='px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-center cursor-pointer'
+              >
+                {overtoneOptions.map((n) => (
+                  <option
+                    key={n}
+                    value={n}
+                  >
+                    {n}
+                  </option>
+                ))}
+              </select>
+              <button
+                type='button'
+                className={`px-1 py-0.25 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 cursor-pointer ${
+                  overtonesCount >= 64 ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+                onClick={() =>
+                  setOvertonesCount(Math.min(64, overtonesCount + 1))
+                }
+                aria-label='Increase overtones'
+              >
+                +
+              </button>
             </div>
           </div>
           <div className='overflow-x-auto overflow-y-hidden whitespace-nowrap h-20 px-1 mx-1 w-full bg-gray-200 dark:bg-gray-800 rounded-b-2xl'>

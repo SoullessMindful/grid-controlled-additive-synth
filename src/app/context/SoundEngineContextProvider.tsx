@@ -9,7 +9,11 @@ import {
   customWaveforms,
   ProcessedWaveform,
 } from '@/lib/waveform'
-import { Envelope } from '@/lib/envelope'
+import {
+  defaultOvertoneEnvelope,
+  defaultOvertoneEnvelopes,
+  Envelope,
+} from '@/lib/envelope'
 
 let ctx: AudioContext | undefined = undefined
 let globalGainNode: GainNode | undefined = undefined
@@ -44,6 +48,7 @@ export const SoundEngineContext = createContext<
 >(undefined)
 
 type OvertoneOsc = {
+  overtoneIndex: number
   osc: OscillatorNode
   gain: GainNode
 }
@@ -81,15 +86,7 @@ export default function SoundEngineContextProvider({
 
   const [overtonesCount, setOvertonesCount] = useState(16)
   const [overtoneEnvelopes, setOvertoneEnvelopes] = useState<Envelope[]>(
-    Array(overtonesCount)
-      .fill(1)
-      .fill(0, 1)
-      .map(
-        (level) =>
-          ({
-            level,
-          } as Envelope)
-      )
+    defaultOvertoneEnvelopes(overtonesCount)
   )
 
   useEffect(() => {
@@ -163,7 +160,7 @@ export default function SoundEngineContextProvider({
           ...prev,
           ...Array(overtonesCount - prev.length)
             .fill(0)
-            .map(() => ({ level: 0 } as Envelope)),
+            .map(() => defaultOvertoneEnvelope),
         ]
       } else {
         return prev
@@ -203,13 +200,19 @@ export default function SoundEngineContextProvider({
         osc.frequency.setValueAtTime(freq, now)
 
         const gain = ctx!.createGain()
-        gain.gain.setValueAtTime(env.level, now) // Constant level
+        gain.gain.cancelScheduledValues(now)
+        gain.gain.setValueAtTime(0, now)
+        gain.gain.linearRampToValueAtTime(env.level, now + env.attack)
+        gain.gain.linearRampToValueAtTime(
+          env.level * env.sustain,
+          now + env.attack + env.decay
+        )
 
         osc.connect(gain)
         gain.connect(mainGain)
         osc.start(now)
 
-        return { osc, gain }
+        return { osc, gain, overtoneIndex }
       })
 
     // Apply envelope to mainGain only
@@ -230,10 +233,13 @@ export default function SoundEngineContextProvider({
     const now = ctx.currentTime
     const releaseEnd = now + release
 
-    padNode.overtones.forEach(({ osc, gain }) => {
+    padNode.overtones.forEach(({ osc, gain, overtoneIndex }) => {
+      const env = overtoneEnvelopes[overtoneIndex - 1]
+      const overtoneReleaseEnd = env ? now + env.release : releaseEnd
+      
       gain.gain.cancelScheduledValues(now)
       gain.gain.setValueAtTime(gain.gain.value, now)
-      gain.gain.linearRampToValueAtTime(0, releaseEnd)
+      gain.gain.linearRampToValueAtTime(0, overtoneReleaseEnd)
 
       osc.stop(releaseEnd)
       osc.onended = () => {
@@ -243,6 +249,13 @@ export default function SoundEngineContextProvider({
     })
 
     padNode.overtones = undefined
+
+    const mainGain = padNode.mainGain
+    if (!mainGain) return
+
+    mainGain.gain.cancelScheduledValues(now)
+    mainGain.gain.setValueAtTime(mainGain.gain.value, now)
+    mainGain.gain.linearRampToValueAtTime(0, releaseEnd)
   }
 
   const noteOnOff = (on: boolean, row: number, column: number) => {

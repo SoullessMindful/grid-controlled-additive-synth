@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import { MainAppContext, MainAppContextType } from './MainAppContextProvider'
 import { range2d } from '@/lib/range'
 import {
@@ -9,6 +9,7 @@ import {
   customWaveforms,
   ProcessedWaveform,
 } from '@/lib/waveform'
+import { Envelope } from '@/lib/envelope'
 
 let ctx: AudioContext | undefined = undefined
 let globalGainNode: GainNode | undefined = undefined
@@ -30,11 +31,26 @@ export type SoundEngineContextType = {
   waveform: ProcessedWaveform
   setWaveform: (waveform: ProcessedWaveform) => void
   availableWaveforms: ProcessedWaveform[]
+  overtonesCount: number
+  setOvertonesCount: React.Dispatch<React.SetStateAction<number>>
+  overtoneEnvelopes: Envelope[]
+  setOvertoneEnvelopes: React.Dispatch<React.SetStateAction<Envelope[]>>
 }
 
 export const SoundEngineContext = createContext<
   SoundEngineContextType | undefined
 >(undefined)
+
+type OvertoneOsc = {
+  osc: OscillatorNode
+  gain: GainNode
+}
+
+type PadNode = {
+  note: number
+  overtones?: OvertoneOsc[]
+  mainGain?: GainNode
+}
 
 export default function SoundEngineContextProvider({
   children,
@@ -59,6 +75,19 @@ export default function SoundEngineContextProvider({
   const [availableWaveforms, setAvailableWaveforms] =
     useState<ProcessedWaveform[]>(basicWaveforms)
   const [waveform, setWaveform] = useState<ProcessedWaveform>(basicWaveforms[0])
+
+  const [overtonesCount, setOvertonesCount] = useState(16)
+  const [overtoneEnvelopes, setOvertoneEnvelopes] = useState<Envelope[]>(
+    Array(overtonesCount)
+      .fill(1)
+      .fill(0, 1)
+      .map(
+        (level) =>
+          ({
+            level,
+          } as Envelope)
+      )
+  )
 
   useEffect(() => {
     if (!ctx) {
@@ -94,11 +123,16 @@ export default function SoundEngineContextProvider({
     // Cleanup old padNodes
     padNodes.forEach((row) =>
       row.forEach((padNode) => {
-        if (padNode.osc) {
-          try {
-            padNode.osc.stop()
-          } catch {}
-          padNode.osc.disconnect()
+        // Cleanup all overtones if present
+        if (padNode.overtones) {
+          padNode.overtones.forEach(({ osc, gain }) => {
+            try {
+              osc.stop()
+            } catch {}
+            osc.disconnect()
+            gain.disconnect()
+          })
+          padNode.overtones = undefined
         }
         if (padNode.mainGain) {
           padNode.mainGain.disconnect()
@@ -114,13 +148,31 @@ export default function SoundEngineContextProvider({
     )
   }, [noteOffset, rowsCount, columnsCount])
 
+  // Update overtoneEnvelopes when overtonesCount changes
+  useEffect(() => {
+    setOvertoneEnvelopes((prev) => {
+      if (overtonesCount < prev.length) {
+        // Crop to new size
+        return prev.slice(0, overtonesCount)
+      } else if (overtonesCount > prev.length) {
+        // Add new envelopes with level=0
+        return [
+          ...prev,
+          ...Array(overtonesCount - prev.length)
+            .fill(0)
+            .map(() => ({ level: 0 } as Envelope)),
+        ]
+      } else {
+        return prev
+      }
+    })
+  }, [overtonesCount])
+
   const noteOn = (row: number, column: number) => {
     if (!ctx || !globalGainNode) return
 
     // Use a consistent time reference
     const now = ctx.currentTime
-
-    // Ensure previous note is fully stopped
     noteOff(row, column)
 
     const padNode = padNodes[row][column]
@@ -130,59 +182,64 @@ export default function SoundEngineContextProvider({
       mainGain.connect(globalGainNode)
       padNode.mainGain = mainGain
     }
-
     const mainGain = padNode.mainGain
 
-    // Create oscillator
-    const osc = ctx.createOscillator()
-    if (waveform.__type__ === 'BasicWaveform') {
-      osc.type = waveform.waveform
-    } else {
-      osc.setPeriodicWave(waveform.waveform)
-    }
-    osc.frequency.setValueAtTime(
-      440 * Math.pow(2, (padNode.note - 69) / 12),
-      now
-    )
+    // Create one oscillator per overtone with non-zero level
+    const overtones: OvertoneOsc[] = overtoneEnvelopes
+      .map((env, i) => ({ env, i }))
+      .filter(({ env }) => env.level !== 0)
+      .map(({ env, i }) => {
+        const osc = ctx!.createOscillator()
+        const overtoneIndex = i + 1 // 1st harmonic is fundamental
+        const freq = 440 * Math.pow(2, (padNode.note - 69) / 12) * overtoneIndex
+        if (waveform.__type__ === 'BasicWaveform') {
+          osc.type = waveform.waveform
+        } else {
+          osc.setPeriodicWave(waveform.waveform)
+        }
+        osc.frequency.setValueAtTime(freq, now)
 
-    // Envelope: Attack -> Decay -> Sustain
+        const gain = ctx!.createGain()
+        gain.gain.setValueAtTime(env.level, now) // Constant level
+
+        osc.connect(gain)
+        gain.connect(mainGain)
+        osc.start(now)
+
+        return { osc, gain }
+      })
+
+    // Apply envelope to mainGain only
     mainGain.gain.cancelScheduledValues(now)
     mainGain.gain.setValueAtTime(0, now)
     mainGain.gain.linearRampToValueAtTime(1, now + attack)
     mainGain.gain.linearRampToValueAtTime(sustain, now + attack + decay)
 
-    osc.connect(mainGain)
-    mainGain.connect(globalGainNode)
-    osc.start(now)
-    padNode.osc = osc
+    padNode.overtones = overtones
   }
 
   const noteOff = (row: number, column: number) => {
     if (!ctx || !globalGainNode) return
 
     const padNode = padNodes[row][column]
-    const osc = padNode.osc
-    if (!osc) return
-
-    const mainGain = padNode.mainGain
-    if (!mainGain) return
+    if (!padNode.overtones) return
 
     const now = ctx.currentTime
     const releaseEnd = now + release
 
-    // Cancel previous gain schedules and ramp from current value
-    mainGain.gain.cancelScheduledValues(now)
-    mainGain.gain.setValueAtTime(mainGain.gain.value, now)
-    mainGain.gain.linearRampToValueAtTime(0, releaseEnd)
+    padNode.overtones.forEach(({ osc, gain }) => {
+      gain.gain.cancelScheduledValues(now)
+      gain.gain.setValueAtTime(gain.gain.value, now)
+      gain.gain.linearRampToValueAtTime(0, releaseEnd)
 
-    // Stop oscillator after release
-    osc.stop(releaseEnd)
-    osc.onended = () => {
-      osc.disconnect()
-      mainGain.disconnect()
-    }
+      osc.stop(releaseEnd)
+      osc.onended = () => {
+        osc.disconnect()
+        gain.disconnect()
+      }
+    })
 
-    padNode.osc = undefined
+    padNode.overtones = undefined
   }
 
   const noteOnOff = (on: boolean, row: number, column: number) => {
@@ -212,15 +269,13 @@ export default function SoundEngineContextProvider({
         waveform,
         setWaveform,
         availableWaveforms,
+        overtonesCount,
+        setOvertonesCount,
+        overtoneEnvelopes,
+        setOvertoneEnvelopes,
       }}
     >
       {children}
     </SoundEngineContext.Provider>
   )
-}
-
-type PadNode = {
-  note: number
-  osc?: OscillatorNode
-  mainGain?: GainNode
 }

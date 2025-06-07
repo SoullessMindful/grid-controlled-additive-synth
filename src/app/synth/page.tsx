@@ -34,9 +34,24 @@ export default function SynthPage() {
     <div className='flex flex-col justify-center items-stretch w-full h-full'>
       <div className='flex-1 m-1 bg-gray-100 dark:bg-gray-900 rounded-md flex flex-col items-center justify-center'>
         <div className='mb-4 text-center w-full flex flex-col items-center px-2'>
-          <div className='flex flex-row mb-1'>
-            <div className='mr-2'>
-              <label>Overtones </label>
+          <div className='flex flex-row w-full rounded-t-2xl'>
+            <button className='bg-gray-200 dark:bg-gray-800 p-1 rounded-tl cursor-pointer'>
+              Level
+            </button>
+            <button className='bg-gray-100 dark:bg-gray-900 p-1 cursor-pointer'>
+              Attack
+            </button>
+            <button className='bg-gray-100 dark:bg-gray-900 p-1 cursor-pointer'>
+              Decay
+            </button>
+            <button className='bg-gray-100 dark:bg-gray-900 p-1 cursor-pointer'>
+              Sustain
+            </button>
+            <button className='bg-gray-100 dark:bg-gray-900 p-1 cursor-pointer'>
+              Release
+            </button>
+            <div className='flex-1 flex justify-end items-center'>
+              <label className='block p-1'>Overtones </label>
               <input
                 type='number'
                 min={1}
@@ -56,30 +71,8 @@ export default function SynthPage() {
                 className='w-6 h-2.5 px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-center'
               />
             </div>
-            <div>
-              <label>Waveform </label>
-              <select
-                value={waveform.name}
-                onChange={(e) => {
-                  const selected = availableWaveforms.find(
-                    (wf) => wf.name === e.target.value
-                  )
-                  if (selected) setWaveform(selected)
-                }}
-                className='w-12 h-2.5 px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
-              >
-                {availableWaveforms.map((wf) => (
-                  <option
-                    key={wf.name}
-                    value={wf.name}
-                  >
-                    {wf.name}
-                  </option>
-                ))}
-              </select>
-            </div>
           </div>
-          <div className='overflow-x-auto overflow-y-hidden whitespace-nowrap h-20 px-1 mx-1 w-full bg-gray-300 dark:bg-gray-700 rounded'>
+          <div className='overflow-x-auto overflow-y-hidden whitespace-nowrap h-20 px-1 mx-1 w-full bg-gray-200 dark:bg-gray-800 rounded-b-2xl'>
             {overtoneEnvelopes.map((env, i) => (
               <div
                 key={i}
@@ -109,6 +102,28 @@ export default function SynthPage() {
               </div>
             ))}
           </div>
+        </div>
+        <div className='mb-2'>
+          <label>Waveform </label>
+          <select
+            value={waveform.name}
+            onChange={(e) => {
+              const selected = availableWaveforms.find(
+                (wf) => wf.name === e.target.value
+              )
+              if (selected) setWaveform(selected)
+            }}
+            className='w-12 h-2.5 px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
+          >
+            {availableWaveforms.map((wf) => (
+              <option
+                key={wf.name}
+                value={wf.name}
+              >
+                {wf.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div className='flex flex-row justify-center items-center w-full mb-2'>
           <div className='w-5 text-center'>

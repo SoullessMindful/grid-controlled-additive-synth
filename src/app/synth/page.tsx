@@ -6,6 +6,8 @@ import {
   SoundEngineContextType,
 } from '../context/SoundEngineContextProvider'
 import { Envelope } from '@/lib/envelope'
+import VerticalSlider from '../ui/VerticalSlider'
+import HorizontalSlider from '../ui/HorizontalSlider'
 
 export default function SynthPage() {
   const {
@@ -99,18 +101,13 @@ export default function SynthPage() {
             {overtoneEnvelopes.map((env, i) => (
               <div
                 key={i}
-                className='w-3 inline-block text-center py-1.5'
+                className='w-3 inline-block text-center py-0.5'
               >
                 <label className='block text-xs mt-0.5'>{i + 1}</label>
                 <div>
-                  <input
-                    type='range'
-                    min={0}
-                    max={1}
-                    step={0.001}
+                  <VerticalSlider
                     value={env.level}
-                    onChange={(e) => {
-                      const newLevel = parseFloat(e.target.value)
+                    onChange={(newLevel) => {
                       const newOvertoneEnvelopes = [...overtoneEnvelopes]
                       const newOvertoneEnvelope = { ...newOvertoneEnvelopes[i] }
 
@@ -119,7 +116,9 @@ export default function SynthPage() {
 
                       setOvertoneEnvelopes(newOvertoneEnvelopes)
                     }}
-                    className='[writing-mode:vertical-lr] [direction:rtl] h-15'
+                    min={0}
+                    max={1}
+                    step={0.001}
                   />
                 </div>
               </div>
@@ -154,110 +153,76 @@ export default function SynthPage() {
               <div>Level</div>
               <div>{level}</div>
             </label>
-            <div>
-              <input
-                type='range'
-                value={level}
-                min={0}
-                max={1}
-                step={0.01}
-                onChange={(e) => setLevel(parseFloat(e.target.value))}
-                className='[writing-mode:vertical-lr] [direction:rtl] [appeareance:slider-vertical] h-15'
-              />
-            </div>
+            <VerticalSlider
+              value={level}
+              onChange={setLevel}
+              min={0}
+              max={1}
+              step={0.01}
+            />
           </div>
           <div className='w-5 text-center'>
             <label className='block mb-0.5'>
               <div>Attack</div>
               <div>{attack * 1000}ms</div>
             </label>
-            <div>
-              <input
-                type='range'
-                value={Math.log(attack * 1000) / Math.log(10000)}
-                min={0}
-                max={1}
-                step={0.01}
-                onChange={(e) => {
-                  const newValue = parseFloat(e.target.value)
-                  const newAttack = 0.001 * Math.pow(10, newValue * 4)
-                  setAttack(Math.round(newAttack * 1000) / 1000)
-                }}
-                className='[writing-mode:vertical-lr] [direction:rtl] [appeareance:slider-vertical] h-15'
-              />
-            </div>
+            <VerticalSlider
+              value={attack}
+              onChange={(v) => setAttack(Math.round(v * 1000) / 1000)}
+              exponential
+              minExp={0.001}
+              maxExp={10}
+            />
           </div>
           <div className='w-5 text-center'>
             <label className='block mb-0.5'>
               <div>Decay</div>
               <div>{decay * 1000}ms</div>
             </label>
-            <div>
-              <input
-                type='range'
-                value={Math.log(decay * 1000) / Math.log(10000)}
-                min={0}
-                max={1}
-                step={0.01}
-                onChange={(e) => {
-                  const newValue = parseFloat(e.target.value)
-                  const newDecay = 0.001 * Math.pow(10, newValue * 4)
-                  setDecay(Math.round(newDecay * 1000) / 1000)
-                }}
-                className='[writing-mode:vertical-lr] [direction:rtl] [appeareance:slider-vertical] h-15'
-              />
-            </div>
+            <VerticalSlider
+              value={decay}
+              onChange={(v) => setDecay(Math.round(v * 1000) / 1000)}
+              exponential
+              minExp={0.001}
+              maxExp={10}
+            />
           </div>
           <div className='w-5 text-center'>
             <label className='block mb-0.5'>
               <div>Sustain</div>
               <div>{sustain}</div>
             </label>
-            <div>
-              <input
-                type='range'
-                value={sustain}
-                min={0}
-                max={1}
-                step={0.01}
-                onChange={(e) => setSustain(parseFloat(e.target.value))}
-                className='[writing-mode:vertical-lr] [direction:rtl] [appeareance:slider-vertical] h-15'
-              />
-            </div>
+            <VerticalSlider
+              value={sustain}
+              onChange={setSustain}
+              min={0}
+              max={1}
+              step={0.01}
+            />
           </div>
           <div className='w-5 text-center'>
             <label className='block mb-0.5'>
               <div>Release</div>
               <div>{release * 1000}ms</div>
             </label>
-            <div>
-              <input
-                type='range'
-                value={Math.log(release * 1000) / Math.log(10000)}
-                min={0}
-                max={1}
-                step={0.01}
-                onChange={(e) => {
-                  const newValue = parseFloat(e.target.value)
-                  const newRelease = 0.001 * Math.pow(10, newValue * 4)
-                  setRelease(Math.round(newRelease * 1000) / 1000)
-                }}
-                className='[writing-mode:vertical-lr] [direction:rtl] [appeareance:slider-vertical] h-15'
-              />
-            </div>
+            <VerticalSlider
+              value={release}
+              onChange={(v) => setRelease(Math.round(v * 1000) / 1000)}
+              exponential
+              minExp={0.001}
+              maxExp={10}
+            />
           </div>
         </div>
         <div className='mb-2'>
           <label className='block mb-0.5'>Volume</label>
           <div>
-            <input
-              type='range'
+            <HorizontalSlider
               value={volume}
+              onChange={setVolume}
               min={0}
               max={1}
               step={0.01}
-              onChange={(e) => setVolume(parseFloat(e.target.value))}
-              className='w-15'
             />
           </div>
         </div>

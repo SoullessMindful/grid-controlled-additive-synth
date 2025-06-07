@@ -20,6 +20,8 @@ export type SoundEngineContextType = {
   noteOnOff: (on: boolean, row: number, column: number) => void
   volume: number
   setVolume: (volume: number) => void
+  level: number
+  setLevel: (level: number) => void
   attack: number
   setAttack: (attack: number) => void
   decay: number
@@ -67,6 +69,7 @@ export default function SoundEngineContextProvider({
     )
   )
   const [volume, setVolume] = useState(0.5)
+  const [level, setLevel] = useState(0.5)
   const [attack, setAttack] = useState(0.01)
   const [decay, setDecay] = useState(0.1)
   const [sustain, setSustain] = useState(0.5)
@@ -212,8 +215,8 @@ export default function SoundEngineContextProvider({
     // Apply envelope to mainGain only
     mainGain.gain.cancelScheduledValues(now)
     mainGain.gain.setValueAtTime(0, now)
-    mainGain.gain.linearRampToValueAtTime(1, now + attack)
-    mainGain.gain.linearRampToValueAtTime(sustain, now + attack + decay)
+    mainGain.gain.linearRampToValueAtTime(level, now + attack)
+    mainGain.gain.linearRampToValueAtTime(level * sustain, now + attack + decay)
 
     padNode.overtones = overtones
   }
@@ -258,6 +261,8 @@ export default function SoundEngineContextProvider({
         noteOnOff,
         volume,
         setVolume,
+        level,
+        setLevel,
         attack,
         setAttack,
         decay,

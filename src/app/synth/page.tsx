@@ -11,6 +11,8 @@ export default function SynthPage() {
   const {
     volume,
     setVolume,
+    level,
+    setLevel,
     attack,
     setAttack,
     decay,
@@ -109,6 +111,23 @@ export default function SynthPage() {
           </div>
         </div>
         <div className='flex flex-row justify-center items-center w-full mb-2'>
+          <div className='w-5 text-center'>
+            <label className='block mb-0.5'>
+              <div>Level</div>
+              <div>{level}</div>
+            </label>
+            <div>
+              <input
+                type='range'
+                value={level}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(e) => setLevel(parseFloat(e.target.value))}
+                className='[writing-mode:vertical-lr] [direction:rtl] [appeareance:slider-vertical] h-15'
+              />
+            </div>
+          </div>
           <div className='w-5 text-center'>
             <label className='block mb-0.5'>
               <div>Attack</div>

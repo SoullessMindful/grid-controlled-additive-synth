@@ -130,7 +130,7 @@ export default function SideMenu({ open, onClose, children }: SideMenuProps) {
             <select
               value={scaleRoot}
               onChange={(e) => setScaleRoot(Number(e.target.value) as RootNote)}
-              className='w-1/2 px-2 py-1 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
+              className='w-1/3 px-1 py-1 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
             >
               {Array.from({ length: 12 }, (_, i) => i as RootNote).map((n) => (
                 <option
@@ -149,7 +149,7 @@ export default function SideMenu({ open, onClose, children }: SideMenuProps) {
                 )
                 if (selected) setScale(selected)
               }}
-              className='w-1/2 px-2 py-1 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
+              className='w-2/3 px-1 py-1 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
             >
               {availableScales.map((s) => (
                 <option

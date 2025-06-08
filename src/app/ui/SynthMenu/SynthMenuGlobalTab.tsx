@@ -1,45 +1,16 @@
 'use client'
 
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import {
   SoundEngineContext,
   SoundEngineContextType,
 } from '@/app/context/SoundEngineContextProvider'
-import {
-  envelopeProperties,
-  EnvelopeProperty,
-  envelopePropertyToString,
-} from '@/lib/envelope'
-import VerticalSlider from '../VerticalSlider'
 import HorizontalSlider from '../HorizontalSlider'
 
-export default function SynthMenuGlobalControls() {
-  const {
-    volume,
-    setVolume,
-    level,
-    setLevel,
-    attack,
-    setAttack,
-    decay,
-    setDecay,
-    sustain,
-    setSustain,
-    release,
-    setRelease,
-    waveform,
-    setWaveform,
-    availableWaveforms,
-    overtoneEnvelopes,
-    setOvertoneEnvelopes,
-    overtonesCount,
-    setOvertonesCount,
-  } = useContext(SoundEngineContext) as SoundEngineContextType
-
-  const [activeEnvelopeProperty, setActiveEnvelopeProperty] =
-    useState<EnvelopeProperty>('level')
-
-  const overtoneOptions = Array.from({ length: 64 }, (_, i) => i + 1)
+export default function SynthMenuGlobalTab() {
+  const { volume, setVolume } = useContext(
+    SoundEngineContext
+  ) as SoundEngineContextType
 
   return (
     <div className='px-1 py-1 flex flex-col items-center justify-center'>

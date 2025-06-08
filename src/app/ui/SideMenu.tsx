@@ -42,12 +42,12 @@ export default function SideMenu({ open, onClose, children }: SideMenuProps) {
 
   return (
     <div
-      className={`absolute top-0 right-0 z-30 h-full w-30 bg-gray-100 dark:bg-gray-900 
+      className={`absolute top-0 left-0 z-30 h-full w-30 bg-gray-100 dark:bg-gray-900 
         shadow-lg transform transition-transform duration-300
-        ${open ? 'translate-x-0' : 'translate-x-full'}`}
+        ${open ? 'translate-x-0' : '-translate-x-full'}`}
     >
       <button
-        className='absolute top-0 left-0 p-1 text-3xl'
+        className='absolute top-0 right-0 p-1 text-3xl'
         onClick={onClose}
       >
         ✕

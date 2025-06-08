@@ -6,6 +6,32 @@ export type Envelope = {
   release: number
 }
 
+export type EnvelopeProperty = 'level' | 'attack' | 'decay' | 'sustain' | 'release'
+export const envelopeProperties: EnvelopeProperty[] = [
+  'level',
+  'attack',
+  'decay',
+  'sustain',
+  'release',
+] as const
+
+export function envelopePropertyToString(
+  property: EnvelopeProperty
+): string {
+  switch (property) {
+    case 'level':
+      return 'Level'
+    case 'attack':
+      return 'Attack'
+    case 'decay':
+      return 'Decay'
+    case 'sustain':
+      return 'Sustain'
+    case 'release':
+      return 'Release'
+  }
+}
+
 export const defaultGlobalEnvelope: Envelope = {
   level: 0.5,
   attack: 0.01,

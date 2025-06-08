@@ -1,11 +1,11 @@
 'use client'
 
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import {
   SoundEngineContext,
   SoundEngineContextType,
 } from '../context/SoundEngineContextProvider'
-import { Envelope } from '@/lib/envelope'
+import { Envelope, envelopeProperties, EnvelopeProperty, envelopePropertyToString } from '@/lib/envelope'
 import VerticalSlider from '../ui/VerticalSlider'
 import HorizontalSlider from '../ui/HorizontalSlider'
 
@@ -32,6 +32,9 @@ export default function SynthPage() {
     setOvertonesCount,
   } = useContext(SoundEngineContext) as SoundEngineContextType
 
+  const [activeEnvelopeProperty, setActiveEnvelopeProperty] =
+    useState<EnvelopeProperty>('level')
+
   // Define allowed overtone counts
   const overtoneOptions = Array.from({ length: 64 }, (_, i) => i + 1)
 
@@ -40,21 +43,19 @@ export default function SynthPage() {
       <div className='flex-1 m-1 bg-gray-100 dark:bg-gray-900 rounded-md flex flex-col items-center justify-center'>
         <div className='mb-4 text-center w-full flex flex-col items-center px-2'>
           <div className='flex flex-row w-full rounded-t-2xl'>
-            <button className='bg-gray-200 dark:bg-gray-800 p-1 rounded-tl cursor-pointer'>
-              Level
-            </button>
-            <button className='bg-gray-100 dark:bg-gray-900 p-1 cursor-pointer'>
-              Attack
-            </button>
-            <button className='bg-gray-100 dark:bg-gray-900 p-1 cursor-pointer'>
-              Decay
-            </button>
-            <button className='bg-gray-100 dark:bg-gray-900 p-1 cursor-pointer'>
-              Sustain
-            </button>
-            <button className='bg-gray-100 dark:bg-gray-900 p-1 cursor-pointer'>
-              Release
-            </button>
+            {envelopeProperties.map((property) => (
+              <button
+                key={property}
+                className={`${
+                  activeEnvelopeProperty === property
+                    ? 'bg-gray-200 dark:bg-gray-800 rounded-t '
+                    : ''
+                }p-1 cursor-pointer`}
+                onClick={() => setActiveEnvelopeProperty(property)}
+              >
+                {envelopePropertyToString(property)}
+              </button>
+            ))}
             <div className='flex-1 flex justify-end items-center gap-1'>
               <label className='block p-1'>Overtones</label>
               <button
@@ -105,21 +106,123 @@ export default function SynthPage() {
               >
                 <label className='block text-xs mt-0.5'>{i + 1}</label>
                 <div>
-                  <VerticalSlider
-                    value={env.level}
-                    onChange={(newLevel) => {
-                      const newOvertoneEnvelopes = [...overtoneEnvelopes]
-                      const newOvertoneEnvelope = { ...newOvertoneEnvelopes[i] }
+                  {(() => {
+                    switch (activeEnvelopeProperty) {
+                      case 'level':
+                        return (
+                          <VerticalSlider
+                            value={env.level}
+                            onChange={(newLevel) => {
+                              const newOvertoneEnvelopes = [
+                                ...overtoneEnvelopes,
+                              ]
+                              const newOvertoneEnvelope = {
+                                ...newOvertoneEnvelopes[i],
+                              }
 
-                      newOvertoneEnvelope.level = newLevel
-                      newOvertoneEnvelopes[i] = newOvertoneEnvelope
+                              newOvertoneEnvelope.level = newLevel
+                              newOvertoneEnvelopes[i] = newOvertoneEnvelope
 
-                      setOvertoneEnvelopes(newOvertoneEnvelopes)
-                    }}
-                    min={0}
-                    max={1}
-                    step={0.001}
-                  />
+                              setOvertoneEnvelopes(newOvertoneEnvelopes)
+                            }}
+                            min={0}
+                            max={1}
+                            step={0.001}
+                          />
+                        )
+                      case 'attack':
+                        return (
+                          <VerticalSlider
+                            value={env.attack}
+                            onChange={(newAttack) => {
+                              const newOvertoneEnvelopes = [
+                                ...overtoneEnvelopes,
+                              ]
+                              const newOvertoneEnvelope = {
+                                ...newOvertoneEnvelopes[i],
+                              }
+
+                              newOvertoneEnvelope.attack =
+                                Math.round(newAttack * 1000) / 1000
+                              newOvertoneEnvelopes[i] = newOvertoneEnvelope
+
+                              setOvertoneEnvelopes(newOvertoneEnvelopes)
+                            }}
+                            exponential
+                            minExp={0.001}
+                            maxExp={10}
+                          />
+                        )
+                      case 'decay':
+                        return (
+                          <VerticalSlider
+                            value={env.decay}
+                            onChange={(newDecay) => {
+                              const newOvertoneEnvelopes = [
+                                ...overtoneEnvelopes,
+                              ]
+                              const newOvertoneEnvelope = {
+                                ...newOvertoneEnvelopes[i],
+                              }
+
+                              newOvertoneEnvelope.decay =
+                                Math.round(newDecay * 1000) / 1000
+                              newOvertoneEnvelopes[i] = newOvertoneEnvelope
+
+                              setOvertoneEnvelopes(newOvertoneEnvelopes)
+                            }}
+                            exponential
+                            minExp={0.001}
+                            maxExp={10}
+                          />
+                        )
+                      case 'sustain':
+                        return (
+                          <VerticalSlider
+                            value={env.sustain}
+                            onChange={(newSustain) => {
+                              const newOvertoneEnvelopes = [
+                                ...overtoneEnvelopes,
+                              ]
+                              const newOvertoneEnvelope = {
+                                ...newOvertoneEnvelopes[i],
+                              }
+
+                              newOvertoneEnvelope.sustain = newSustain
+                              newOvertoneEnvelopes[i] = newOvertoneEnvelope
+
+                              setOvertoneEnvelopes(newOvertoneEnvelopes)
+                            }}
+                            min={0}
+                            max={1}
+                            step={0.01}
+                          />
+                        )
+                      case 'release':
+                        return (
+                          <VerticalSlider
+                            value={env.release}
+                            onChange={(newRelease) => {
+                              const newOvertoneEnvelopes = [
+                                ...overtoneEnvelopes,
+                              ]
+                              const newOvertoneEnvelope = {
+                                ...newOvertoneEnvelopes[i],
+                              }
+
+                              newOvertoneEnvelope.release =
+                                Math.round(newRelease * 1000) / 1000
+                              newOvertoneEnvelopes[i] = newOvertoneEnvelope
+
+                              setOvertoneEnvelopes(newOvertoneEnvelopes)
+                            }}
+                            exponential
+                            minExp={0.001}
+                            maxExp={10}
+                          />
+                        )
+                    }
+                  })()}
                 </div>
               </div>
             ))}

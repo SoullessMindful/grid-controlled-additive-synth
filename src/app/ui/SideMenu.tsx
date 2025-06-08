@@ -14,13 +14,13 @@ import {
   RootNote,
 } from '../../lib/scale'
 
-type SideMenuProps = {
+type GridMenuProps = {
   open: boolean
   onClose: () => void
   children?: React.ReactNode
 }
 
-export default function SideMenu({ open, onClose, children }: SideMenuProps) {
+export default function GridMenu({ open, onClose, children }: GridMenuProps) {
   const {
     rowsCount,
     setRowsCount,
@@ -52,7 +52,7 @@ export default function SideMenu({ open, onClose, children }: SideMenuProps) {
       >
         ✕
       </button>
-      <div className='py-4'>
+      <div className='p-4'>
         <div className='mb-4'>
           <label className='block mb-1'>Rows</label>
           <select

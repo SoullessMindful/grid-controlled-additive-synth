@@ -49,7 +49,7 @@ export default function SynthMenu({ open, onClose }: SynthMenuProps) {
 
   return (
     <div
-      className={`absolute top-0 right-0 z-30 h-full w-full
+      className={`absolute top-0 right-0 z-31 h-full w-full
         bg-gray-100 dark:bg-gray-900 shadow-lg transform transition-transform duration-300
         ${open ? 'translate-x-0' : 'translate-x-full'}`}
     >
@@ -75,11 +75,11 @@ export default function SynthMenu({ open, onClose }: SynthMenuProps) {
                 {envelopePropertyToString(property)}
               </button>
             ))}
-            <div className='flex-1 flex justify-end items-center gap-1'>
+            <div className='flex-1 flex justify-end items-center'>
               <label className='block p-1'>Overtones</label>
               <button
                 type='button'
-                className={`px-1 py-0.25 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 cursor-pointer ${
+                className={`px-0.5 py-0.25 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 cursor-pointer ${
                   overtonesCount <= 1 ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
                 onClick={() =>
@@ -92,7 +92,7 @@ export default function SynthMenu({ open, onClose }: SynthMenuProps) {
               <select
                 value={overtonesCount}
                 onChange={(e) => setOvertonesCount(Number(e.target.value))}
-                className='px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-center cursor-pointer'
+                className='px-0.25 py-0.5 mx-0.5 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-center cursor-pointer'
               >
                 {overtoneOptions.map((n) => (
                   <option
@@ -105,7 +105,7 @@ export default function SynthMenu({ open, onClose }: SynthMenuProps) {
               </select>
               <button
                 type='button'
-                className={`px-1 py-0.25 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 cursor-pointer ${
+                className={`px-0.5 py-0.25 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 cursor-pointer ${
                   overtonesCount >= 64 ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
                 onClick={() =>

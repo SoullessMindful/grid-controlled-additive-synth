@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { Montserrat } from 'next/font/google'
 import './globals.css'
 import MainAppContextProvider from './context/MainAppContextProvider'
-import Navigation from './ui/Navigation'
 
 const montserrat = Montserrat({
   variable: '--font-montserrat-sans',
@@ -28,9 +27,6 @@ export default function RootLayout({
           <main className='flex-1'>
             <MainAppContextProvider>{children}</MainAppContextProvider>
           </main>
-          <footer>
-            <Navigation />
-          </footer>
         </div>
       </body>
     </html>

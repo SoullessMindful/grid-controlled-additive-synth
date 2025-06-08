@@ -47,12 +47,12 @@ export default function SideMenu({ open, onClose, children }: SideMenuProps) {
         ${open ? 'translate-x-0' : '-translate-x-full'}`}
     >
       <button
-        className='absolute top-0 right-0 p-1 text-3xl'
+        className='absolute top-0 right-0 px-1.5 py-1 text-3xl'
         onClick={onClose}
       >
         ✕
       </button>
-      <div className='p-4'>
+      <div className='py-4'>
         <div className='mb-4'>
           <label className='block mb-1'>Rows</label>
           <select

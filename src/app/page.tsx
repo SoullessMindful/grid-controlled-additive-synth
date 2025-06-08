@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import GridController from './ui/GridController'
-import GridMenu from './ui/SideMenu'
+import GridMenu from './ui/GridMenu'
 import SynthMenu from './ui/SynthMenu'
 
 export default function Home() {

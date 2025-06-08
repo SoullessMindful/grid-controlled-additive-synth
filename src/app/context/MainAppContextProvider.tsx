@@ -20,6 +20,8 @@ export type MainAppContextType = {
   setLockToScale: Dispatch<SetStateAction<boolean>>
   highlightRootNote: boolean
   setHighlightRootNote: Dispatch<SetStateAction<boolean>>
+  displayNoteLetter: boolean
+  setDisplayNoteLetter: Dispatch<SetStateAction<boolean>>
 }
 
 export const MainAppContext = createContext<MainAppContextType | undefined>(
@@ -39,6 +41,7 @@ export default function MainAppContextProvider({
   const [scaleRoot, setScaleRoot] = useState<RootNote>(0)
   const [lockToScale, setLockToScale] = useState(false)
   const [highlightRootNote, setHighlightRootNote] = useState(false)
+  const [displayNoteLetter, setDisplayNoteLetter] = useState(false)
 
   return (
     <MainAppContext.Provider
@@ -59,6 +62,8 @@ export default function MainAppContextProvider({
         setLockToScale,
         highlightRootNote,
         setHighlightRootNote,
+        displayNoteLetter,
+        setDisplayNoteLetter,
       }}
     >
       <SoundEngineContextProvider>{children}</SoundEngineContextProvider>

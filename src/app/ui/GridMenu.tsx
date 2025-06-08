@@ -38,6 +38,8 @@ export default function GridMenu({ open, onClose, children }: GridMenuProps) {
     setLockToScale,
     highlightRootNote,
     setHighlightRootNote,
+    displayNoteLetter,
+    setDisplayNoteLetter,
   } = useContext(MainAppContext) as MainAppContextType
 
   return (
@@ -183,6 +185,16 @@ export default function GridMenu({ open, onClose, children }: GridMenuProps) {
               <label htmlFor='highlightRootNote'>Highlight root note</label>
             </div>
           </div>
+        </div>
+        <div className='mb-4'>
+          <input
+            type='checkbox'
+            checked={displayNoteLetter}
+            onChange={(e) => setDisplayNoteLetter(e.target.checked)}
+            id='displayNoteLetter'
+            className='mr-1 accent-gray-800 dark:accent-gray-200'
+          />
+          <label htmlFor='displayNoteLetter'>Display note letter</label>
         </div>
         {children}
       </div>

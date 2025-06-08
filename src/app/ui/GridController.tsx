@@ -11,7 +11,7 @@ import {
   SoundEngineContext,
   SoundEngineContextType,
 } from '../context/SoundEngineContextProvider'
-import { isNoteInScale } from '../../lib/scale'
+import { isNoteInScale, RootNote, rootNoteToString } from '../../lib/scale'
 
 export default function GridController() {
   const {
@@ -23,6 +23,7 @@ export default function GridController() {
     scaleRoot,
     lockToScale,
     highlightRootNote,
+    displayNoteLetter,
   } = useContext(MainAppContext) as MainAppContextType
 
   const { noteOn, noteOff } = useContext(
@@ -162,7 +163,18 @@ export default function GridController() {
                 ${isGreyed ? 0 : isPressed ? 100 : 20}%,
                 ${isPressed && !isGreyed ? 70 : 50}%)`,
             }}
-          ></div>
+          >
+            {displayNoteLetter && !isGreyed && (
+              <div
+                className='text-center text-2xl font-bold text-gray-800 dark:text-gray-200 pointer-events-none select-none'
+                style={{
+                  lineHeight: `${padSize}rem`,
+                }}
+              >
+                {rootNoteToString((note % 12) as RootNote)}
+              </div>
+            )}
+          </div>
         )
       })}
     </div>

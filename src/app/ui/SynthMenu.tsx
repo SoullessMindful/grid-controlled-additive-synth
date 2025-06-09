@@ -15,13 +15,14 @@ import VerticalSlider from './VerticalSlider'
 import HorizontalSlider from './HorizontalSlider'
 import SynthMenuWaveTab from './SynthMenu/SynthMenuWaveTab'
 import SynthMenuGlobalTab from './SynthMenu/SynthMenuGlobalTab'
+import SynthMenuFilterTab from './SynthMenu/SynthMenuFilterTab'
 
 type SynthMenuProps = {
   open: boolean
   onClose: () => void
 }
 
-type Tab = 'wave' | 'filters' | 'global'
+type Tab = 'wave' | 'filter' | 'global'
 
 export default function SynthMenu({ open, onClose }: SynthMenuProps) {
   const [tab, setTab] = useState<Tab>('wave')
@@ -50,11 +51,11 @@ export default function SynthMenu({ open, onClose }: SynthMenuProps) {
           </button>
           <button
             className={`w-7 py-1 text-3xl text-center cursor-pointer ${
-              tab === 'filters' ? '' : 'text-gray-600 dark:text-gray-400'
+              tab === 'filter' ? '' : 'text-gray-600 dark:text-gray-400'
             }`}
-            onClick={() => setTab('filters')}
+            onClick={() => setTab('filter')}
           >
-            Filters
+            Filter
           </button>
           <button
             className={`w-7 py-1 text-3xl text-center cursor-pointer ${
@@ -76,6 +77,8 @@ export default function SynthMenu({ open, onClose }: SynthMenuProps) {
         switch (tab) {
           case 'wave':
             return <SynthMenuWaveTab />
+          case 'filter':
+            return <SynthMenuFilterTab />
           case 'global':
             return <SynthMenuGlobalTab />
         }

@@ -4,9 +4,9 @@ export type FilterParameter = {
   value: number
   modulation: Envelope | undefined
 }
-
+export type FilterType = 'lowpass' | 'highpass' | 'bandpass' | 'notch' | 'allpass' | undefined
 export type FilterParameters = {
-  type: 'lowpass' | 'highpass' | 'bandpass' | 'notch' | 'allpass' | undefined
+  type: FilterType
   Q: FilterParameter
   frequency: FilterParameter
 }

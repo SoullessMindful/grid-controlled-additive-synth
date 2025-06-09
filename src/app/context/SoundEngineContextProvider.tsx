@@ -44,6 +44,8 @@ export type SoundEngineContextType = {
   setOvertonesCount: React.Dispatch<React.SetStateAction<number>>
   overtoneEnvelopes: Envelope[]
   setOvertoneEnvelopes: React.Dispatch<React.SetStateAction<Envelope[]>>
+  filterParameters: FilterParameters
+  setFilterParameters: React.Dispatch<React.SetStateAction<FilterParameters>>
 }
 
 export const SoundEngineContext = createContext<
@@ -321,6 +323,8 @@ export default function SoundEngineContextProvider({
         setOvertonesCount,
         overtoneEnvelopes,
         setOvertoneEnvelopes,
+        filterParameters,
+        setFilterParameters,
       }}
     >
       {children}

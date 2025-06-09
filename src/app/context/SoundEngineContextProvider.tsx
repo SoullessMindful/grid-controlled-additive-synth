@@ -4,7 +4,6 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import { MainAppContext, MainAppContextType } from './MainAppContextProvider'
 import { range2d } from '@/lib/range'
 import {
-  BasicWaveform,
   basicWaveforms,
   customWaveforms,
   ProcessedWaveform,
@@ -14,6 +13,10 @@ import {
   defaultOvertoneEnvelopes,
   Envelope,
 } from '@/lib/envelope'
+import {
+  defaultFilterParameters,
+  FilterParameters,
+} from '@/lib/filterParameters'
 
 let ctx: AudioContext | undefined = undefined
 let globalGainNode: GainNode | undefined = undefined
@@ -57,6 +60,7 @@ type PadNode = {
   note: number
   overtones?: OvertoneOsc[]
   mainGain?: GainNode
+  filter?: BiquadFilterNode
 }
 
 export default function SoundEngineContextProvider({
@@ -79,6 +83,10 @@ export default function SoundEngineContextProvider({
   const [decay, setDecay] = useState(0.1)
   const [sustain, setSustain] = useState(0.5)
   const [release, setRelease] = useState(0.01)
+
+  const [filterParameters, setFilterParameters] = useState<FilterParameters>(
+    defaultFilterParameters
+  )
 
   const [availableWaveforms, setAvailableWaveforms] =
     useState<ProcessedWaveform[]>(basicWaveforms)
@@ -134,8 +142,13 @@ export default function SoundEngineContextProvider({
           })
           padNode.overtones = undefined
         }
+
         if (padNode.mainGain) {
           padNode.mainGain.disconnect()
+        }
+
+        if (padNode.filter) {
+          padNode.filter.disconnect()
         }
       })
     )
@@ -177,10 +190,13 @@ export default function SoundEngineContextProvider({
 
     const padNode = padNodes[row][column]
 
+    if (!padNode.filter) {
+      padNode.filter = ctx.createBiquadFilter()
+    }
+    const filter = padNode.filter
+
     if (!padNode.mainGain) {
-      const mainGain = ctx.createGain()
-      mainGain.connect(globalGainNode)
-      padNode.mainGain = mainGain
+      padNode.mainGain = ctx.createGain()
     }
     const mainGain = padNode.mainGain
 
@@ -215,11 +231,25 @@ export default function SoundEngineContextProvider({
         return { osc, gain, overtoneIndex }
       })
 
+    filter.disconnect()
+    mainGain.disconnect()
+
     // Apply envelope to mainGain only
     mainGain.gain.cancelScheduledValues(now)
     mainGain.gain.setValueAtTime(0, now)
     mainGain.gain.linearRampToValueAtTime(level, now + attack)
     mainGain.gain.linearRampToValueAtTime(level * sustain, now + attack + decay)
+
+    if (filterParameters.type === undefined) {
+      mainGain.connect(globalGainNode)
+    } else {
+      filter.type = filterParameters.type
+      filter.Q.setValueAtTime(filterParameters.Q.value, now)
+      filter.frequency.setValueAtTime(filterParameters.frequency.value, now)
+      
+      mainGain.connect(filter)
+      filter.connect(globalGainNode)
+    }
 
     padNode.overtones = overtones
   }
@@ -236,7 +266,7 @@ export default function SoundEngineContextProvider({
     padNode.overtones.forEach(({ osc, gain, overtoneIndex }) => {
       const env = overtoneEnvelopes[overtoneIndex - 1]
       const overtoneReleaseEnd = env ? now + env.release : releaseEnd
-      
+
       gain.gain.cancelScheduledValues(now)
       gain.gain.setValueAtTime(gain.gain.value, now)
       gain.gain.linearRampToValueAtTime(0, overtoneReleaseEnd)

@@ -1,0 +1,24 @@
+import { Envelope } from './envelope'
+
+export type FilterParameter = {
+  value: number
+  modulation: Envelope | undefined
+}
+
+export type FilterParameters = {
+  type: 'lowpass' | 'highpass' | 'bandpass' | 'notch' | 'allpass' | undefined
+  Q: FilterParameter
+  frequency: FilterParameter
+}
+
+export const defaultFilterParameters: FilterParameters = {
+  type: undefined,
+  Q: {
+    value: 1.4,
+    modulation: undefined,
+  },
+  frequency: {
+    value: 800,
+    modulation: undefined,
+  },
+} as const

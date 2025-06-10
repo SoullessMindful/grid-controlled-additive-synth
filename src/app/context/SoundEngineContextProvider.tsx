@@ -246,9 +246,29 @@ export default function SoundEngineContextProvider({
       mainGain.connect(globalGainNode)
     } else {
       filter.type = filterParameters.type
+      filter.Q.cancelScheduledValues(now)
       filter.Q.setValueAtTime(filterParameters.Q.value, now)
+      if (filterParameters.Q.modulation !== undefined) {
+        const mod = filterParameters.Q.modulation
+        filter.Q.exponentialRampToValueAtTime(mod.level, now + mod.attack)
+        filter.Q.exponentialRampToValueAtTime(
+          mod.sustain,
+          now + mod.attack + mod.decay
+        )
+      }
       filter.frequency.setValueAtTime(filterParameters.frequency.value, now)
-      
+      if (filterParameters.frequency.modulation !== undefined) {
+        const mod = filterParameters.frequency.modulation
+        filter.frequency.exponentialRampToValueAtTime(
+          mod.level,
+          now + mod.attack
+        )
+        filter.frequency.exponentialRampToValueAtTime(
+          mod.sustain,
+          now + mod.attack + mod.decay
+        )
+      }
+
       mainGain.connect(filter)
       filter.connect(globalGainNode)
     }

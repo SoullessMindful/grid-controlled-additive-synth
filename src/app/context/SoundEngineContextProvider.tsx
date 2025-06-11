@@ -220,9 +220,12 @@ export default function SoundEngineContextProvider({
         const gain = ctx!.createGain()
         gain.gain.cancelScheduledValues(now)
         gain.gain.setValueAtTime(0, now)
-        gain.gain.linearRampToValueAtTime(env.level, now + env.attack)
-        gain.gain.linearRampToValueAtTime(
-          env.level * env.sustain,
+        gain.gain.exponentialRampToValueAtTime(
+          env.level || 0.001,
+          now + env.attack
+        )
+        gain.gain.exponentialRampToValueAtTime(
+          env.level * env.sustain || 0.001,
           now + env.attack + env.decay
         )
 
@@ -239,8 +242,11 @@ export default function SoundEngineContextProvider({
     // Apply envelope to mainGain only
     mainGain.gain.cancelScheduledValues(now)
     mainGain.gain.setValueAtTime(0, now)
-    mainGain.gain.linearRampToValueAtTime(level, now + attack)
-    mainGain.gain.linearRampToValueAtTime(level * sustain, now + attack + decay)
+    mainGain.gain.exponentialRampToValueAtTime(level || 0.001, now + attack)
+    mainGain.gain.exponentialRampToValueAtTime(
+      level * sustain || 0.001,
+      now + attack + decay
+    )
 
     if (filterParameters.type === undefined) {
       mainGain.connect(globalGainNode)
@@ -250,9 +256,12 @@ export default function SoundEngineContextProvider({
       filter.Q.setValueAtTime(filterParameters.Q.value, now)
       if (filterParameters.Q.modulation !== undefined) {
         const mod = filterParameters.Q.modulation
-        filter.Q.exponentialRampToValueAtTime(mod.level, now + mod.attack)
         filter.Q.exponentialRampToValueAtTime(
-          mod.sustain,
+          mod.level || 0.001,
+          now + mod.attack
+        )
+        filter.Q.exponentialRampToValueAtTime(
+          mod.sustain || 0.001,
           now + mod.attack + mod.decay
         )
       }
@@ -260,11 +269,11 @@ export default function SoundEngineContextProvider({
       if (filterParameters.frequency.modulation !== undefined) {
         const mod = filterParameters.frequency.modulation
         filter.frequency.exponentialRampToValueAtTime(
-          mod.level,
+          mod.level || 0.001,
           now + mod.attack
         )
         filter.frequency.exponentialRampToValueAtTime(
-          mod.sustain,
+          mod.sustain || 0.001,
           now + mod.attack + mod.decay
         )
       }
@@ -291,7 +300,7 @@ export default function SoundEngineContextProvider({
 
       gain.gain.cancelScheduledValues(now)
       gain.gain.setValueAtTime(gain.gain.value, now)
-      gain.gain.linearRampToValueAtTime(0, overtoneReleaseEnd)
+      gain.gain.exponentialRampToValueAtTime(0.001, overtoneReleaseEnd)
 
       osc.stop(releaseEnd)
       osc.onended = () => {
@@ -307,7 +316,7 @@ export default function SoundEngineContextProvider({
 
     mainGain.gain.cancelScheduledValues(now)
     mainGain.gain.setValueAtTime(mainGain.gain.value, now)
-    mainGain.gain.linearRampToValueAtTime(0, releaseEnd)
+    mainGain.gain.exponentialRampToValueAtTime(0.001, releaseEnd)
   }
 
   const noteOnOff = (on: boolean, row: number, column: number) => {

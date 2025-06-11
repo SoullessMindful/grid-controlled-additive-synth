@@ -219,7 +219,7 @@ export default function SoundEngineContextProvider({
 
         const gain = ctx!.createGain()
         gain.gain.cancelScheduledValues(now)
-        gain.gain.setValueAtTime(0, now)
+        gain.gain.setValueAtTime(0.001, now)
         gain.gain.exponentialRampToValueAtTime(
           env.level || 0.001,
           now + env.attack
@@ -241,7 +241,7 @@ export default function SoundEngineContextProvider({
 
     // Apply envelope to mainGain only
     mainGain.gain.cancelScheduledValues(now)
-    mainGain.gain.setValueAtTime(0, now)
+    mainGain.gain.setValueAtTime(0.001, now)
     mainGain.gain.exponentialRampToValueAtTime(level || 0.001, now + attack)
     mainGain.gain.exponentialRampToValueAtTime(
       level * sustain || 0.001,

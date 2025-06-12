@@ -165,36 +165,41 @@ export default function GridMenu({ open, onClose, children }: GridMenuProps) {
           </div>
           <div className='flex items-center justify-between'>
             <div>
-              <input
-                type='checkbox'
-                checked={lockToScale}
-                onChange={(e) => setLockToScale(e.target.checked)}
-                id='lockToScale'
-                className='mr-1 accent-gray-800 dark:accent-gray-200'
-              />
-              <label htmlFor='lockToScale'>Lock to scale</label>
+              <label>
+                <input
+                  type='checkbox'
+                  checked={lockToScale}
+                  onChange={(e) => setLockToScale(e.target.checked)}
+                  id='lockToScale'
+                  className='mr-1 accent-gray-800 dark:accent-gray-200'
+                />
+                Lock to scale
+              </label>
             </div>
             <div>
-              <input
-                type='checkbox'
-                checked={highlightRootNote}
-                onChange={(e) => setHighlightRootNote(e.target.checked)}
-                id='highlightRootNote'
-                className='mr-1 accent-gray-800 dark:accent-gray-200'
-              />
-              <label htmlFor='highlightRootNote'>Highlight root note</label>
+              <label>
+                <input
+                  type='checkbox'
+                  checked={highlightRootNote}
+                  onChange={(e) => setHighlightRootNote(e.target.checked)}
+                  id='highlightRootNote'
+                  className='mr-1 accent-gray-800 dark:accent-gray-200'
+                />
+                Highlight root note
+              </label>
             </div>
           </div>
         </div>
         <div className='mb-4'>
-          <input
-            type='checkbox'
-            checked={displayNoteLetter}
-            onChange={(e) => setDisplayNoteLetter(e.target.checked)}
-            id='displayNoteLetter'
-            className='mr-1 accent-gray-800 dark:accent-gray-200'
-          />
-          <label htmlFor='displayNoteLetter'>Display note letter</label>
+          <label>
+            <input
+              type='checkbox'
+              checked={displayNoteLetter}
+              onChange={(e) => setDisplayNoteLetter(e.target.checked)}
+              className='mr-1 accent-gray-800 dark:accent-gray-200'
+            />
+            Display note letter
+          </label>
         </div>
         {children}
       </div>

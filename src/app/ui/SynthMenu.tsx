@@ -22,16 +22,16 @@ export default function SynthMenu({ open, onClose }: SynthMenuProps) {
         bg-gray-100 dark:bg-gray-900 shadow-lg transform transition-transform duration-300
         ${open ? 'translate-x-0' : 'translate-x-full'}`}
     >
-      <div className='w-full flex justify-between'>
+      <div className='w-full flex justify-between items-center'>
         <button
-          className='px-1 py-1 text-3xl cursor-pointer'
+          className='p-1 cursor-pointer'
           onClick={onClose}
         >
           <XMarkIcon className='size-2' />
         </button>
-        <div className='px-1'>
+        <div className='px-1 text-2xl text-center'>
           <button
-            className={`w-7 py-1 text-3xl text-center cursor-pointer ${
+            className={`w-6 p-1 cursor-pointer ${
               tab === 'wave' ? '' : 'text-gray-600 dark:text-gray-400'
             }`}
             onClick={() => setTab('wave')}
@@ -39,7 +39,7 @@ export default function SynthMenu({ open, onClose }: SynthMenuProps) {
             Wave
           </button>
           <button
-            className={`w-7 py-1 text-3xl text-center cursor-pointer ${
+            className={`w-6 p-1 cursor-pointer ${
               tab === 'filter' ? '' : 'text-gray-600 dark:text-gray-400'
             }`}
             onClick={() => setTab('filter')}
@@ -47,7 +47,7 @@ export default function SynthMenu({ open, onClose }: SynthMenuProps) {
             Filter
           </button>
           <button
-            className={`w-7 py-1 text-3xl text-center cursor-pointer ${
+            className={`w-6 p-1 cursor-pointer ${
               tab === 'global' ? '' : 'text-gray-600 dark:text-gray-400'
             }`}
             onClick={() => setTab('global')}

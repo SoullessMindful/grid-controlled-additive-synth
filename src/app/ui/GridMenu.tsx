@@ -50,7 +50,7 @@ export default function GridMenu({ open, onClose, children }: GridMenuProps) {
         ${open ? 'translate-x-0' : '-translate-x-full'}`}
     >
       <button
-        className='absolute top-0 right-0 px-1 py-1 text-3xl'
+        className='absolute top-0 right-0 p-1'
         onClick={onClose}
       >
         <XMarkIcon className='size-2' />

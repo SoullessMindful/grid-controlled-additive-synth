@@ -22,7 +22,7 @@ export default function Home() {
         onClose={() => setIsGridMenuOpen(false)}
       />
       <button
-        className='absolute top-0 left-0 z-29 bg-gray-100 dark:bg-gray-900 text-3xl px-1 py-1 rounded-md'
+        className='absolute top-0 left-0 z-29 bg-gray-100 dark:bg-gray-900 p-1 rounded-md'
         onClick={() => setIsGridMenuOpen(true)}
       >
         <Cog6ToothIcon className='size-2' />
@@ -32,13 +32,13 @@ export default function Home() {
         onClose={() => setIsSynthMenuOpen(false)}
       />
       <button
-        className='absolute top-0 right-0 z-29 bg-gray-100 dark:bg-gray-900 text-3xl px-1 py-1 rounded-md'
+        className='absolute top-0 right-0 z-29 bg-gray-100 dark:bg-gray-900 p-1 rounded-md'
         onClick={() => setIsSynthMenuOpen(true)}
       >
         <BeakerIcon className='size-2' />
       </button>
       <button
-        className='absolute top-0 left-1/2 -translate-x-1/2 bg-gray-100 dark:bg-gray-900 text-3xl px-1 py-1 rounded-md'
+        className='absolute top-0 left-1/2 -translate-x-1/2 bg-gray-100 dark:bg-gray-900 p-1 rounded-md'
         onClick={() => {
           if (document.fullscreenElement !== null) {
             document.exitFullscreen()

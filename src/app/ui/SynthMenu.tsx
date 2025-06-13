@@ -1,21 +1,10 @@
 'use client'
 
-import { useContext, useState } from 'react'
-import {
-  SoundEngineContext,
-  SoundEngineContextType,
-} from '../context/SoundEngineContextProvider'
-import {
-  Envelope,
-  envelopeProperties,
-  EnvelopeProperty,
-  envelopePropertyToString,
-} from '@/lib/envelope'
-import VerticalSlider from './VerticalSlider'
-import HorizontalSlider from './HorizontalSlider'
+import { useState } from 'react'
 import SynthMenuWaveTab from './SynthMenu/SynthMenuWaveTab'
 import SynthMenuGlobalTab from './SynthMenu/SynthMenuGlobalTab'
 import SynthMenuFilterTab from './SynthMenu/SynthMenuFilterTab'
+import { XMarkIcon } from '@heroicons/react/24/solid'
 
 type SynthMenuProps = {
   open: boolean
@@ -35,12 +24,12 @@ export default function SynthMenu({ open, onClose }: SynthMenuProps) {
     >
       <div className='w-full flex justify-between'>
         <button
-          className='px-1.5 py-1 text-3xl cursor-pointer'
+          className='px-1 py-1 text-3xl cursor-pointer'
           onClick={onClose}
         >
-          ✕
+          <XMarkIcon className='size-2' />
         </button>
-        <div>
+        <div className='px-1'>
           <button
             className={`w-7 py-1 text-3xl text-center cursor-pointer ${
               tab === 'wave' ? '' : 'text-gray-600 dark:text-gray-400'
@@ -66,12 +55,6 @@ export default function SynthMenu({ open, onClose }: SynthMenuProps) {
             Global
           </button>
         </div>
-        <button
-          className='px-1.5 py-1 text-3xl cursor-pointer'
-          onClick={onClose}
-        >
-          ✕
-        </button>
       </div>
       {(() => {
         switch (tab) {

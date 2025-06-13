@@ -13,6 +13,7 @@ import {
   rootNoteToString,
   RootNote,
 } from '../../lib/scale'
+import { XMarkIcon } from '@heroicons/react/24/solid'
 
 type GridMenuProps = {
   open: boolean
@@ -49,10 +50,10 @@ export default function GridMenu({ open, onClose, children }: GridMenuProps) {
         ${open ? 'translate-x-0' : '-translate-x-full'}`}
     >
       <button
-        className='absolute top-0 right-0 px-1.5 py-1 text-3xl'
+        className='absolute top-0 right-0 px-1 py-1 text-3xl'
         onClick={onClose}
       >
-        ✕
+        <XMarkIcon className='size-2' />
       </button>
       <div className='p-4'>
         <div className='mb-4'>

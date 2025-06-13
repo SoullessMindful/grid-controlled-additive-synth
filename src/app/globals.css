@@ -34,3 +34,15 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+:fullscreen .fullscreen-invisible {
+  display: none;
+}
+
+.not-fullscreen-invisible {
+  display: none;
+}
+
+:fullscreen .not-fullscreen-invisible {
+  display: initial;
+}

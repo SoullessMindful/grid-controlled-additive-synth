@@ -109,7 +109,8 @@ export default function MainAppContextProvider({
     setColumnsCount(settings.columnsCount)
     setPadSize(settings.padSize)
     setScale(
-      availableScales.find((s) => s.name === settings.scaleName) ?? chromaticScale
+      availableScales.find((s) => s.name === settings.scaleName) ??
+        chromaticScale
     )
     setScaleRoot(settings.scaleRoot)
     setLockToScale(settings.lockToScale)

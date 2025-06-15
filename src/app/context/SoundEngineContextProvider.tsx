@@ -152,11 +152,15 @@ export default function SoundEngineContextProvider({
     )
 
     // Create new padNodes
-    if (rowsCount !== undefined && columnsCount !== undefined && noteOffset !== undefined) {
+    if (
+      rowsCount !== undefined &&
+      columnsCount !== undefined &&
+      noteOffset !== undefined
+    ) {
       setPadNodes(
         range2d([0, rowsCount], [0, columnsCount]).map((arr) =>
-                                                       arr.map(([row, column]) => ({ note: noteOffset + row * 5 + column }))
-                                                      )
+          arr.map(([row, column]) => ({ note: noteOffset + row * 5 + column }))
+        )
       )
     } else {
       setPadNodes([])

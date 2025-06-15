@@ -47,7 +47,6 @@ export default function GridController() {
     highlightRootNote !== undefined &&
     lockToScale !== undefined &&
     displayNoteLetter !== undefined
-    
 
   useEffect(() => {
     setIsPadPressed(
@@ -104,93 +103,95 @@ export default function GridController() {
   }, [touches])
 
   return (
-    initialized && (<div
-      ref={selfRef}
-      className='grid'
-      style={{
-        gridTemplateRows: `repeat(${rowsCount}, 1fr)`,
-        gridTemplateColumns: `repeat(${columnsCount}, 1fr)`,
-        width: `${columnsCount * padSize}rem`,
-        height: `${rowsCount * padSize}rem`,
-      }}
-      onTouchStart={(e) => {
-        e.preventDefault()
-        setTouches(Array.from(e.targetTouches))
-      }}
-      onTouchEnd={(e) => {
-        e.preventDefault()
-        setTouches(Array.from(e.targetTouches))
-      }}
-      onTouchCancel={(e) => {
-        e.preventDefault()
-        setTouches(Array.from(e.targetTouches))
-      }}
-      onTouchMove={(e) => {
-        e.preventDefault()
-        const changedTouches = Array.from(e.changedTouches)
-        if (changedTouches.length === 0) return
+    initialized && (
+      <div
+        ref={selfRef}
+        className='grid'
+        style={{
+          gridTemplateRows: `repeat(${rowsCount}, 1fr)`,
+          gridTemplateColumns: `repeat(${columnsCount}, 1fr)`,
+          width: `${columnsCount * padSize}rem`,
+          height: `${rowsCount * padSize}rem`,
+        }}
+        onTouchStart={(e) => {
+          e.preventDefault()
+          setTouches(Array.from(e.targetTouches))
+        }}
+        onTouchEnd={(e) => {
+          e.preventDefault()
+          setTouches(Array.from(e.targetTouches))
+        }}
+        onTouchCancel={(e) => {
+          e.preventDefault()
+          setTouches(Array.from(e.targetTouches))
+        }}
+        onTouchMove={(e) => {
+          e.preventDefault()
+          const changedTouches = Array.from(e.changedTouches)
+          if (changedTouches.length === 0) return
 
-        let isUpdated = false
-        const updatedTouches = [...touches]
+          let isUpdated = false
+          const updatedTouches = [...touches]
 
-        changedTouches.forEach((ct) => {
-          const i = touches.findIndex((t) => t.identifier === ct.identifier)
+          changedTouches.forEach((ct) => {
+            const i = touches.findIndex((t) => t.identifier === ct.identifier)
 
-          if (i === -1) {
-            updatedTouches.push(ct)
-            isUpdated = true
-          } else if (
-            touches[i].pageX !== ct.pageX ||
-            touches[i].pageY !== ct.pageY
-          ) {
-            updatedTouches[i] = ct
-            isUpdated = true
+            if (i === -1) {
+              updatedTouches.push(ct)
+              isUpdated = true
+            } else if (
+              touches[i].pageX !== ct.pageX ||
+              touches[i].pageY !== ct.pageY
+            ) {
+              updatedTouches[i] = ct
+              isUpdated = true
+            }
+          })
+
+          if (isUpdated) {
+            setTouches(updatedTouches)
           }
-        })
+        }}
+      >
+        {range2dFlat([0, rowsCount], [0, columnsCount]).map(([row, column]) => {
+          const note = noteOffset + row * 5 + column
+          const isPressed = isPadPressed[row]?.[column] ?? false
 
-        if (isUpdated) {
-          setTouches(updatedTouches)
-        }
-      }}
-    >
-      {range2dFlat([0, rowsCount], [0, columnsCount]).map(([row, column]) => {
-        const note = noteOffset + row * 5 + column
-        const isPressed = isPadPressed[row]?.[column] ?? false
+          const isInScale = isNoteInScale(note, scale, scaleRoot)
+          const isGreyed = !isInScale && (!isPressed || lockToScale)
+          const isRootNote = (note - scaleRoot) % 12 === 0
 
-        const isInScale = isNoteInScale(note, scale, scaleRoot)
-        const isGreyed = !isInScale && (!isPressed || lockToScale)
-        const isRootNote = (note - scaleRoot) % 12 === 0
-
-        return (
-          <div
-            key={`${row}-${column}`}
-            className={`pointer-events-none p-0 m-0${
-              highlightRootNote && isRootNote
-                ? ' inset-ring-3 inset-ring-amber-400/50'
-                : ''
-            }`}
-            style={{
-              gridRow: rowsCount - row,
-              gridColumn: column + 1,
-              backgroundColor: `hsl(
+          return (
+            <div
+              key={`${row}-${column}`}
+              className={`pointer-events-none p-0 m-0${
+                highlightRootNote && isRootNote
+                  ? ' inset-ring-3 inset-ring-amber-400/50'
+                  : ''
+              }`}
+              style={{
+                gridRow: rowsCount - row,
+                gridColumn: column + 1,
+                backgroundColor: `hsl(
                 ${(note * 30) % 360},
                 ${isGreyed ? 0 : isPressed ? 100 : 20}%,
                 ${isPressed && !isGreyed ? 70 : 50}%)`,
-            }}
-          >
-            {displayNoteLetter && !isGreyed && (
-              <div
-                className='text-center text-2xl font-bold text-gray-800 dark:text-gray-200 pointer-events-none select-none'
-                style={{
-                  lineHeight: `${padSize}rem`,
-                }}
-              >
-                {rootNoteToString((note % 12) as RootNote)}
-              </div>
-            )}
-          </div>
-        )
-      })}
-    </div>)
+              }}
+            >
+              {displayNoteLetter && !isGreyed && (
+                <div
+                  className='text-center text-2xl font-bold text-gray-800 dark:text-gray-200 pointer-events-none select-none'
+                  style={{
+                    lineHeight: `${padSize}rem`,
+                  }}
+                >
+                  {rootNoteToString((note % 12) as RootNote)}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    )
   )
 }

@@ -74,11 +74,7 @@ export default function SoundEngineContextProvider({
     MainAppContext
   ) as MainAppContextType
 
-  const [padNodes, setPadNodes] = useState<PadNode[][]>(
-    range2d([0, rowsCount], [0, columnsCount]).map((arr) =>
-      arr.map(([row, column]) => ({ note: noteOffset + row * 5 + column }))
-    )
-  )
+  const [padNodes, setPadNodes] = useState<PadNode[][]>([])
   const [volume, setVolume] = useState(0.5)
   const [level, setLevel] = useState(0.5)
   const [attack, setAttack] = useState(0.01)
@@ -156,11 +152,15 @@ export default function SoundEngineContextProvider({
     )
 
     // Create new padNodes
-    setPadNodes(
-      range2d([0, rowsCount], [0, columnsCount]).map((arr) =>
-        arr.map(([row, column]) => ({ note: noteOffset + row * 5 + column }))
+    if (rowsCount !== undefined && columnsCount !== undefined && noteOffset !== undefined) {
+      setPadNodes(
+        range2d([0, rowsCount], [0, columnsCount]).map((arr) =>
+                                                       arr.map(([row, column]) => ({ note: noteOffset + row * 5 + column }))
+                                                      )
       )
-    )
+    } else {
+      setPadNodes([])
+    }
   }, [noteOffset, rowsCount, columnsCount])
 
   // Update overtoneEnvelopes when overtonesCount changes

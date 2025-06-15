@@ -37,6 +37,18 @@ export default function GridController() {
 
   const selfRef = useRef<HTMLDivElement>(null)
 
+  const initialized =
+    rowsCount !== undefined &&
+    columnsCount !== undefined &&
+    noteOffset !== undefined &&
+    padSize !== undefined &&
+    scale !== undefined &&
+    scaleRoot !== undefined &&
+    highlightRootNote !== undefined &&
+    lockToScale !== undefined &&
+    displayNoteLetter !== undefined
+    
+
   useEffect(() => {
     setIsPadPressed(
       [...Array(rowsCount)].map(() => Array(columnsCount).fill(false))
@@ -44,6 +56,8 @@ export default function GridController() {
   }, [rowsCount, columnsCount])
 
   useEffect(() => {
+    if (!initialized) return
+
     const self = selfRef.current
     if (!self) return
 
@@ -90,7 +104,7 @@ export default function GridController() {
   }, [touches])
 
   return (
-    <div
+    initialized && (<div
       ref={selfRef}
       className='grid'
       style={{
@@ -177,6 +191,6 @@ export default function GridController() {
           </div>
         )
       })}
-    </div>
+    </div>)
   )
 }

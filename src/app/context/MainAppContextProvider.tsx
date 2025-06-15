@@ -9,31 +9,44 @@ import {
 import {
   availableScales,
   chromaticScale,
+  rootC,
   RootNote,
   Scale,
 } from '../../lib/scale'
 import SoundEngineContextProvider from './SoundEngineContextProvider'
 
 export type MainAppContextType = {
-  noteOffset: number
-  setNoteOffset: Dispatch<SetStateAction<number>>
-  rowsCount: number
-  setRowsCount: Dispatch<SetStateAction<number>>
-  columnsCount: number
-  setColumnsCount: Dispatch<SetStateAction<number>>
-  padSize: number
-  setPadSize: Dispatch<SetStateAction<number>>
-  scale: Scale
-  setScale: Dispatch<SetStateAction<Scale>>
-  scaleRoot: RootNote
-  setScaleRoot: Dispatch<SetStateAction<RootNote>>
-  lockToScale: boolean
-  setLockToScale: Dispatch<SetStateAction<boolean>>
-  highlightRootNote: boolean
-  setHighlightRootNote: Dispatch<SetStateAction<boolean>>
-  displayNoteLetter: boolean
-  setDisplayNoteLetter: Dispatch<SetStateAction<boolean>>
+  noteOffset?: number
+  setNoteOffset: (v: number) => void
+  rowsCount?: number
+  setRowsCount: (v: number) => void
+  columnsCount?: number
+  setColumnsCount: (v: number) => void
+  padSize?: number
+  setPadSize: (v: number) => void
+  scale?: Scale
+  setScale: (v: Scale) => void
+  scaleRoot?: RootNote
+  setScaleRoot: (v: RootNote) => void
+  lockToScale?: boolean
+  setLockToScale: (v: boolean) => void
+  highlightRootNote?: boolean
+  setHighlightRootNote: (v: boolean) => void
+  displayNoteLetter?: boolean
+  setDisplayNoteLetter: (v: boolean) => void
 }
+
+const DEFAULT_SETTINGS = {
+  noteOffset: 45,
+  rowsCount: 8,
+  columnsCount: 8,
+  padSize: 6,
+  scaleName: 'chromatic',
+  scaleRoot: rootC,
+  lockToScale: false,
+  highlightRootNote: false,
+  displayNoteLetter: false,
+} as const
 
 export const MainAppContext = createContext<MainAppContextType | undefined>(
   undefined
@@ -44,7 +57,7 @@ export default function MainAppContextProvider({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const [noteOffset, setNoteOffset] = useState(45)
+  const [noteOffset, setNoteOffset] = useState<number | undefined>(undefined)
   const [rowsCount, setRowsCount] = useState(8)
   const [columnsCount, setColumnsCount] = useState(8)
   const [padSize, setPadSize] = useState(6)
@@ -55,40 +68,53 @@ export default function MainAppContextProvider({
   const [displayNoteLetter, setDisplayNoteLetter] = useState(false)
 
   useEffect(() => {
+    const settings = { ...DEFAULT_SETTINGS }
+
     const storedSettingsString = localStorage.getItem('gridSettings')
-    console.log(storedSettingsString)
-    if (storedSettingsString === null) return
 
-    const storedSettings = JSON.parse(storedSettingsString)
-    console.log(storedSettings)
+    if (storedSettingsString) {
+      try {
+        const storedSettings = JSON.parse(storedSettingsString)
+        const {
+          noteOffset: storedNoteOffset,
+          rowsCount: storedRowsCount,
+          columnsCount: storedColumnsCount,
+          padSize: storedPadSize,
+          scaleName: storedScaleName,
+          scaleRoot: storedScaleRoot,
+          lockToScale: storedLockToScale,
+          highlightRootNote: storedHighlightRootNote,
+          displayNoteLetter: storedDisplayNoteLetter,
+        } = storedSettings
 
-    const {
-      noteOffset: storedNoteOffset,
-      rowsCount: storedRowsCount,
-      columnsCount: storedColumnsCount,
-      padSize: storedPadSize,
-      scaleName: storedScaleName,
-      scaleRoot: storedScaleRoot,
-      lockToScale: storedLockToScale,
-      highlightRootNote: storedHighlightRootNote,
-      displayNoteLetter: storedDisplayNoteLetter,
-    } = storedSettings
+        if (storedNoteOffset !== undefined)
+          settings.noteOffset = storedNoteOffset
+        if (storedRowsCount !== undefined) settings.rowsCount = storedRowsCount
+        if (storedColumnsCount !== undefined)
+          settings.columnsCount = storedColumnsCount
+        if (storedPadSize !== undefined) settings.padSize = storedPadSize
+        if (storedScaleName !== undefined) settings.scaleName = storedScaleName
+        if (storedScaleRoot !== undefined) settings.scaleRoot = storedScaleRoot
+        if (storedLockToScale !== undefined)
+          settings.lockToScale = storedLockToScale
+        if (storedHighlightRootNote !== undefined)
+          settings.highlightRootNote = storedHighlightRootNote
+        if (storedDisplayNoteLetter !== undefined)
+          settings.displayNoteLetter = storedDisplayNoteLetter
+      } catch {}
+    }
 
-    if (storedNoteOffset !== undefined) setNoteOffset(storedNoteOffset)
-    if (storedRowsCount !== undefined) setRowsCount(storedRowsCount)
-    if (storedColumnsCount !== undefined) setColumnsCount(storedColumnsCount)
-    if (storedPadSize !== undefined) setPadSize(storedPadSize)
-    if (storedScaleName !== undefined)
-      setScale(
-        availableScales.find((s) => s.name === storedScaleName) ??
-          chromaticScale
-      )
-    if (storedScaleRoot !== undefined) setScaleRoot(storedScaleRoot)
-    if (storedLockToScale !== undefined) setLockToScale(storedLockToScale)
-    if (storedHighlightRootNote !== undefined)
-      setHighlightRootNote(storedHighlightRootNote)
-    if (storedDisplayNoteLetter !== undefined)
-      setDisplayNoteLetter(storedDisplayNoteLetter)
+    setNoteOffset(settings.noteOffset)
+    setRowsCount(settings.rowsCount)
+    setColumnsCount(settings.columnsCount)
+    setPadSize(settings.padSize)
+    setScale(
+      availableScales.find((s) => s.name === settings.scaleName) ?? chromaticScale
+    )
+    setScaleRoot(settings.scaleRoot)
+    setLockToScale(settings.lockToScale)
+    setHighlightRootNote(settings.highlightRootNote)
+    setDisplayNoteLetter(settings.displayNoteLetter)
   }, [])
 
   useEffect(() => {

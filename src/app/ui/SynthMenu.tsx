@@ -1,10 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import SynthMenuWaveTab from './SynthMenu/SynthMenuWaveTab'
 import SynthMenuGlobalTab from './SynthMenu/SynthMenuGlobalTab'
 import SynthMenuFilterTab from './SynthMenu/SynthMenuFilterTab'
 import { XMarkIcon } from '@heroicons/react/24/solid'
+import { availablePresets } from '@/lib/synthSettingsPreset'
+import {
+  SoundEngineContext,
+  SoundEngineContextType,
+} from '../context/SoundEngineContextProvider'
 
 type SynthMenuProps = {
   open: boolean
@@ -14,6 +19,9 @@ type SynthMenuProps = {
 type Tab = 'wave' | 'filter' | 'global'
 
 export default function SynthMenu({ open, onClose }: SynthMenuProps) {
+  const { setSynthSettings } = useContext(
+    SoundEngineContext
+  ) as SoundEngineContextType
   const [tab, setTab] = useState<Tab>('wave')
 
   return (
@@ -54,6 +62,33 @@ export default function SynthMenu({ open, onClose }: SynthMenuProps) {
           >
             Global
           </button>
+        </div>
+        <div>
+          <select
+            value='choose'
+            onChange={(e) => {
+              const selected = availablePresets.find(
+                (preset) => preset.name === e.target.value
+              )
+              if (selected) setSynthSettings(selected)
+            }}
+            className='w-12 h-2.5 px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
+          >
+            {availablePresets.map((preset) => (
+              <option
+                key={preset.name}
+                value={preset.name}
+              >
+                {preset.name}
+              </option>
+            ))}
+            <option
+              hidden
+              value='choose'
+            >
+              Choose preset
+            </option>
+          </select>
         </div>
       </div>
       {(() => {

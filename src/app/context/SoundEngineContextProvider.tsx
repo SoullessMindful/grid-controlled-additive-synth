@@ -17,6 +17,7 @@ import {
   defaultFilterParameters,
   FilterParameters,
 } from '@/lib/filterParameters'
+import { SynthSettingsPreset } from '@/lib/synthSettingsPreset'
 
 let ctx: AudioContext | undefined = undefined
 let globalGainNode: GainNode | undefined = undefined
@@ -46,6 +47,7 @@ export type SoundEngineContextType = {
   setOvertoneEnvelopes: React.Dispatch<React.SetStateAction<Envelope[]>>
   filterParameters: FilterParameters
   setFilterParameters: React.Dispatch<React.SetStateAction<FilterParameters>>
+  setSynthSettings: (synthSettings: SynthSettingsPreset) => void
 }
 
 export const SoundEngineContext = createContext<
@@ -74,7 +76,12 @@ export default function SoundEngineContextProvider({
     MainAppContext
   ) as MainAppContextType
 
+  const [availableWaveforms, setAvailableWaveforms] =
+    useState<ProcessedWaveform[]>(basicWaveforms)
+
   const [padNodes, setPadNodes] = useState<PadNode[][]>([])
+
+  // Synth settings begin
   const [volume, setVolume] = useState(0.5)
   const [level, setLevel] = useState(0.5)
   const [attack, setAttack] = useState(0.01)
@@ -86,14 +93,29 @@ export default function SoundEngineContextProvider({
     defaultFilterParameters
   )
 
-  const [availableWaveforms, setAvailableWaveforms] =
-    useState<ProcessedWaveform[]>(basicWaveforms)
   const [waveform, setWaveform] = useState<ProcessedWaveform>(basicWaveforms[0])
 
   const [overtonesCount, setOvertonesCount] = useState(16)
   const [overtoneEnvelopes, setOvertoneEnvelopes] = useState<Envelope[]>(
     defaultOvertoneEnvelopes(overtonesCount)
   )
+
+  const setSynthSettings = (preset: SynthSettingsPreset) => {
+    setVolume(preset.volume)
+    setLevel(preset.level)
+    setAttack(preset.attack)
+    setDecay(preset.decay)
+    setSustain(preset.sustain)
+    setRelease(preset.release)
+    setWaveform(
+      availableWaveforms.find((wf) => wf.name === preset.waveformName) ??
+        availableWaveforms[0]
+    )
+    setOvertonesCount(preset.overtoneEnvelopes.length)
+    setOvertoneEnvelopes(preset.overtoneEnvelopes)
+    setFilterParameters(preset.filterParameters)
+  }
+  // Synth settings end
 
   useEffect(() => {
     if (!ctx) {
@@ -358,6 +380,7 @@ export default function SoundEngineContextProvider({
         setOvertoneEnvelopes,
         filterParameters,
         setFilterParameters,
+        setSynthSettings,
       }}
     >
       {children}

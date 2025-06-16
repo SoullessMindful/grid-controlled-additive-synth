@@ -102,11 +102,11 @@ export default function SoundEngineContextProvider({
 
   const setSynthSettings = (preset: SynthSettingsPreset) => {
     setVolume(preset.volume)
-    setLevel(preset.level)
-    setAttack(preset.attack)
-    setDecay(preset.decay)
-    setSustain(preset.sustain)
-    setRelease(preset.release)
+    setLevel(preset.globalEnvelope.level)
+    setAttack(preset.globalEnvelope.attack)
+    setDecay(preset.globalEnvelope.decay)
+    setSustain(preset.globalEnvelope.sustain)
+    setRelease(preset.globalEnvelope.release)
     setWaveform(
       availableWaveforms.find((wf) => wf.name === preset.waveformName) ??
         availableWaveforms[0]

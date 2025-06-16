@@ -38,7 +38,7 @@ export const defaultGlobalEnvelope: Envelope = {
   decay: 0.1,
   sustain: 0.5,
   release: 0.01,
-}
+} as const
 
 export const defaultOvertoneEnvelope: Envelope = {
   level: 0,
@@ -46,7 +46,7 @@ export const defaultOvertoneEnvelope: Envelope = {
   decay: 0.001,
   sustain: 1,
   release: 10,
-}
+} as const
 
 export const defaultFirstOvertoneEnvelope: Envelope = {
   level: 1,
@@ -54,7 +54,7 @@ export const defaultFirstOvertoneEnvelope: Envelope = {
   decay: 0.001,
   sustain: 1,
   release: 10,
-}
+} as const
 
 export function defaultOvertoneEnvelopes(
   count: number

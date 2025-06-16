@@ -63,7 +63,7 @@ export default function SynthMenu({ open, onClose }: SynthMenuProps) {
             Global
           </button>
         </div>
-        <div>
+        <div className='px-1'>
           <select
             value='choose'
             onChange={(e) => {

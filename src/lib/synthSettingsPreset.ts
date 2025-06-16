@@ -9,11 +9,7 @@ import { FilterParameters } from './filterParameters'
 export type SynthSettingsPreset = {
   name: string
   volume: number
-  level: number
-  attack: number
-  decay: number
-  sustain: number
-  release: number
+  globalEnvelope: Envelope
   waveformName: string
   overtoneEnvelopes: Envelope[]
   filterParameters: FilterParameters
@@ -22,11 +18,7 @@ export type SynthSettingsPreset = {
 const clearPreset: SynthSettingsPreset = {
   name: 'Clear',
   volume: 0.5,
-  level: defaultGlobalEnvelope.level,
-  attack: defaultGlobalEnvelope.attack,
-  decay: defaultGlobalEnvelope.decay,
-  sustain: defaultGlobalEnvelope.sustain,
-  release: defaultGlobalEnvelope.release,
+  globalEnvelope: defaultGlobalEnvelope,
   waveformName: 'Sine',
   overtoneEnvelopes: [defaultFirstOvertoneEnvelope],
   filterParameters: {
@@ -45,11 +37,13 @@ const clearPreset: SynthSettingsPreset = {
 const simpleBass: SynthSettingsPreset = {
   name: 'Simple Bass',
   volume: 0.5,
-  level: 0.4,
-  attack: 0.01,
-  decay: 4,
-  sustain: 0.25,
-  release: 0.01,
+  globalEnvelope: {
+    level: 0.4,
+    attack: 0.01,
+    decay: 4,
+    sustain: 0.25,
+    release: 0.01,
+  },
   waveformName: 'Sine',
   overtoneEnvelopes: [
     {
@@ -187,11 +181,7 @@ const simpleBass: SynthSettingsPreset = {
 const simpleOrgans: SynthSettingsPreset = {
   name: 'Simple Organs',
   volume: 0.5,
-  level: defaultGlobalEnvelope.level,
-  attack: defaultGlobalEnvelope.attack,
-  decay: defaultGlobalEnvelope.decay,
-  sustain: defaultGlobalEnvelope.sustain,
-  release: defaultGlobalEnvelope.release,
+  globalEnvelope: defaultGlobalEnvelope,
   waveformName: 'Additive Octaves 5',
   overtoneEnvelopes: [
     defaultFirstOvertoneEnvelope,

@@ -20,6 +20,8 @@ import {
 import { SynthSettingsPreset } from '@/lib/synthSettingsPreset'
 
 let ctx: AudioContext | undefined = undefined
+let globalHighpassNode: BiquadFilterNode | undefined = undefined
+let globalLowpassNode: BiquadFilterNode | undefined = undefined
 let globalGainNode: GainNode | undefined = undefined
 
 export type SoundEngineContextType = {
@@ -28,6 +30,10 @@ export type SoundEngineContextType = {
   noteOnOff: (on: boolean, row: number, column: number) => void
   volume: number
   setVolume: (volume: number) => void
+  highpassFrequency: number
+  setHighpassFrequency: (volume: number) => void
+  lowpassFrequency: number
+  setLowpassFrequency: (volume: number) => void
   level: number
   setLevel: (level: number) => void
   attack: number
@@ -83,6 +89,8 @@ export default function SoundEngineContextProvider({
 
   // Synth settings begin
   const [volume, setVolume] = useState(0.5)
+  const [highpassFrequency, setHighpassFrequency] = useState(20) // TODO link to preset
+  const [lowpassFrequency, setLowpassFrequency] = useState(20000) // TODO link to preset
   const [level, setLevel] = useState(0.5)
   const [attack, setAttack] = useState(0.01)
   const [decay, setDecay] = useState(0.1)
@@ -123,11 +131,29 @@ export default function SoundEngineContextProvider({
         latencyHint: 'interactive',
       })
     }
+    
+    const now = ctx.currentTime
+    
+    if (!globalHighpassNode) {
+      globalHighpassNode = ctx.createBiquadFilter()
+      globalHighpassNode.type = 'highpass'
+      globalHighpassNode.Q.setValueAtTime(1.4, now)
+      globalHighpassNode.frequency.setValueAtTime(20, now)
+      globalHighpassNode.connect(ctx.destination)
+    }
+
+    if (!globalLowpassNode) {
+      globalLowpassNode = ctx.createBiquadFilter()
+      globalLowpassNode.type = 'lowpass'
+      globalLowpassNode.Q.setValueAtTime(1.4, now)
+      globalLowpassNode.frequency.setValueAtTime(20000, now)
+      globalLowpassNode.connect(globalHighpassNode)
+    }
 
     if (!globalGainNode) {
       globalGainNode = ctx.createGain()
       globalGainNode.gain.setValueAtTime(volume, ctx.currentTime)
-      globalGainNode.connect(ctx.destination)
+      globalGainNode.connect(globalLowpassNode)
     }
 
     const processedCustom = customWaveforms.map(
@@ -140,6 +166,18 @@ export default function SoundEngineContextProvider({
     )
     setAvailableWaveforms([...basicWaveforms, ...processedCustom])
   }, [])
+
+  useEffect(() => {
+    if (!ctx || !globalHighpassNode) return
+
+    globalHighpassNode.frequency.setValueAtTime(highpassFrequency, ctx.currentTime)
+  }, [highpassFrequency])
+
+  useEffect(() => {
+    if (!ctx || !globalLowpassNode) return
+
+    globalLowpassNode.frequency.setValueAtTime(lowpassFrequency, ctx.currentTime)
+  }, [lowpassFrequency])
 
   useEffect(() => {
     if (!ctx || !globalGainNode) return
@@ -361,6 +399,10 @@ export default function SoundEngineContextProvider({
         noteOnOff,
         volume,
         setVolume,
+        highpassFrequency,
+        setHighpassFrequency,
+        lowpassFrequency,
+        setLowpassFrequency,
         level,
         setLevel,
         attack,

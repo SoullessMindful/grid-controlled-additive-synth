@@ -110,6 +110,8 @@ export default function SoundEngineContextProvider({
 
   const setSynthSettings = (preset: SynthSettingsPreset) => {
     setVolume(preset.volume)
+    setHighpassFrequency(preset.highpassFilterFrequency)
+    setLowpassFrequency(preset.lowpassFilterFrequency)
     setLevel(preset.globalEnvelope.level)
     setAttack(preset.globalEnvelope.attack)
     setDecay(preset.globalEnvelope.decay)

@@ -9,6 +9,8 @@ import { FilterParameters } from './filterParameters'
 export type SynthSettingsPreset = {
   name: string
   volume: number
+  highpassFilterFrequency: number
+  lowpassFilterFrequency: number
   globalEnvelope: Envelope
   waveformName: string
   overtoneEnvelopes: Envelope[]
@@ -18,6 +20,8 @@ export type SynthSettingsPreset = {
 const clearPreset: SynthSettingsPreset = {
   name: 'Clear',
   volume: 0.5,
+  highpassFilterFrequency: 20,
+  lowpassFilterFrequency: 20000,
   globalEnvelope: defaultGlobalEnvelope,
   waveformName: 'Sine',
   overtoneEnvelopes: [defaultFirstOvertoneEnvelope],
@@ -37,6 +41,8 @@ const clearPreset: SynthSettingsPreset = {
 const simpleBass: SynthSettingsPreset = {
   name: 'Simple Bass',
   volume: 0.5,
+  highpassFilterFrequency: 20,
+  lowpassFilterFrequency: 20000,
   globalEnvelope: {
     level: 0.4,
     attack: 0.01,
@@ -181,6 +187,8 @@ const simpleBass: SynthSettingsPreset = {
 const simpleOrgans: SynthSettingsPreset = {
   name: 'Simple Organs',
   volume: 0.5,
+  highpassFilterFrequency: 20,
+  lowpassFilterFrequency: 20000,
   globalEnvelope: defaultGlobalEnvelope,
   waveformName: 'Additive Octaves 5',
   overtoneEnvelopes: [

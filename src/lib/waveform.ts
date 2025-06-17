@@ -27,6 +27,18 @@ const additiveOctaves = (n: number): CustomWaveform => ({
   ],
 })
 
+const imperfectSine: CustomWaveform = {
+  name: 'Imperfect Sine',
+  data: [
+    new Float32Array(Array(33).fill(0)),
+    new Float32Array([
+      0,
+      1,
+      ...Array.from({length: 31}, (_, i) => (-1)**(i+1)/((i+2)*(i+2)*64)),
+    ]),
+  ],
+}
+
 export const basicWaveforms: ProcessedWaveform[] = [
   {
     __type__: 'BasicWaveform',
@@ -51,6 +63,7 @@ export const basicWaveforms: ProcessedWaveform[] = [
 ]
 
 export const customWaveforms: CustomWaveform[] = [
+  imperfectSine,
   additiveOctaves(3),
   additiveOctaves(4),
   additiveOctaves(5),

@@ -13,7 +13,8 @@ import {
   rootNoteToString,
   RootNote,
 } from '../../lib/scale'
-import { XMarkIcon } from '@heroicons/react/24/solid'
+import { StopIcon as StopIconSolid, XMarkIcon } from '@heroicons/react/24/solid'
+import { StopIcon as StopIconOutline } from '@heroicons/react/24/outline'
 
 type GridMenuProps = {
   open: boolean
@@ -145,7 +146,7 @@ export default function GridMenu({ open, onClose, children }: GridMenuProps) {
               ))}
             </select>
             <select
-              value={scale.name}
+              value={scale?.name}
               onChange={(e) => {
                 const selected = availableScales.find(
                   (s) => s.name === e.target.value
@@ -172,8 +173,10 @@ export default function GridMenu({ open, onClose, children }: GridMenuProps) {
                   checked={lockToScale}
                   onChange={(e) => setLockToScale(e.target.checked)}
                   id='lockToScale'
-                  className='mr-1 accent-gray-800 dark:accent-gray-200'
+                  className='appearance-none'
                 />
+                {lockToScale ? <StopIconSolid className='size-1.5 inline mr-0.5' /> :
+                <StopIconOutline className='size-1.5 inline mr-0.5' />}
                 Lock to scale
               </label>
             </div>
@@ -184,8 +187,10 @@ export default function GridMenu({ open, onClose, children }: GridMenuProps) {
                   checked={highlightRootNote}
                   onChange={(e) => setHighlightRootNote(e.target.checked)}
                   id='highlightRootNote'
-                  className='mr-1 accent-gray-800 dark:accent-gray-200'
+                  className='appearance-none'
                 />
+                {highlightRootNote ? <StopIconSolid className='size-1.5 inline mr-0.5' /> :
+                <StopIconOutline className='size-1.5 inline mr-0.5' />}
                 Highlight root note
               </label>
             </div>
@@ -197,8 +202,10 @@ export default function GridMenu({ open, onClose, children }: GridMenuProps) {
               type='checkbox'
               checked={displayNoteLetter}
               onChange={(e) => setDisplayNoteLetter(e.target.checked)}
-              className='mr-1 accent-gray-800 dark:accent-gray-200'
+                  className='appearance-none'
             />
+                {displayNoteLetter ? <StopIconSolid className='size-1.5 inline mr-0.5' /> :
+                <StopIconOutline className='size-1.5 inline mr-0.5' />}
             Display note letter
           </label>
         </div>

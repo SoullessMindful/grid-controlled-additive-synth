@@ -1,6 +1,6 @@
 'use client'
 
-import { useContext, useState } from 'react'
+import { Fragment, useContext, useState } from 'react'
 import {
   SoundEngineContext,
   SoundEngineContextType,
@@ -11,6 +11,7 @@ import {
   envelopePropertyToString,
 } from '@/lib/envelope'
 import VerticalSlider from '../VerticalSlider'
+import { NoSymbolIcon } from '@heroicons/react/24/solid'
 
 export default function SynthMenuWaveTab() {
   const {
@@ -97,7 +98,7 @@ export default function SynthMenuWaveTab() {
             </button>
           </div>
         </div>
-        <div className='overflow-x-auto overflow-y-hidden whitespace-nowrap h-20 px-1 mx-1 w-full bg-gray-200 dark:bg-gray-800 rounded-b-2xl'>
+        <div className='overflow-x-auto overflow-y-hidden whitespace-nowrap h-22 px-1 mx-1 w-full bg-gray-200 dark:bg-gray-800 rounded-b-2xl'>
           {overtoneEnvelopes.map((env, i) => (
             <div
               key={i}
@@ -109,23 +110,54 @@ export default function SynthMenuWaveTab() {
                   switch (activeEnvelopeProperty) {
                     case 'level':
                       return (
-                        <VerticalSlider
-                          value={env.level}
-                          onChange={(newLevel) => {
-                            const newOvertoneEnvelopes = [...overtoneEnvelopes]
-                            const newOvertoneEnvelope = {
-                              ...newOvertoneEnvelopes[i],
-                            }
+                        <Fragment>
+                          <VerticalSlider
+                            value={env.level}
+                            onChange={(newLevel) => {
+                              const newOvertoneEnvelopes = [
+                                ...overtoneEnvelopes,
+                              ]
+                              const newOvertoneEnvelope = {
+                                ...newOvertoneEnvelopes[i],
+                              }
 
-                            newOvertoneEnvelope.level = newLevel
-                            newOvertoneEnvelopes[i] = newOvertoneEnvelope
+                              newOvertoneEnvelope.level = newLevel
+                              newOvertoneEnvelopes[i] = newOvertoneEnvelope
 
-                            setOvertoneEnvelopes(newOvertoneEnvelopes)
-                          }}
-                          min={0}
-                          max={1}
-                          step={0.001}
-                        />
+                              setOvertoneEnvelopes(newOvertoneEnvelopes)
+                            }}
+                            min={0}
+                            max={1}
+                            step={0.001}
+                          />
+                          <div
+                            className='cursor-pointer'
+                            onClick={() => {
+                              const newOvertoneEnvelopes = [
+                                ...overtoneEnvelopes,
+                              ]
+                              const newOvertoneEnvelope = {
+                                ...newOvertoneEnvelopes[i],
+                              }
+
+                              newOvertoneEnvelope.flipPhase =
+                                newOvertoneEnvelope.flipPhase === true
+                                  ? false
+                                  : true
+                              newOvertoneEnvelopes[i] = newOvertoneEnvelope
+
+                              setOvertoneEnvelopes(newOvertoneEnvelopes)
+                            }}
+                          >
+                            <NoSymbolIcon
+                              className={`size-1 inline ${
+                                env.flipPhase === true
+                                  ? 'stroke-black dark:stroke-white'
+                                  : 'stroke-gray-400 dark:stroke-gray-600'
+                              }`}
+                            />
+                          </div>
+                        </Fragment>
                       )
                     case 'attack':
                       return (

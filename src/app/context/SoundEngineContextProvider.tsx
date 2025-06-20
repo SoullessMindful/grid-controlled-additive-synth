@@ -12,6 +12,7 @@ import {
   defaultOvertoneEnvelope,
   defaultOvertoneEnvelopes,
   Envelope,
+  phase,
 } from '@/lib/envelope'
 import {
   defaultFilterParameters,
@@ -64,6 +65,7 @@ type OvertoneOsc = {
   overtoneIndex: number
   osc: OscillatorNode
   gain: GainNode
+  flipGain: GainNode
 }
 
 type PadNode = {
@@ -133,9 +135,9 @@ export default function SoundEngineContextProvider({
         latencyHint: 'interactive',
       })
     }
-    
+
     const now = ctx.currentTime
-    
+
     if (!globalHighpassNode) {
       globalHighpassNode = ctx.createBiquadFilter()
       globalHighpassNode.type = 'highpass'
@@ -172,13 +174,19 @@ export default function SoundEngineContextProvider({
   useEffect(() => {
     if (!ctx || !globalHighpassNode) return
 
-    globalHighpassNode.frequency.setValueAtTime(highpassFrequency, ctx.currentTime)
+    globalHighpassNode.frequency.setValueAtTime(
+      highpassFrequency,
+      ctx.currentTime
+    )
   }, [highpassFrequency])
 
   useEffect(() => {
     if (!ctx || !globalLowpassNode) return
 
-    globalLowpassNode.frequency.setValueAtTime(lowpassFrequency, ctx.currentTime)
+    globalLowpassNode.frequency.setValueAtTime(
+      lowpassFrequency,
+      ctx.currentTime
+    )
   }, [lowpassFrequency])
 
   useEffect(() => {
@@ -295,11 +303,15 @@ export default function SoundEngineContextProvider({
           now + env.attack + env.decay
         )
 
+        const flipGain = ctx!.createGain()
+        flipGain.gain.setValueAtTime(phase(env), now)
+
         osc.connect(gain)
-        gain.connect(mainGain)
+        gain.connect(flipGain)
+        flipGain.connect(mainGain)
         osc.start(now)
 
-        return { osc, gain, overtoneIndex }
+        return { osc, gain, flipGain, overtoneIndex }
       })
 
     filter.disconnect()

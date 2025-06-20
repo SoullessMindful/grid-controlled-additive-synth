@@ -4,6 +4,7 @@ export type Envelope = {
   decay: number
   sustain: number
   release: number
+  flipPhase?: boolean
 }
 
 export type EnvelopeProperty = 'level' | 'attack' | 'decay' | 'sustain' | 'release'
@@ -46,6 +47,7 @@ export const defaultOvertoneEnvelope: Envelope = {
   decay: 0.001,
   sustain: 1,
   release: 10,
+  flipPhase: false,
 } as const
 
 export const defaultFirstOvertoneEnvelope: Envelope = {
@@ -54,6 +56,7 @@ export const defaultFirstOvertoneEnvelope: Envelope = {
   decay: 0.001,
   sustain: 1,
   release: 10,
+  flipPhase: false,
 } as const
 
 export function defaultOvertoneEnvelopes(
@@ -62,4 +65,8 @@ export function defaultOvertoneEnvelopes(
   return Array.from({ length: count }, (_, i) =>
     i === 0 ? defaultFirstOvertoneEnvelope : defaultOvertoneEnvelope
   )
+}
+
+export function phase(env: Envelope): 1 | -1 {
+  return env.flipPhase === true ? -1 : 1
 }

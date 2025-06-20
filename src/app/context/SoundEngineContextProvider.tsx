@@ -91,8 +91,8 @@ export default function SoundEngineContextProvider({
 
   // Synth settings begin
   const [volume, setVolume] = useState(0.5)
-  const [highpassFrequency, setHighpassFrequency] = useState(20) // TODO link to preset
-  const [lowpassFrequency, setLowpassFrequency] = useState(20000) // TODO link to preset
+  const [highpassFrequency, setHighpassFrequency] = useState(20)
+  const [lowpassFrequency, setLowpassFrequency] = useState(20000)
   const [level, setLevel] = useState(0.5)
   const [attack, setAttack] = useState(0.01)
   const [decay, setDecay] = useState(0.1)
@@ -372,7 +372,7 @@ export default function SoundEngineContextProvider({
     const now = ctx.currentTime
     const releaseEnd = now + release
 
-    padNode.overtones.forEach(({ osc, gain, overtoneIndex }) => {
+    padNode.overtones.forEach(({ osc, gain, flipGain, overtoneIndex }) => {
       const env = overtoneEnvelopes[overtoneIndex - 1]
       const overtoneReleaseEnd = env ? now + env.release : releaseEnd
 
@@ -384,6 +384,7 @@ export default function SoundEngineContextProvider({
       osc.onended = () => {
         osc.disconnect()
         gain.disconnect()
+        flipGain.disconnect()
       }
     })
 

@@ -19,6 +19,7 @@ import {
   FilterParameters,
 } from '@/lib/filterParameters'
 import { SynthSettingsPreset } from '@/lib/synthSettingsPreset'
+import { defaultVoices, Voice } from '@/lib/voice'
 
 let ctx: AudioContext | undefined = undefined
 let globalHighpassNode: BiquadFilterNode | undefined = undefined
@@ -53,6 +54,8 @@ export type SoundEngineContextType = {
   overtoneEnvelopes: Envelope[]
   setOvertoneEnvelopes: React.Dispatch<React.SetStateAction<Envelope[]>>
   filterParameters: FilterParameters
+  voices: Voice[]
+  setVoices: React.Dispatch<React.SetStateAction<Voice[]>>
   setFilterParameters: React.Dispatch<React.SetStateAction<FilterParameters>>
   setSynthSettings: (synthSettings: SynthSettingsPreset) => void
 }
@@ -70,7 +73,7 @@ type OvertoneOsc = {
 
 type PadNode = {
   note: number
-  overtones?: OvertoneOsc[]
+  overtones?: OvertoneOsc[][]
   mainGain?: GainNode
   filter?: BiquadFilterNode
 }
@@ -109,6 +112,7 @@ export default function SoundEngineContextProvider({
   const [overtoneEnvelopes, setOvertoneEnvelopes] = useState<Envelope[]>(
     defaultOvertoneEnvelopes(overtonesCount)
   )
+  const [voices, setVoices] = useState<Voice[]>(defaultVoices)
 
   const setSynthSettings = (preset: SynthSettingsPreset) => {
     setVolume(preset.volume)
@@ -201,13 +205,15 @@ export default function SoundEngineContextProvider({
       row.forEach((padNode) => {
         // Cleanup all overtones if present
         if (padNode.overtones) {
-          padNode.overtones.forEach(({ osc, gain }) => {
-            try {
-              osc.stop()
-            } catch {}
-            osc.disconnect()
-            gain.disconnect()
-          })
+          padNode.overtones.forEach((v) =>
+            v.forEach(({ osc, gain }) => {
+              try {
+                osc.stop()
+              } catch {}
+              osc.disconnect()
+              gain.disconnect()
+            })
+          )
           padNode.overtones = undefined
         }
 
@@ -277,42 +283,48 @@ export default function SoundEngineContextProvider({
     const mainGain = padNode.mainGain
 
     // Create one oscillator per overtone with non-zero level
-    const overtones: OvertoneOsc[] = overtoneEnvelopes
-      .map((env, i) => ({ env, i }))
-      .filter(({ env }) => env.level !== 0)
-      .map(({ env, i }) => {
-        const osc = ctx!.createOscillator()
-        const overtoneIndex = i + 1 // 1st harmonic is fundamental
-        const freq = 440 * Math.pow(2, (padNode.note - 69) / 12) * overtoneIndex
-        if (waveform.__type__ === 'BasicWaveform') {
-          osc.type = waveform.waveform
-        } else {
-          osc.setPeriodicWave(waveform.waveform)
-        }
-        osc.frequency.setValueAtTime(freq, now)
+    const overtones: OvertoneOsc[][] = voices
+      .filter(({ active }) => active)
+      .map((voice) =>
+        overtoneEnvelopes
+          .map((env, i) => ({ env, i }))
+          .filter(({ env }) => env.level !== 0)
+          .map(({ env, i }) => {
+            const osc = ctx!.createOscillator()
+            const overtoneIndex = i + 1 // 1st harmonic is fundamental
+            const freq =
+              440 * Math.pow(2, (padNode.note - 69) / 12) * overtoneIndex
+            if (waveform.__type__ === 'BasicWaveform') {
+              osc.type = waveform.waveform
+            } else {
+              osc.setPeriodicWave(waveform.waveform)
+            }
+            osc.frequency.setValueAtTime(freq, now)
+            osc.detune.setValueAtTime(voice.detune, now)
 
-        const gain = ctx!.createGain()
-        gain.gain.cancelScheduledValues(now)
-        gain.gain.setValueAtTime(0.001, now)
-        gain.gain.exponentialRampToValueAtTime(
-          env.level || 0.001,
-          now + env.attack
-        )
-        gain.gain.exponentialRampToValueAtTime(
-          env.level * env.sustain || 0.001,
-          now + env.attack + env.decay
-        )
+            const gain = ctx!.createGain()
+            gain.gain.cancelScheduledValues(now)
+            gain.gain.setValueAtTime(0.001, now)
+            gain.gain.exponentialRampToValueAtTime(
+              env.level || 0.001,
+              now + env.attack
+            )
+            gain.gain.exponentialRampToValueAtTime(
+              env.level * env.sustain || 0.001,
+              now + env.attack + env.decay
+            )
 
-        const flipGain = ctx!.createGain()
-        flipGain.gain.setValueAtTime(phase(env), now)
+            const flipGain = ctx!.createGain()
+            flipGain.gain.setValueAtTime(voice.level * phase(env), now)
 
-        osc.connect(gain)
-        gain.connect(flipGain)
-        flipGain.connect(mainGain)
-        osc.start(now)
+            osc.connect(gain)
+            gain.connect(flipGain)
+            flipGain.connect(mainGain)
+            osc.start(now)
 
-        return { osc, gain, flipGain, overtoneIndex }
-      })
+            return { osc, gain, flipGain, overtoneIndex }
+          })
+      )
 
     filter.disconnect()
     mainGain.disconnect()
@@ -372,21 +384,23 @@ export default function SoundEngineContextProvider({
     const now = ctx.currentTime
     const releaseEnd = now + release
 
-    padNode.overtones.forEach(({ osc, gain, flipGain, overtoneIndex }) => {
-      const env = overtoneEnvelopes[overtoneIndex - 1]
-      const overtoneReleaseEnd = env ? now + env.release : releaseEnd
+    padNode.overtones.forEach((v) =>
+      v.forEach(({ osc, gain, flipGain, overtoneIndex }) => {
+        const env = overtoneEnvelopes[overtoneIndex - 1]
+        const overtoneReleaseEnd = env ? now + env.release : releaseEnd
 
-      gain.gain.cancelScheduledValues(now)
-      gain.gain.setValueAtTime(gain.gain.value, now)
-      gain.gain.exponentialRampToValueAtTime(0.001, overtoneReleaseEnd)
+        gain.gain.cancelScheduledValues(now)
+        gain.gain.setValueAtTime(gain.gain.value, now)
+        gain.gain.exponentialRampToValueAtTime(0.001, overtoneReleaseEnd)
 
-      osc.stop(releaseEnd)
-      osc.onended = () => {
-        osc.disconnect()
-        gain.disconnect()
-        flipGain.disconnect()
-      }
-    })
+        osc.stop(releaseEnd)
+        osc.onended = () => {
+          osc.disconnect()
+          gain.disconnect()
+          flipGain.disconnect()
+        }
+      })
+    )
 
     padNode.overtones = undefined
 
@@ -435,6 +449,8 @@ export default function SoundEngineContextProvider({
         setOvertonesCount,
         overtoneEnvelopes,
         setOvertoneEnvelopes,
+        voices,
+        setVoices,
         filterParameters,
         setFilterParameters,
         setSynthSettings,

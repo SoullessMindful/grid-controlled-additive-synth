@@ -75,13 +75,13 @@ type VoiceNode = {
   overtones: OvertoneOsc[]
   delayNode: DelayNode
   panNode: StereoPannerNode
+  mainGain: GainNode
+  filter?: BiquadFilterNode
 }
 
 type PadNode = {
   note: number
   voiceNodes?: VoiceNode[]
-  mainGain?: GainNode
-  filter?: BiquadFilterNode
 }
 
 export default function SoundEngineContextProvider({
@@ -225,15 +225,13 @@ export default function SoundEngineContextProvider({
             v.delayNode.disconnect()
 
             v.panNode.disconnect()
+
+            v.mainGain.disconnect()
+
+            v.filter?.disconnect()
           })
           padNode.voiceNodes = undefined
         }
-
-        padNode.mainGain?.disconnect()
-        padNode.mainGain = undefined
-
-        padNode.filter?.disconnect()
-        padNode.filter = undefined
       })
     )
 
@@ -276,35 +274,70 @@ export default function SoundEngineContextProvider({
   const noteOn = (row: number, column: number) => {
     if (!ctx || !globalGainNode) return
 
+    const currentCtx = ctx
+    const currentGlobalGainNode = globalGainNode
+
     // Use a consistent time reference
-    const now = ctx.currentTime
+    const now = currentCtx.currentTime
     noteOff(row, column)
 
     const padNode = padNodes[row][column]
 
-    if (!padNode.filter) {
-      padNode.filter = ctx.createBiquadFilter()
-      padNode.filter.channelCount = 2
-    }
-    const filter = padNode.filter
-
-    if (!padNode.mainGain) {
-      padNode.mainGain = ctx.createGain()
-      padNode.mainGain.channelCount = 2
-    }
-    const mainGain = padNode.mainGain
-
-    // Create one oscillator per overtone with non-zero level
     const voiceNodes: VoiceNode[] = voices
       .filter(({ active }) => active)
       .map((voice) => {
         const panNode = ctx!.createStereoPanner()
         panNode.pan.setValueAtTime(voice.pan, now)
-        panNode.connect(mainGain)
+        panNode.connect(currentGlobalGainNode)
 
         const delayNode = ctx!.createDelay()
         delayNode.delayTime.setValueAtTime(voice.delay, now)
         delayNode.connect(panNode)
+
+        const mainGain = currentCtx.createGain()
+        mainGain.gain.cancelScheduledValues(now)
+        mainGain.gain.setValueAtTime(0.001, now)
+        mainGain.gain.exponentialRampToValueAtTime(level || 0.001, now + attack)
+        mainGain.gain.exponentialRampToValueAtTime(
+          level * sustain || 0.001,
+          now + attack + decay
+        )
+
+        let filter: BiquadFilterNode | undefined = undefined
+
+        if (filterParameters.type === undefined) {
+          mainGain.connect(delayNode)
+        } else {
+          filter = currentCtx.createBiquadFilter()
+          filter.type = filterParameters.type
+          filter.Q.cancelScheduledValues(now)
+          filter.Q.setValueAtTime(filterParameters.Q.value, now)
+          if (filterParameters.Q.modulation !== undefined) {
+            const mod = filterParameters.Q.modulation
+            filter.Q.exponentialRampToValueAtTime(
+              mod.level || 0.001,
+              now + mod.attack
+            )
+            filter.Q.exponentialRampToValueAtTime(
+              mod.sustain || 0.001,
+              now + mod.attack + mod.decay
+            )
+          }
+          filter.frequency.setValueAtTime(filterParameters.frequency.value, now)
+          if (filterParameters.frequency.modulation !== undefined) {
+            const mod = filterParameters.frequency.modulation
+            filter.frequency.exponentialRampToValueAtTime(
+              mod.level || 0.001,
+              now + mod.attack
+            )
+            filter.frequency.exponentialRampToValueAtTime(
+              mod.sustain || 0.001,
+              now + mod.attack + mod.decay
+            )
+          }
+          filter.connect(delayNode)
+          mainGain.connect(filter)
+        }
 
         const overtones = overtoneEnvelopes
           .map((env, i) => ({ env, i }))
@@ -339,7 +372,7 @@ export default function SoundEngineContextProvider({
 
             osc.connect(gain)
             gain.connect(flipGain)
-            flipGain.connect(delayNode)
+            flipGain.connect(mainGain)
             osc.start(now)
 
             return { osc, gain, flipGain, overtoneIndex }
@@ -349,54 +382,10 @@ export default function SoundEngineContextProvider({
           overtones,
           panNode,
           delayNode,
+          filter,
+          mainGain,
         }
       })
-
-    filter.disconnect()
-    mainGain.disconnect()
-
-    // Apply envelope to mainGain only
-    mainGain.gain.cancelScheduledValues(now)
-    mainGain.gain.setValueAtTime(0.001, now)
-    mainGain.gain.exponentialRampToValueAtTime(level || 0.001, now + attack)
-    mainGain.gain.exponentialRampToValueAtTime(
-      level * sustain || 0.001,
-      now + attack + decay
-    )
-
-    if (filterParameters.type === undefined) {
-      mainGain.connect(globalGainNode)
-    } else {
-      filter.type = filterParameters.type
-      filter.Q.cancelScheduledValues(now)
-      filter.Q.setValueAtTime(filterParameters.Q.value, now)
-      if (filterParameters.Q.modulation !== undefined) {
-        const mod = filterParameters.Q.modulation
-        filter.Q.exponentialRampToValueAtTime(
-          mod.level || 0.001,
-          now + mod.attack
-        )
-        filter.Q.exponentialRampToValueAtTime(
-          mod.sustain || 0.001,
-          now + mod.attack + mod.decay
-        )
-      }
-      filter.frequency.setValueAtTime(filterParameters.frequency.value, now)
-      if (filterParameters.frequency.modulation !== undefined) {
-        const mod = filterParameters.frequency.modulation
-        filter.frequency.exponentialRampToValueAtTime(
-          mod.level || 0.001,
-          now + mod.attack
-        )
-        filter.frequency.exponentialRampToValueAtTime(
-          mod.sustain || 0.001,
-          now + mod.attack + mod.decay
-        )
-      }
-
-      mainGain.connect(filter)
-      filter.connect(globalGainNode)
-    }
 
     padNode.voiceNodes = voiceNodes
   }
@@ -410,34 +399,40 @@ export default function SoundEngineContextProvider({
     const now = ctx.currentTime
     const releaseEnd = now + release
 
-    padNode.voiceNodes.forEach(({ overtones }) => {
-      overtones.forEach(({ osc, gain, flipGain, overtoneIndex }) => {
-        const env = overtoneEnvelopes[overtoneIndex - 1]
-        const overtoneReleaseEnd = env ? now + env.release : releaseEnd
+    padNode.voiceNodes.forEach(
+      ({ overtones, panNode, delayNode, mainGain, filter }) => {
+        overtones.forEach(({ osc, gain, flipGain, overtoneIndex }) => {
+          const env = overtoneEnvelopes[overtoneIndex - 1]
+          const overtoneReleaseEnd = env ? now + env.release : releaseEnd
 
-        gain.gain.cancelScheduledValues(now)
-        gain.gain.setValueAtTime(gain.gain.value, now)
-        gain.gain.exponentialRampToValueAtTime(0.001, overtoneReleaseEnd)
+          gain.gain.cancelScheduledValues(now)
+          gain.gain.setValueAtTime(gain.gain.value, now)
+          gain.gain.exponentialRampToValueAtTime(0.001, overtoneReleaseEnd)
 
-        osc.stop(releaseEnd)
-        osc.onended = () => {
-          osc.disconnect()
-          gain.disconnect()
-          flipGain.disconnect()
-        }
-      })
+          osc.stop(releaseEnd)
+          osc.onended = () => {
+            osc.disconnect()
+            gain.disconnect()
+            flipGain.disconnect()
+          }
+        })
 
-      // TODO cleanup panNode and delayNode after release end
-    })
+        mainGain.gain.cancelScheduledValues(now)
+        mainGain.gain.setValueAtTime(mainGain.gain.value, now)
+        mainGain.gain.exponentialRampToValueAtTime(0.001, releaseEnd)
+
+        const cleanupDelay = (release + delayNode.delayTime.value) * 1000 + 100
+
+        setTimeout(() => {
+          mainGain.disconnect()
+          delayNode.disconnect()
+          panNode.disconnect()
+          filter?.disconnect()
+        }, cleanupDelay)
+      }
+    )
 
     padNode.voiceNodes = undefined
-
-    const mainGain = padNode.mainGain
-    if (!mainGain) return
-
-    mainGain.gain.cancelScheduledValues(now)
-    mainGain.gain.setValueAtTime(mainGain.gain.value, now)
-    mainGain.gain.exponentialRampToValueAtTime(0.001, releaseEnd)
   }
 
   const noteOnOff = (on: boolean, row: number, column: number) => {

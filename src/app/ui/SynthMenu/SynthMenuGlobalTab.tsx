@@ -27,76 +27,132 @@ export default function SynthMenuGlobalTab() {
     <div className='px-1 py-1 flex flex-col items-center justify-center'>
       <div className='mb-2 px-1'>
         <div className='mb-0.5 w-full'>Voices</div>
-        <div className='h-15 p-1 w-full bg-gray-200 dark:bg-gray-800 rounded-2xl'>
+        <div className='h-30 p-1 bg-gray-200 dark:bg-gray-800 rounded-2xl'>
           {voices.map((voice, i) => (
             <div
               key={`voice ${i}`}
               className='mb-1 w-full'
             >
-              <label className='mr-1'>
-                <input
-                  type='checkbox'
-                  checked={voice.active}
-                  onChange={(e) => {
-                    const newVoices = [...voices]
-                    const newVoice = { ...newVoices[i] }
+              <div className='grid grid-cols-[3rem,5rem,15rem,5rem,15rem,auto] grid-rows-2 gap-0.5 items-center'>
+                <div className='row-span-2'>
+                  <label>
+                    <input
+                      type='checkbox'
+                      checked={voice.active}
+                      onChange={(e) => {
+                        const newVoices = [...voices]
+                        const newVoice = { ...newVoices[i] }
 
-                    newVoice.active = e.target.checked
-                    newVoices[i] = newVoice
-                    setVoices(newVoices)
-                  }}
-                  className='appearance-none'
-                />
-                {voice.active ? (
-                  <StopIconOutline className='size-1 inline mr-0.5 fill-blue-500' />
-                ) : (
-                  <StopIconSolid className='size-1 inline mr-0.5' />
-                )}
-              </label>
-              <span className='mr-1'>
-                <label className='mr-0.5'>Level</label>
-                <HorizontalSlider
-                  value={voice.level}
-                  onChange={(newLevel) => {
-                    const newVoices = [...voices]
-                    const newVoice = { ...newVoices[i] }
+                        newVoice.active = e.target.checked
+                        newVoices[i] = newVoice
+                        setVoices(newVoices)
+                      }}
+                      className='appearance-none'
+                    />
+                    {voice.active ? (
+                      <StopIconOutline className='size-1.5 inline fill-blue-500' />
+                    ) : (
+                      <StopIconSolid className='size-1.5 inline' />
+                    )}
+                  </label>
+                </div>
+                <div>
+                  <label>Level</label>
+                </div>
+                <div>
+                  <HorizontalSlider
+                    value={voice.level}
+                    onChange={(newLevel) => {
+                      const newVoices = [...voices]
+                      const newVoice = { ...newVoices[i] }
 
-                    newVoice.level = newLevel
-                    newVoices[i] = newVoice
-                    setVoices(newVoices)
-                  }}
-                  min={0}
-                  max={1}
-                  step={0.01}
-                />
-              </span>
-              <span className='mr-1'>
-                <label className='mr-0.5'>Detune</label>
-                <HorizontalSlider
-                  value={voice.detune}
-                  onChange={(newDetune) => {
-                    const newVoices = [...voices]
-                    const newVoice = { ...newVoices[i] }
-
-                    newVoice.detune = newDetune
-                    newVoices[i] = newVoice
-                    setVoices(newVoices)
-                  }}
-                  min={-15}
-                  max={15}
-                  step={1}
-                />
-              </span>
-              <span className='min-w-2'>
-                {i !== 0 && (
-                  <TrashIcon
-                    className='size-1 inline cursor-pointer'
-                    onClick={() =>
-                      setVoices(voices.filter((_, ii) => i !== ii))
-                    }
+                      newVoice.level = newLevel
+                      newVoices[i] = newVoice
+                      setVoices(newVoices)
+                    }}
+                    min={0}
+                    max={1}
+                    step={0.01}
                   />
-                )}
+                </div>
+                <div className='col-start-2 row-start-2'>
+                  <label>Pan</label>
+                </div>
+                <div className='col-start-3 row-start-2'>
+                  <HorizontalSlider
+                    value={voice.pan}
+                    onChange={(newPan) => {
+                      const newVoices = [...voices]
+                      const newVoice = { ...newVoices[i] }
+
+                      newVoice.pan = newPan
+                      newVoices[i] = newVoice
+                      setVoices(newVoices)
+                    }}
+                    min={-1}
+                    max={1}
+                    step={0.05}
+                  />
+                </div>
+                <div className='col-start-4 row-start-1'>
+                  <label>Detune</label>
+                </div>
+                <div className='col-start-5 row-start-1'>
+                  <HorizontalSlider
+                    value={voice.detune}
+                    onChange={(newDetune) => {
+                      const newVoices = [...voices]
+                      const newVoice = { ...newVoices[i] }
+
+                      newVoice.detune = newDetune
+                      newVoices[i] = newVoice
+                      setVoices(newVoices)
+                    }}
+                    min={-15}
+                    max={15}
+                    step={1}
+                  />
+                </div>
+                <div className='col-start-4 row-start-2'>
+                  <label>Delay</label>
+                </div>
+                <div className='col-start-5 row-start-2'>
+                  <HorizontalSlider
+                    value={voice.delay}
+                    onChange={(newDelay) => {
+                      const newVoices = [...voices]
+                      const newVoice = { ...newVoices[i] }
+
+                      newVoice.delay = newDelay
+                      newVoices[i] = newVoice
+                      setVoices(newVoices)
+                    }}
+                    min={0}
+                    max={0.02}
+                    step={0.0001}
+                  />
+                </div>
+                <div className='row-span-2 col-start-6 row-start-1'>
+                  <div className='size-1.5'>
+                    {i !== 0 && (
+                      <TrashIcon
+                        className='size-1.5 inline cursor-pointer'
+                        onClick={() =>
+                          setVoices(voices.filter((_, ii) => i !== ii))
+                        }
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <span>
+                <div>
+                  <span className='mr-1'></span>
+                  <span className='mr-1'></span>
+                </div>
               </span>
+              <span className='min-w-2'></span>
             </div>
           ))}
           {voices.length < 5 && (

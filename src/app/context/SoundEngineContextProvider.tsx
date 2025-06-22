@@ -71,9 +71,15 @@ type OvertoneOsc = {
   flipGain: GainNode
 }
 
+type VoiceNode = {
+  overtones: OvertoneOsc[]
+  delayNode: DelayNode
+  panNode: StereoPannerNode
+}
+
 type PadNode = {
   note: number
-  overtones?: OvertoneOsc[][]
+  voiceNodes?: VoiceNode[]
   mainGain?: GainNode
   filter?: BiquadFilterNode
 }
@@ -147,6 +153,7 @@ export default function SoundEngineContextProvider({
       globalHighpassNode.type = 'highpass'
       globalHighpassNode.Q.setValueAtTime(1.4, now)
       globalHighpassNode.frequency.setValueAtTime(20, now)
+      globalHighpassNode.channelCount = 2
       globalHighpassNode.connect(ctx.destination)
     }
 
@@ -155,12 +162,14 @@ export default function SoundEngineContextProvider({
       globalLowpassNode.type = 'lowpass'
       globalLowpassNode.Q.setValueAtTime(1.4, now)
       globalLowpassNode.frequency.setValueAtTime(20000, now)
+      globalLowpassNode.channelCount = 2
       globalLowpassNode.connect(globalHighpassNode)
     }
 
     if (!globalGainNode) {
       globalGainNode = ctx.createGain()
       globalGainNode.gain.setValueAtTime(volume, ctx.currentTime)
+      globalGainNode.channelCount = 2
       globalGainNode.connect(globalLowpassNode)
     }
 
@@ -203,27 +212,28 @@ export default function SoundEngineContextProvider({
     // Cleanup old padNodes
     padNodes.forEach((row) =>
       row.forEach((padNode) => {
-        // Cleanup all overtones if present
-        if (padNode.overtones) {
-          padNode.overtones.forEach((v) =>
-            v.forEach(({ osc, gain }) => {
+        if (padNode.voiceNodes) {
+          padNode.voiceNodes.forEach((v) => {
+            v.overtones.forEach(({ osc, gain }) => {
               try {
                 osc.stop()
               } catch {}
               osc.disconnect()
               gain.disconnect()
             })
-          )
-          padNode.overtones = undefined
+
+            v.delayNode.disconnect()
+
+            v.panNode.disconnect()
+          })
+          padNode.voiceNodes = undefined
         }
 
-        if (padNode.mainGain) {
-          padNode.mainGain.disconnect()
-        }
+        padNode.mainGain?.disconnect()
+        padNode.mainGain = undefined
 
-        if (padNode.filter) {
-          padNode.filter.disconnect()
-        }
+        padNode.filter?.disconnect()
+        padNode.filter = undefined
       })
     )
 
@@ -274,19 +284,29 @@ export default function SoundEngineContextProvider({
 
     if (!padNode.filter) {
       padNode.filter = ctx.createBiquadFilter()
+      padNode.filter.channelCount = 2
     }
     const filter = padNode.filter
 
     if (!padNode.mainGain) {
       padNode.mainGain = ctx.createGain()
+      padNode.mainGain.channelCount = 2
     }
     const mainGain = padNode.mainGain
 
     // Create one oscillator per overtone with non-zero level
-    const overtones: OvertoneOsc[][] = voices
+    const voiceNodes: VoiceNode[] = voices
       .filter(({ active }) => active)
-      .map((voice) =>
-        overtoneEnvelopes
+      .map((voice) => {
+        const panNode = ctx!.createStereoPanner()
+        panNode.pan.setValueAtTime(voice.pan, now)
+        panNode.connect(mainGain)
+
+        const delayNode = ctx!.createDelay()
+        delayNode.delayTime.setValueAtTime(voice.delay, now)
+        delayNode.connect(panNode)
+
+        const overtones = overtoneEnvelopes
           .map((env, i) => ({ env, i }))
           .filter(({ env }) => env.level !== 0)
           .map(({ env, i }) => {
@@ -319,12 +339,18 @@ export default function SoundEngineContextProvider({
 
             osc.connect(gain)
             gain.connect(flipGain)
-            flipGain.connect(mainGain)
+            flipGain.connect(delayNode)
             osc.start(now)
 
             return { osc, gain, flipGain, overtoneIndex }
           })
-      )
+
+        return {
+          overtones,
+          panNode,
+          delayNode,
+        }
+      })
 
     filter.disconnect()
     mainGain.disconnect()
@@ -372,20 +398,20 @@ export default function SoundEngineContextProvider({
       filter.connect(globalGainNode)
     }
 
-    padNode.overtones = overtones
+    padNode.voiceNodes = voiceNodes
   }
 
   const noteOff = (row: number, column: number) => {
     if (!ctx || !globalGainNode) return
 
     const padNode = padNodes[row][column]
-    if (!padNode.overtones) return
+    if (!padNode.voiceNodes) return
 
     const now = ctx.currentTime
     const releaseEnd = now + release
 
-    padNode.overtones.forEach((v) =>
-      v.forEach(({ osc, gain, flipGain, overtoneIndex }) => {
+    padNode.voiceNodes.forEach(({ overtones }) => {
+      overtones.forEach(({ osc, gain, flipGain, overtoneIndex }) => {
         const env = overtoneEnvelopes[overtoneIndex - 1]
         const overtoneReleaseEnd = env ? now + env.release : releaseEnd
 
@@ -400,9 +426,11 @@ export default function SoundEngineContextProvider({
           flipGain.disconnect()
         }
       })
-    )
 
-    padNode.overtones = undefined
+      // TODO cleanup panNode and delayNode after release end
+    })
+
+    padNode.voiceNodes = undefined
 
     const mainGain = padNode.mainGain
     if (!mainGain) return

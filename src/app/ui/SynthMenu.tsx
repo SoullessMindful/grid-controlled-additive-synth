@@ -26,7 +26,8 @@ export default function SynthMenu({ open, onClose }: SynthMenuProps) {
 
   return (
     <div
-      className={`absolute top-0 right-0 z-31 h-full w-full
+      className={`absolute top-0 right-0 z-31 h-svh min-h-0 w-full
+        flex flex-col
         bg-gray-100 dark:bg-gray-900 shadow-lg transform transition-transform duration-300
         ${open ? 'translate-x-0' : 'translate-x-full'}`}
     >
@@ -91,16 +92,18 @@ export default function SynthMenu({ open, onClose }: SynthMenuProps) {
           </select>
         </div>
       </div>
-      {(() => {
-        switch (tab) {
-          case 'wave':
-            return <SynthMenuWaveTab />
-          case 'filter':
-            return <SynthMenuFilterTab />
-          case 'global':
-            return <SynthMenuGlobalTab />
-        }
-      })()}
+      <div className='flex-1 min-h-0 overflow-y-auto mb-1'>
+        {(() => {
+          switch (tab) {
+            case 'wave':
+              return <SynthMenuWaveTab />
+            case 'filter':
+              return <SynthMenuFilterTab />
+            case 'global':
+              return <SynthMenuGlobalTab />
+          }
+        })()}
+      </div>
     </div>
   )
 }

@@ -21,7 +21,7 @@ export default function SynthMenuFilterTab() {
       <div className='mb-2'>
         <label>Filter type </label>
         <select
-          value={filterParameters.type}
+          value={filterParameters.type ?? 'undefined'}
           onChange={(e) => {
             const value = e.target.value
             const type =

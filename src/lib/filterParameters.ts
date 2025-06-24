@@ -9,6 +9,7 @@ export type FilterParameters = {
   type: FilterType
   Q: FilterParameter
   frequency: FilterParameter
+  mix: number
 }
 
 export const defaultFilterParameters: FilterParameters = {
@@ -21,4 +22,5 @@ export const defaultFilterParameters: FilterParameters = {
     value: 800,
     modulation: undefined,
   },
+  mix: 1,
 } as const

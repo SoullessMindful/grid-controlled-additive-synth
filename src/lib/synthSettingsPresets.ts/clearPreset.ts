@@ -2,6 +2,7 @@ import {
   defaultFirstOvertoneEnvelope,
   defaultGlobalEnvelope,
 } from '../envelope'
+import { defaultFilterParameters } from '../filterParameters'
 import { SynthSettingsPreset } from '../synthSettingsPreset'
 import { defaultVoices } from '../voice'
 
@@ -14,15 +15,5 @@ export const clearPreset: SynthSettingsPreset = {
   globalEnvelope: defaultGlobalEnvelope,
   waveformName: 'Sine',
   overtoneEnvelopes: [defaultFirstOvertoneEnvelope],
-  filterParameters: {
-    type: undefined,
-    frequency: {
-      value: 800,
-      modulation: undefined,
-    },
-    Q: {
-      value: 1.4,
-      modulation: undefined,
-    },
-  },
+  filterParameters: defaultFilterParameters,
 }

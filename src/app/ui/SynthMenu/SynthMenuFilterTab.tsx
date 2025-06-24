@@ -94,7 +94,15 @@ export default function SynthMenuFilterTab() {
                   ) : (
                     <PlayIconOutline className='size-1.5 inline mr-0.5 text-gray-700 dark:text-gray-300' />
                   )}
-                  <span className={filterParameters.frequency.modulation === undefined ? '' : 'text-gray-700 dark:text-gray-300'}>Static</span>
+                  <span
+                    className={
+                      filterParameters.frequency.modulation === undefined
+                        ? ''
+                        : 'text-gray-700 dark:text-gray-300'
+                    }
+                  >
+                    Static
+                  </span>
                 </label>
               </div>
               <div>
@@ -129,7 +137,15 @@ export default function SynthMenuFilterTab() {
                   ) : (
                     <PlayIconOutline className='size-1.5 inline mr-0.5 text-gray-700 dark:text-gray-300' />
                   )}
-                  <span className={filterParameters.frequency.modulation !== undefined ? '' : 'text-gray-700 dark:text-gray-300'}>Envelope</span>
+                  <span
+                    className={
+                      filterParameters.frequency.modulation !== undefined
+                        ? ''
+                        : 'text-gray-700 dark:text-gray-300'
+                    }
+                  >
+                    Envelope
+                  </span>
                 </label>
               </div>
             </div>
@@ -306,7 +322,15 @@ export default function SynthMenuFilterTab() {
                   ) : (
                     <PlayIconOutline className='size-1.5 inline mr-0.5 text-gray-700 dark:text-gray-300' />
                   )}
-                  <span className={filterParameters.Q.modulation === undefined ? '' : 'text-gray-700 dark:text-gray-300'}>Static</span>
+                  <span
+                    className={
+                      filterParameters.Q.modulation === undefined
+                        ? ''
+                        : 'text-gray-700 dark:text-gray-300'
+                    }
+                  >
+                    Static
+                  </span>
                 </label>
               </div>
               <div>
@@ -337,7 +361,15 @@ export default function SynthMenuFilterTab() {
                   ) : (
                     <PlayIconOutline className='size-1.5 inline mr-0.5 text-gray-700 dark:text-gray-300' />
                   )}
-                  <span className={filterParameters.Q.modulation !== undefined ? '' : 'text-gray-700 dark:text-gray-300'}>Envelope</span>
+                  <span
+                    className={
+                      filterParameters.Q.modulation !== undefined
+                        ? ''
+                        : 'text-gray-700 dark:text-gray-300'
+                    }
+                  >
+                    Envelope
+                  </span>
                 </label>
               </div>
             </div>
@@ -460,6 +492,18 @@ export default function SynthMenuFilterTab() {
                 </div>
               </Fragment>
             )}
+          </div>
+          <div>
+            <label>Mix: </label>
+            <HorizontalSlider
+              value={filterParameters.mix}
+              onChange={(v) => {
+                const newFilterParameters = { ...filterParameters }
+                
+                newFilterParameters.mix = v
+                setFilterParameters(newFilterParameters)
+              }}
+            />
           </div>
         </Fragment>
       )}

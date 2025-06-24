@@ -75,8 +75,10 @@ type VoiceNode = {
   overtones: OvertoneOsc[]
   delayNode: DelayNode
   panNode: StereoPannerNode
-  mainGain: GainNode
-  filter?: BiquadFilterNode
+  mainGainNode: GainNode
+  filterNode?: BiquadFilterNode
+  filterDryGainNode?: GainNode
+  filterWetGainNode?: GainNode
 }
 
 type PadNode = {
@@ -227,9 +229,9 @@ export default function SoundEngineContextProvider({
 
             v.panNode.disconnect()
 
-            v.mainGain.disconnect()
+            v.mainGainNode.disconnect()
 
-            v.filter?.disconnect()
+            v.filterNode?.disconnect()
           })
           padNode.voiceNodes = undefined
         }
@@ -287,57 +289,70 @@ export default function SoundEngineContextProvider({
     const voiceNodes: VoiceNode[] = voices
       .filter(({ active }) => active)
       .map((voice) => {
-        const panNode = ctx!.createStereoPanner()
+        const panNode = currentCtx.createStereoPanner()
         panNode.pan.setValueAtTime(voice.pan, now)
         panNode.connect(currentGlobalGainNode)
 
-        const delayNode = ctx!.createDelay()
+        const delayNode = currentCtx.createDelay()
         delayNode.delayTime.setValueAtTime(voice.delay, now)
         delayNode.connect(panNode)
 
-        const mainGain = currentCtx.createGain()
-        mainGain.gain.cancelScheduledValues(now)
-        mainGain.gain.setValueAtTime(0.001, now)
-        mainGain.gain.exponentialRampToValueAtTime(level || 0.001, now + attack)
-        mainGain.gain.exponentialRampToValueAtTime(
+        const mainGainNode = currentCtx.createGain()
+        mainGainNode.gain.cancelScheduledValues(now)
+        mainGainNode.gain.setValueAtTime(0.001, now)
+        mainGainNode.gain.exponentialRampToValueAtTime(level || 0.001, now + attack)
+        mainGainNode.gain.exponentialRampToValueAtTime(
           level * sustain || 0.001,
           now + attack + decay
         )
+        
+        
 
-        let filter: BiquadFilterNode | undefined = undefined
+        let filterNode: BiquadFilterNode | undefined = undefined
+        let filterDryGainNode: GainNode | undefined = undefined
+        let filterWetGainNode: GainNode | undefined = undefined
 
         if (filterParameters.type === undefined) {
-          mainGain.connect(delayNode)
+          mainGainNode.connect(delayNode)
         } else {
-          filter = currentCtx.createBiquadFilter()
-          filter.type = filterParameters.type
-          filter.Q.cancelScheduledValues(now)
-          filter.Q.setValueAtTime(filterParameters.Q.value, now)
+          filterDryGainNode = currentCtx.createGain()
+          filterDryGainNode.gain.setValueAtTime(1 - filterParameters.mix, now)
+          filterWetGainNode = currentCtx.createGain()
+          filterWetGainNode.gain.setValueAtTime(filterParameters.mix, now)
+
+          filterNode = currentCtx.createBiquadFilter()
+          filterNode.type = filterParameters.type
+          filterNode.Q.cancelScheduledValues(now)
+          filterNode.Q.setValueAtTime(filterParameters.Q.value, now)
           if (filterParameters.Q.modulation !== undefined) {
             const mod = filterParameters.Q.modulation
-            filter.Q.exponentialRampToValueAtTime(
+            filterNode.Q.exponentialRampToValueAtTime(
               mod.level || 0.001,
               now + mod.attack
             )
-            filter.Q.exponentialRampToValueAtTime(
+            filterNode.Q.exponentialRampToValueAtTime(
               mod.sustain || 0.001,
               now + mod.attack + mod.decay
             )
           }
-          filter.frequency.setValueAtTime(filterParameters.frequency.value, now)
+          filterNode.frequency.setValueAtTime(filterParameters.frequency.value, now)
           if (filterParameters.frequency.modulation !== undefined) {
             const mod = filterParameters.frequency.modulation
-            filter.frequency.exponentialRampToValueAtTime(
+            filterNode.frequency.exponentialRampToValueAtTime(
               mod.level || 0.001,
               now + mod.attack
             )
-            filter.frequency.exponentialRampToValueAtTime(
+            filterNode.frequency.exponentialRampToValueAtTime(
               mod.sustain || 0.001,
               now + mod.attack + mod.decay
             )
           }
-          filter.connect(delayNode)
-          mainGain.connect(filter)
+
+          filterDryGainNode.connect(delayNode)
+          filterWetGainNode.connect(delayNode)
+          filterNode.connect(filterWetGainNode)
+          mainGainNode.connect(filterNode)
+          mainGainNode.connect(filterDryGainNode)
         }
 
         const overtones = overtoneEnvelopes
@@ -373,7 +388,7 @@ export default function SoundEngineContextProvider({
 
             osc.connect(gain)
             gain.connect(flipGain)
-            flipGain.connect(mainGain)
+            flipGain.connect(mainGainNode)
             osc.start(now)
 
             return { osc, gain, flipGain, overtoneIndex }
@@ -383,8 +398,8 @@ export default function SoundEngineContextProvider({
           overtones,
           panNode,
           delayNode,
-          filter,
-          mainGain,
+          filterNode,
+          mainGainNode,
         }
       })
 
@@ -401,7 +416,7 @@ export default function SoundEngineContextProvider({
     const releaseEnd = now + release
 
     padNode.voiceNodes.forEach(
-      ({ overtones, panNode, delayNode, mainGain, filter }) => {
+      ({ overtones, panNode, delayNode, mainGainNode, filterNode }) => {
         overtones.forEach(({ osc, gain, flipGain, overtoneIndex }) => {
           const env = overtoneEnvelopes[overtoneIndex - 1]
           const overtoneReleaseEnd = env ? now + env.release : releaseEnd
@@ -418,17 +433,17 @@ export default function SoundEngineContextProvider({
           }
         })
 
-        mainGain.gain.cancelScheduledValues(now)
-        mainGain.gain.setValueAtTime(mainGain.gain.value, now)
-        mainGain.gain.exponentialRampToValueAtTime(0.001, releaseEnd)
+        mainGainNode.gain.cancelScheduledValues(now)
+        mainGainNode.gain.setValueAtTime(mainGainNode.gain.value, now)
+        mainGainNode.gain.exponentialRampToValueAtTime(0.001, releaseEnd)
 
         const cleanupDelay = (release + delayNode.delayTime.value) * 1000 + 100
 
         setTimeout(() => {
-          mainGain.disconnect()
+          mainGainNode.disconnect()
           delayNode.disconnect()
           panNode.disconnect()
-          filter?.disconnect()
+          filterNode?.disconnect()
         }, cleanupDelay)
       }
     )

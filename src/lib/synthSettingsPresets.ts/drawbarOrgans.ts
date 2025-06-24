@@ -3,6 +3,7 @@ import {
   defaultGlobalEnvelope,
   Envelope,
 } from '../envelope'
+import { defaultFilterParameters } from '../filterParameters'
 import { SynthSettingsPreset } from '../synthSettingsPreset'
 
 const inactiveOvertoneEnvelope: Envelope = {
@@ -59,15 +60,5 @@ export const drawbarOrgans: SynthSettingsPreset = {
     inactiveOvertoneEnvelope, // 15
     defaultFirstOvertoneEnvelope, // 16
   ],
-  filterParameters: {
-    type: undefined,
-    frequency: {
-      value: 800,
-      modulation: undefined,
-    },
-    Q: {
-      value: 1.4,
-      modulation: undefined,
-    },
-  },
+  filterParameters: defaultFilterParameters,
 }

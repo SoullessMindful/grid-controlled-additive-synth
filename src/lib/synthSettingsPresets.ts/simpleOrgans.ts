@@ -3,6 +3,7 @@ import {
   defaultGlobalEnvelope,
   defaultOvertoneEnvelope,
 } from '../envelope'
+import { defaultFilterParameters } from '../filterParameters'
 import { SynthSettingsPreset } from '../synthSettingsPreset'
 import { defaultVoices } from '../voice'
 
@@ -19,15 +20,5 @@ export const simpleOrgans: SynthSettingsPreset = {
     defaultOvertoneEnvelope,
     { level: 0.2, attack: 0.001, decay: 0.001, sustain: 1, release: 10 },
   ],
-  filterParameters: {
-    type: undefined,
-    frequency: {
-      value: 800,
-      modulation: undefined,
-    },
-    Q: {
-      value: 1.4,
-      modulation: undefined,
-    },
-  },
+  filterParameters: defaultFilterParameters,
 }

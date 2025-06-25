@@ -175,8 +175,11 @@ export default function GridMenu({ open, onClose, children }: GridMenuProps) {
                   id='lockToScale'
                   className='appearance-none'
                 />
-                {lockToScale ? <StopIconSolid className='size-1.5 inline mr-0.5' /> :
-                <StopIconOutline className='size-1.5 inline mr-0.5' />}
+                {lockToScale ? (
+                  <StopIconOutline className='size-1.5 inline fill-blue-500' />
+                ) : (
+                  <StopIconSolid className='size-1.5 inline' />
+                )}
                 Lock to scale
               </label>
             </div>
@@ -189,8 +192,11 @@ export default function GridMenu({ open, onClose, children }: GridMenuProps) {
                   id='highlightRootNote'
                   className='appearance-none'
                 />
-                {highlightRootNote ? <StopIconSolid className='size-1.5 inline mr-0.5' /> :
-                <StopIconOutline className='size-1.5 inline mr-0.5' />}
+                {highlightRootNote ? (
+                  <StopIconOutline className='size-1.5 inline fill-blue-500' />
+                ) : (
+                  <StopIconSolid className='size-1.5 inline' />
+                )}
                 Highlight root note
               </label>
             </div>
@@ -202,10 +208,13 @@ export default function GridMenu({ open, onClose, children }: GridMenuProps) {
               type='checkbox'
               checked={displayNoteLetter}
               onChange={(e) => setDisplayNoteLetter(e.target.checked)}
-                  className='appearance-none'
+              className='appearance-none'
             />
-                {displayNoteLetter ? <StopIconSolid className='size-1.5 inline mr-0.5' /> :
-                <StopIconOutline className='size-1.5 inline mr-0.5' />}
+            {displayNoteLetter ? (
+              <StopIconOutline className='size-1.5 inline fill-blue-500' />
+            ) : (
+              <StopIconSolid className='size-1.5 inline' />
+            )}
             Display note letter
           </label>
         </div>

@@ -8,8 +8,8 @@ import {
 import { FilterType } from '@/lib/filterParameters'
 import HorizontalSlider from '../HorizontalSlider'
 import VerticalSlider from '../VerticalSlider'
-import { PlayCircleIcon as PlayIconOutline } from '@heroicons/react/24/outline'
-import { PlayCircleIcon as PlayIconSolid } from '@heroicons/react/24/solid'
+import { PlayIcon as PlayIconOutline } from '@heroicons/react/24/outline'
+import { PlayIcon as PlayIconSolid } from '@heroicons/react/24/solid'
 
 export default function SynthMenuFilterTab() {
   const { filterParameters, setFilterParameters } = useContext(
@@ -90,9 +90,9 @@ export default function SynthMenuFilterTab() {
                     className='appearance-none'
                   />
                   {filterParameters.frequency.modulation === undefined ? (
-                    <PlayIconSolid className='size-1.5 inline mr-0.5' />
+                    <PlayIconOutline className='size-1.5 inline fill-blue-500' />
                   ) : (
-                    <PlayIconOutline className='size-1.5 inline mr-0.5 text-gray-700 dark:text-gray-300' />
+                    <PlayIconSolid className='size-1.5 inline fill-gray-700 dark:fill-gray-300' />
                   )}
                   <span
                     className={
@@ -133,9 +133,9 @@ export default function SynthMenuFilterTab() {
                     className='appearance-none'
                   />
                   {filterParameters.frequency.modulation !== undefined ? (
-                    <PlayIconSolid className='size-1.5 inline mr-0.5' />
+                    <PlayIconOutline className='size-1.5 inline fill-blue-500' />
                   ) : (
-                    <PlayIconOutline className='size-1.5 inline mr-0.5 text-gray-700 dark:text-gray-300' />
+                    <PlayIconSolid className='size-1.5 inline fill-gray-700 dark:fill-gray-300' />
                   )}
                   <span
                     className={
@@ -318,9 +318,9 @@ export default function SynthMenuFilterTab() {
                     className='appearance-none'
                   />
                   {filterParameters.Q.modulation === undefined ? (
-                    <PlayIconSolid className='size-1.5 inline mr-0.5' />
+                    <PlayIconOutline className='size-1.5 inline fill-blue-500' />
                   ) : (
-                    <PlayIconOutline className='size-1.5 inline mr-0.5 text-gray-700 dark:text-gray-300' />
+                    <PlayIconSolid className='size-1.5 inline fill-gray-700 dark:fill-gray-300' />
                   )}
                   <span
                     className={
@@ -357,9 +357,9 @@ export default function SynthMenuFilterTab() {
                     className='appearance-none'
                   />
                   {filterParameters.Q.modulation !== undefined ? (
-                    <PlayIconSolid className='size-1.5 inline mr-0.5' />
+                    <PlayIconOutline className='size-1.5 inline fill-blue-500' />
                   ) : (
-                    <PlayIconOutline className='size-1.5 inline mr-0.5 text-gray-700 dark:text-gray-300' />
+                    <PlayIconSolid className='size-1.5 inline fill-gray-700 dark:fill-gray-300' />
                   )}
                   <span
                     className={
@@ -535,9 +535,9 @@ export default function SynthMenuFilterTab() {
                     className='appearance-none'
                   />
                   {filterParameters.mix.modulation === undefined ? (
-                    <PlayIconSolid className='size-1.5 inline mr-0.5' />
+                    <PlayIconOutline className='size-1.5 inline fill-blue-500' />
                   ) : (
-                    <PlayIconOutline className='size-1.5 inline mr-0.5 text-gray-700 dark:text-gray-300' />
+                    <PlayIconSolid className='size-1.5 inline fill-gray-700 dark:fill-gray-300' />
                   )}
                   <span
                     className={
@@ -574,9 +574,9 @@ export default function SynthMenuFilterTab() {
                     className='appearance-none'
                   />
                   {filterParameters.mix.modulation !== undefined ? (
-                    <PlayIconSolid className='size-1.5 inline mr-0.5' />
+                    <PlayIconOutline className='size-1.5 inline fill-blue-500' />
                   ) : (
-                    <PlayIconOutline className='size-1.5 inline mr-0.5 text-gray-700 dark:text-gray-300' />
+                    <PlayIconSolid className='size-1.5 inline fill-gray-700 dark:fill-gray-300' />
                   )}
                   <span
                     className={

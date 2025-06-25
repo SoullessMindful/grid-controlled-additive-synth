@@ -1,5 +1,6 @@
 import React from 'react'
 import './horizontalSlider.css'
+import { Bungee_Inline } from 'next/font/google'
 
 type HorizontalSliderProps = {
   value: number
@@ -51,18 +52,39 @@ export default function HorizontalSlider({
     : [percent, trackCenterPercent - percent]
 
   return (
-    <div className='relative w-fit h-fit'>
-      <div className='absolute left-0 top-0 h-full w-full bg-gray-100 rounded-xl pointer-events-none'>
+    <div className={`relative ${className}`}>
+      <div className='absolute left-0 top-0 h-full w-full bg-gray-100 rounded-xl overflow-clip pointer-events-none'>
+        {trackCenterPercent === 0 && (
+          <div
+            className='absolute left-0  h-full bg-blue-400'
+            style={{
+              width: 'calc(var(--thumb-width)/2)',
+            }}
+          ></div>
+        )}
+        {trackCenterPercent === 100 && (
+          <div
+            className='absolute right-0  h-full bg-blue-400'
+            style={{
+              width: 'calc(var(--thumb-width)/2)',
+            }}
+          ></div>
+        )}
         <div
-          className={`absolute top-0 h-full bg-blue-400
-        ${trackGoesRight || trackCenterPercent === 1 ? 'rounded-r-xl' : ''}
-        ${!trackGoesRight || trackCenterPercent === 0 ? 'rounded-l-xl' : ''}
-        pointer-events-none`}
+          className='relative h-full'
           style={{
-            left: `${trackLeft}%`,
-            width: `${trackWidth}%`,
+            left: 'calc(var(--thumb-width)/2)',
+            width: 'calc(100% - var(--thumb-width))',
           }}
-        ></div>
+        >
+          <div
+            className={`absolute top-0 h-full bg-blue-400 pointer-events-none`}
+            style={{
+              left: `${trackLeft}%`,
+              width: `${trackWidth}%`,
+            }}
+          ></div>
+        </div>
       </div>
       <input
         type='range'
@@ -74,7 +96,7 @@ export default function HorizontalSlider({
           const v = parseFloat(e.target.value)
           onChange(fromSlider(v))
         }}
-        className={`horizontal-slider w-15 h-2 thumb-w-1 thumb-r-1 ${className}`}
+        className={`horizontal-slider h-full w-full`}
       />
     </div>
   )

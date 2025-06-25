@@ -281,7 +281,8 @@ export default function SoundEngineContextProvider({
     const currentGlobalGainNode = globalGainNode
 
     // Use a consistent time reference
-    const now = currentCtx.currentTime
+    // const now = currentCtx.currentTime
+    const scheduler: ((now: number) => void)[] = []
     noteOff(row, column)
 
     const padNode = padNodes[row][column]
@@ -290,24 +291,27 @@ export default function SoundEngineContextProvider({
       .filter(({ active }) => active)
       .map((voice) => {
         const panNode = currentCtx.createStereoPanner()
-        panNode.pan.setValueAtTime(voice.pan, now)
-        panNode.connect(currentGlobalGainNode)
-
         const delayNode = currentCtx.createDelay()
-        delayNode.delayTime.setValueAtTime(voice.delay, now)
-        delayNode.connect(panNode)
-
         const mainGainNode = currentCtx.createGain()
-        mainGainNode.gain.cancelScheduledValues(now)
-        mainGainNode.gain.setValueAtTime(0.001, now)
-        mainGainNode.gain.exponentialRampToValueAtTime(
-          level || 0.001,
-          now + attack
-        )
-        mainGainNode.gain.exponentialRampToValueAtTime(
-          level * sustain || 0.001,
-          now + attack + decay
-        )
+
+        scheduler.push((now) => {
+          panNode.pan.setValueAtTime(voice.pan, now)
+          panNode.connect(currentGlobalGainNode)
+
+          delayNode.delayTime.setValueAtTime(voice.delay, now)
+          delayNode.connect(panNode)
+
+          mainGainNode.gain.cancelScheduledValues(now)
+          mainGainNode.gain.setValueAtTime(0.001, now)
+          mainGainNode.gain.exponentialRampToValueAtTime(
+            level || 0.001,
+            now + attack
+          )
+          mainGainNode.gain.exponentialRampToValueAtTime(
+            level * sustain || 0.001,
+            now + attack + decay
+          )
+        })
 
         let filterNode: BiquadFilterNode | undefined = undefined
         let filterMixNode: MixNode | undefined = undefined
@@ -316,49 +320,54 @@ export default function SoundEngineContextProvider({
           mainGainNode.connect(delayNode)
         } else {
           filterMixNode = createMixNode(currentCtx)
-          filterMixNode.mix.setValueAtTime(filterParameters.mix.value, now)
-          if (filterParameters.mix.modulation !== undefined) {
-            const mod = filterParameters.mix.modulation
-            filterMixNode.mix.exponentialRampToValueAtTime(
-              mod.level || 0.001,
-              now + mod.attack
-            )
-            filterMixNode.mix.exponentialRampToValueAtTime(
-              mod.sustain || 0.001,
-              now + mod.attack + mod.decay
-            )
-          }
-
           filterNode = currentCtx.createBiquadFilter()
           filterNode.type = filterParameters.type
-          filterNode.Q.cancelScheduledValues(now)
-          filterNode.Q.setValueAtTime(filterParameters.Q.value, now)
-          if (filterParameters.Q.modulation !== undefined) {
-            const mod = filterParameters.Q.modulation
-            filterNode.Q.exponentialRampToValueAtTime(
-              mod.level || 0.001,
-              now + mod.attack
+
+          scheduler.push((now) => {
+            if (!filterMixNode || !filterNode) return
+
+            filterMixNode.mix.setValueAtTime(filterParameters.mix.value, now)
+            if (filterParameters.mix.modulation !== undefined) {
+              const mod = filterParameters.mix.modulation
+              filterMixNode.mix.exponentialRampToValueAtTime(
+                mod.level || 0.001,
+                now + mod.attack
+              )
+              filterMixNode.mix.exponentialRampToValueAtTime(
+                mod.sustain || 0.001,
+                now + mod.attack + mod.decay
+              )
+            }
+
+            filterNode.Q.cancelScheduledValues(now)
+            filterNode.Q.setValueAtTime(filterParameters.Q.value, now)
+            if (filterParameters.Q.modulation !== undefined) {
+              const mod = filterParameters.Q.modulation
+              filterNode.Q.exponentialRampToValueAtTime(
+                mod.level || 0.001,
+                now + mod.attack
+              )
+              filterNode.Q.exponentialRampToValueAtTime(
+                mod.sustain || 0.001,
+                now + mod.attack + mod.decay
+              )
+            }
+            filterNode.frequency.setValueAtTime(
+              filterParameters.frequency.value,
+              now
             )
-            filterNode.Q.exponentialRampToValueAtTime(
-              mod.sustain || 0.001,
-              now + mod.attack + mod.decay
-            )
-          }
-          filterNode.frequency.setValueAtTime(
-            filterParameters.frequency.value,
-            now
-          )
-          if (filterParameters.frequency.modulation !== undefined) {
-            const mod = filterParameters.frequency.modulation
-            filterNode.frequency.exponentialRampToValueAtTime(
-              mod.level || 0.001,
-              now + mod.attack
-            )
-            filterNode.frequency.exponentialRampToValueAtTime(
-              mod.sustain || 0.001,
-              now + mod.attack + mod.decay
-            )
-          }
+            if (filterParameters.frequency.modulation !== undefined) {
+              const mod = filterParameters.frequency.modulation
+              filterNode.frequency.exponentialRampToValueAtTime(
+                mod.level || 0.001,
+                now + mod.attack
+              )
+              filterNode.frequency.exponentialRampToValueAtTime(
+                mod.sustain || 0.001,
+                now + mod.attack + mod.decay
+              )
+            }
+          })
 
           filterMixNode.connect(delayNode)
           filterNode.connect(filterMixNode.wet)
@@ -370,7 +379,7 @@ export default function SoundEngineContextProvider({
           .map((env, i) => ({ env, i }))
           .filter(({ env }) => env.level !== 0)
           .map(({ env, i }) => {
-            const osc = ctx!.createOscillator()
+            const osc = currentCtx.createOscillator()
             const overtoneIndex = i + 1 // 1st harmonic is fundamental
             const freq =
               440 * Math.pow(2, (padNode.note - 69) / 12) * overtoneIndex
@@ -379,28 +388,33 @@ export default function SoundEngineContextProvider({
             } else {
               osc.setPeriodicWave(waveform.waveform)
             }
-            osc.frequency.setValueAtTime(freq, now)
-            osc.detune.setValueAtTime(voice.detune, now)
 
-            const gain = ctx!.createGain()
-            gain.gain.cancelScheduledValues(now)
-            gain.gain.setValueAtTime(0.001, now)
-            gain.gain.exponentialRampToValueAtTime(
-              env.level || 0.001,
-              now + env.attack
-            )
-            gain.gain.exponentialRampToValueAtTime(
-              env.level * env.sustain || 0.001,
-              now + env.attack + env.decay
-            )
+            const gain = currentCtx.createGain()
+            const flipGain = currentCtx.createGain()
 
-            const flipGain = ctx!.createGain()
-            flipGain.gain.setValueAtTime(voice.level * phase(env), now)
+            scheduler.push((now) => {
+              osc.frequency.setValueAtTime(freq, now)
+              osc.detune.setValueAtTime(voice.detune, now)
+
+              gain.gain.cancelScheduledValues(now)
+              gain.gain.setValueAtTime(0.001, now)
+              gain.gain.exponentialRampToValueAtTime(
+                env.level || 0.001,
+                now + env.attack
+              )
+              gain.gain.exponentialRampToValueAtTime(
+                env.level * env.sustain || 0.001,
+                now + env.attack + env.decay
+              )
+
+              flipGain.gain.setValueAtTime(voice.level * phase(env), now)
+
+              osc.start(now)
+            })
 
             osc.connect(gain)
             gain.connect(flipGain)
             flipGain.connect(mainGainNode)
-            osc.start(now)
 
             return { osc, gain, flipGain, overtoneIndex }
           })
@@ -414,6 +428,8 @@ export default function SoundEngineContextProvider({
         }
       })
 
+    const now = currentCtx.currentTime
+    scheduler.forEach((cb) => cb(now))
     padNode.voiceNodes = voiceNodes
   }
 

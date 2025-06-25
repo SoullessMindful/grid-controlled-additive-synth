@@ -20,6 +20,7 @@ import {
 } from '@/lib/filterParameters'
 import { SynthSettingsPreset } from '@/lib/synthSettingsPreset'
 import { defaultVoices, Voice } from '@/lib/voice'
+import { createMixNode, MixNode } from '@/lib/audionodes/MixNode'
 
 let ctx: AudioContext | undefined = undefined
 let globalHighpassNode: BiquadFilterNode | undefined = undefined
@@ -77,8 +78,7 @@ type VoiceNode = {
   panNode: StereoPannerNode
   mainGainNode: GainNode
   filterNode?: BiquadFilterNode
-  filterDryGainNode?: GainNode
-  filterWetGainNode?: GainNode
+  filterMixNode?: MixNode
 }
 
 type PadNode = {
@@ -300,25 +300,34 @@ export default function SoundEngineContextProvider({
         const mainGainNode = currentCtx.createGain()
         mainGainNode.gain.cancelScheduledValues(now)
         mainGainNode.gain.setValueAtTime(0.001, now)
-        mainGainNode.gain.exponentialRampToValueAtTime(level || 0.001, now + attack)
+        mainGainNode.gain.exponentialRampToValueAtTime(
+          level || 0.001,
+          now + attack
+        )
         mainGainNode.gain.exponentialRampToValueAtTime(
           level * sustain || 0.001,
           now + attack + decay
         )
-        
-        
 
         let filterNode: BiquadFilterNode | undefined = undefined
-        let filterDryGainNode: GainNode | undefined = undefined
-        let filterWetGainNode: GainNode | undefined = undefined
+        let filterMixNode: MixNode | undefined = undefined
 
         if (filterParameters.type === undefined) {
           mainGainNode.connect(delayNode)
         } else {
-          filterDryGainNode = currentCtx.createGain()
-          filterDryGainNode.gain.setValueAtTime(1 - filterParameters.mix, now)
-          filterWetGainNode = currentCtx.createGain()
-          filterWetGainNode.gain.setValueAtTime(filterParameters.mix, now)
+          filterMixNode = createMixNode(currentCtx)
+          filterMixNode.mix.setValueAtTime(filterParameters.mix.value, now)
+          if (filterParameters.mix.modulation !== undefined) {
+            const mod = filterParameters.mix.modulation
+            filterMixNode.mix.exponentialRampToValueAtTime(
+              mod.level || 0.001,
+              now + mod.attack
+            )
+            filterMixNode.mix.exponentialRampToValueAtTime(
+              mod.sustain || 0.001,
+              now + mod.attack + mod.decay
+            )
+          }
 
           filterNode = currentCtx.createBiquadFilter()
           filterNode.type = filterParameters.type
@@ -335,7 +344,10 @@ export default function SoundEngineContextProvider({
               now + mod.attack + mod.decay
             )
           }
-          filterNode.frequency.setValueAtTime(filterParameters.frequency.value, now)
+          filterNode.frequency.setValueAtTime(
+            filterParameters.frequency.value,
+            now
+          )
           if (filterParameters.frequency.modulation !== undefined) {
             const mod = filterParameters.frequency.modulation
             filterNode.frequency.exponentialRampToValueAtTime(
@@ -348,11 +360,10 @@ export default function SoundEngineContextProvider({
             )
           }
 
-          filterDryGainNode.connect(delayNode)
-          filterWetGainNode.connect(delayNode)
-          filterNode.connect(filterWetGainNode)
+          filterMixNode.connect(delayNode)
+          filterNode.connect(filterMixNode.wet)
           mainGainNode.connect(filterNode)
-          mainGainNode.connect(filterDryGainNode)
+          mainGainNode.connect(filterMixNode.dry)
         }
 
         const overtones = overtoneEnvelopes
@@ -416,7 +427,14 @@ export default function SoundEngineContextProvider({
     const releaseEnd = now + release
 
     padNode.voiceNodes.forEach(
-      ({ overtones, panNode, delayNode, mainGainNode, filterNode }) => {
+      ({
+        overtones,
+        panNode,
+        delayNode,
+        mainGainNode,
+        filterNode,
+        filterMixNode,
+      }) => {
         overtones.forEach(({ osc, gain, flipGain, overtoneIndex }) => {
           const env = overtoneEnvelopes[overtoneIndex - 1]
           const overtoneReleaseEnd = env ? now + env.release : releaseEnd
@@ -444,6 +462,7 @@ export default function SoundEngineContextProvider({
           delayNode.disconnect()
           panNode.disconnect()
           filterNode?.disconnect()
+          filterMixNode?.disconnect()
         }, cleanupDelay)
       }
     )

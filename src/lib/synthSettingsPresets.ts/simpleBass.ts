@@ -145,6 +145,9 @@ export const simpleBass: SynthSettingsPreset = {
       value: 1.4,
       modulation: undefined,
     },
-    mix: 1,
+    mix: {
+      value: 1,
+      modulation: undefined,
+    },
   },
 }

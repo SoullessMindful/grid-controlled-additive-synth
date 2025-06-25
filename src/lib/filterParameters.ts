@@ -4,12 +4,20 @@ export type FilterParameter = {
   value: number
   modulation: Envelope | undefined
 }
-export type FilterType = 'lowpass' | 'highpass' | 'bandpass' | 'notch' | 'allpass' | undefined
+
+export type FilterType =
+  | 'lowpass'
+  | 'highpass'
+  | 'bandpass'
+  | 'notch'
+  | 'allpass'
+  | undefined
+
 export type FilterParameters = {
   type: FilterType
   Q: FilterParameter
   frequency: FilterParameter
-  mix: number
+  mix: FilterParameter
 }
 
 export const defaultFilterParameters: FilterParameters = {
@@ -22,5 +30,8 @@ export const defaultFilterParameters: FilterParameters = {
     value: 800,
     modulation: undefined,
   },
-  mix: 1,
+  mix: {
+    value: 1,
+    modulation: undefined,
+  },
 } as const

@@ -493,17 +493,224 @@ export default function SynthMenuFilterTab() {
               </Fragment>
             )}
           </div>
-          <div>
-            <label>Mix: </label>
-            <HorizontalSlider
-              value={filterParameters.mix}
-              onChange={(v) => {
-                const newFilterParameters = { ...filterParameters }
-                
-                newFilterParameters.mix = v
-                setFilterParameters(newFilterParameters)
-              }}
-            />
+          <div className='mb-2 flex flex-row min-w-37'>
+            <div className='w-5 text-center'>
+              <label className='block mb-0.5'>
+                <div>Mix</div>
+                <div>{filterParameters.mix.value}</div>
+              </label>
+              <div>
+                <VerticalSlider
+                  value={filterParameters.mix.value}
+                  onChange={(value) => {
+                    const newFilterParameters = { ...filterParameters }
+                    const newMix = { ...newFilterParameters.mix }
+
+                    newMix.value = value
+                    newFilterParameters.mix = newMix
+                    setFilterParameters(newFilterParameters)
+                  }}
+                  min={0}
+                  max={1}
+                  step={0.01}
+                />
+              </div>
+            </div>
+            <div className='min-w-7 flex-1 flex flex-col justify-evenly'>
+              <div>
+                <label>
+                  <input
+                    type='radio'
+                    checked={filterParameters.mix.modulation === undefined}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        const newFilterParameters = { ...filterParameters }
+                        const newMix = { ...newFilterParameters.mix }
+
+                        newMix.modulation = undefined
+                        newFilterParameters.mix = newMix
+                        setFilterParameters(newFilterParameters)
+                      }
+                    }}
+                    className='appearance-none'
+                  />
+                  {filterParameters.mix.modulation === undefined ? (
+                    <PlayIconSolid className='size-1.5 inline mr-0.5' />
+                  ) : (
+                    <PlayIconOutline className='size-1.5 inline mr-0.5 text-gray-700 dark:text-gray-300' />
+                  )}
+                  <span
+                    className={
+                      filterParameters.mix.modulation === undefined
+                        ? ''
+                        : 'text-gray-700 dark:text-gray-300'
+                    }
+                  >
+                    Static
+                  </span>
+                </label>
+              </div>
+              <div>
+                <label>
+                  <input
+                    type='radio'
+                    checked={filterParameters.mix.modulation !== undefined}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        const newFilterParameters = { ...filterParameters }
+                        const newMix = { ...newFilterParameters.mix }
+
+                        newMix.modulation = {
+                          level: newMix.value,
+                          attack: 0.001,
+                          decay: 0.001,
+                          sustain: newMix.value,
+                          release: 0.001,
+                        }
+                        newFilterParameters.mix = newMix
+                        setFilterParameters(newFilterParameters)
+                      }
+                    }}
+                    className='appearance-none'
+                  />
+                  {filterParameters.mix.modulation !== undefined ? (
+                    <PlayIconSolid className='size-1.5 inline mr-0.5' />
+                  ) : (
+                    <PlayIconOutline className='size-1.5 inline mr-0.5 text-gray-700 dark:text-gray-300' />
+                  )}
+                  <span
+                    className={
+                      filterParameters.mix.modulation !== undefined
+                        ? ''
+                        : 'text-gray-700 dark:text-gray-300'
+                    }
+                  >
+                    Envelope
+                  </span>
+                </label>
+              </div>
+            </div>
+            {filterParameters.mix.modulation !== undefined && (
+              <Fragment>
+                <div className='w-5 text-center'>
+                  <label className='block mb-0.5'>
+                    <div>Peak</div>
+                    <div>{filterParameters.mix.modulation.level}</div>
+                  </label>
+                  <VerticalSlider
+                    value={filterParameters.mix.modulation.level}
+                    onChange={(v) => {
+                      const newFilterParameters = { ...filterParameters }
+                      const newMix = { ...newFilterParameters.mix }
+                      if (newMix.modulation === undefined) return
+                      const newModulation = { ...newMix.modulation }
+
+                      newModulation.level = v
+                      newMix.modulation = newModulation
+                      newFilterParameters.mix = newMix
+                      setFilterParameters(newFilterParameters)
+                    }}
+                    min={0}
+                    max={1}
+                    step={0.01}
+                  />
+                </div>
+                <div className='w-5 text-center'>
+                  <label className='block mb-0.5'>
+                    <div>Attack</div>
+                    <div>{filterParameters.mix.modulation.attack * 1000}ms</div>
+                  </label>
+                  <VerticalSlider
+                    value={filterParameters.mix.modulation.attack}
+                    onChange={(v) => {
+                      const newFilterParameters = { ...filterParameters }
+                      const newMix = { ...newFilterParameters.mix }
+                      if (newMix.modulation === undefined) return
+                      const newModulation = { ...newMix.modulation }
+
+                      newModulation.attack = Math.round(v * 1000) / 1000
+                      newMix.modulation = newModulation
+                      newFilterParameters.mix = newMix
+                      setFilterParameters(newFilterParameters)
+                    }}
+                    exponential
+                    minExp={0.001}
+                    maxExp={10}
+                  />
+                </div>
+                <div className='w-5 text-center'>
+                  <label className='block mb-0.5'>
+                    <div>Decay</div>
+                    <div>{filterParameters.mix.modulation.decay * 1000}ms</div>
+                  </label>
+                  <VerticalSlider
+                    value={filterParameters.mix.modulation.decay}
+                    onChange={(v) => {
+                      const newFilterParameters = { ...filterParameters }
+                      const newMix = { ...newFilterParameters.mix }
+                      if (newMix.modulation === undefined) return
+                      const newModulation = { ...newMix.modulation }
+
+                      newModulation.decay = Math.round(v * 1000) / 1000
+                      newMix.modulation = newModulation
+                      newFilterParameters.mix = newMix
+                      setFilterParameters(newFilterParameters)
+                    }}
+                    exponential
+                    minExp={0.001}
+                    maxExp={10}
+                  />
+                </div>
+                <div className='w-5 text-center'>
+                  <label className='block mb-0.5'>
+                    <div>Stable</div>
+                    <div>{filterParameters.mix.modulation.sustain}</div>
+                  </label>
+                  <VerticalSlider
+                    value={filterParameters.mix.modulation.sustain}
+                    onChange={(v) => {
+                      const newFilterParameters = { ...filterParameters }
+                      const newMix = { ...newFilterParameters.mix }
+                      if (newMix.modulation === undefined) return
+                      const newModulation = { ...newMix.modulation }
+
+                      newModulation.sustain = v
+                      newMix.modulation = newModulation
+                      newFilterParameters.mix = newMix
+                      setFilterParameters(newFilterParameters)
+                    }}
+                    min={0}
+                    max={1}
+                    step={0.01}
+                  />
+                </div>
+                <div className='w-5 text-center'>
+                  <label className='block mb-0.5'>
+                    <div>Release</div>
+                    <div>
+                      {filterParameters.mix.modulation.release * 1000}ms
+                    </div>
+                  </label>
+                  <VerticalSlider
+                    value={filterParameters.mix.modulation.release}
+                    onChange={(v) => {
+                      const newFilterParameters = { ...filterParameters }
+                      const newMix = { ...newFilterParameters.mix }
+                      if (newMix.modulation === undefined) return
+                      const newModulation = { ...newMix.modulation }
+
+                      newModulation.release = Math.round(v * 1000) / 1000
+                      newMix.modulation = newModulation
+                      newFilterParameters.mix = newMix
+                      setFilterParameters(newFilterParameters)
+                    }}
+                    exponential
+                    minExp={0.001}
+                    maxExp={10}
+                  />
+                </div>
+              </Fragment>
+            )}
           </div>
         </Fragment>
       )}

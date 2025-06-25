@@ -1,15 +1,18 @@
 import React from 'react'
+import './horizontalSlider.css'
 
 type HorizontalSliderProps = {
   value: number
   onChange: (value: number) => void
   min?: number
   max?: number
+  trackCenter?: number
   step?: number
   exponential?: boolean
-  minExp?: number // only for exponential, in seconds (e.g. 0.001)
-  maxExp?: number // only for exponential, in seconds (e.g. 1)
-  className?: string
+  minExp?: number
+  maxExp?: number
+  trackCenterExp?: number
+  className: string
 }
 
 export default function HorizontalSlider({
@@ -17,11 +20,13 @@ export default function HorizontalSlider({
   onChange,
   min = 0,
   max = 1,
+  trackCenter = min,
   step = 0.01,
   exponential = false,
   minExp = 0.001,
   maxExp = 1,
-  className = '',
+  trackCenterExp = minExp,
+  className,
 }: HorizontalSliderProps) {
   const toSlider = (v: number) =>
     exponential ? Math.log(v / minExp) / Math.log(maxExp / minExp) : v
@@ -29,23 +34,48 @@ export default function HorizontalSlider({
     exponential ? minExp * Math.pow(maxExp / minExp, s) : s
 
   const sliderValue = exponential ? toSlider(value) : value
+  const trackCenterValue = exponential ? toSlider(trackCenterExp) : trackCenter
 
   const sliderMin = exponential ? 0 : min
   const sliderMax = exponential ? 1 : max
   const sliderStep = exponential ? 0.01 : step
 
+  const percent = (100 * (sliderValue - sliderMin)) / (sliderMax - sliderMin)
+  const trackCenterPercent =
+    (100 * (trackCenterValue - sliderMin)) / (sliderMax - sliderMin)
+
+  const trackGoesRight = percent > trackCenterPercent
+
+  const [trackLeft, trackWidth] = trackGoesRight
+    ? [trackCenterPercent, percent - trackCenterPercent]
+    : [percent, trackCenterPercent - percent]
+
   return (
-    <input
-      type='range'
-      min={sliderMin}
-      max={sliderMax}
-      step={sliderStep}
-      value={sliderValue}
-      onChange={(e) => {
-        const v = parseFloat(e.target.value)
-        onChange(fromSlider(v))
-      }}
-      className={`w-15 ${className}`}
-    />
+    <div className='relative w-fit h-fit'>
+      <div className='absolute left-0 top-0 h-full w-full bg-gray-100 rounded-xl pointer-events-none'>
+        <div
+          className={`absolute top-0 h-full bg-blue-400
+        ${trackGoesRight || trackCenterPercent === 1 ? 'rounded-r-xl' : ''}
+        ${!trackGoesRight || trackCenterPercent === 0 ? 'rounded-l-xl' : ''}
+        pointer-events-none`}
+          style={{
+            left: `${trackLeft}%`,
+            width: `${trackWidth}%`,
+          }}
+        ></div>
+      </div>
+      <input
+        type='range'
+        min={sliderMin}
+        max={sliderMax}
+        step={sliderStep}
+        value={sliderValue}
+        onChange={(e) => {
+          const v = parseFloat(e.target.value)
+          onChange(fromSlider(v))
+        }}
+        className={`horizontal-slider w-15 h-2 thumb-w-1 thumb-r-1 ${className}`}
+      />
+    </div>
   )
 }

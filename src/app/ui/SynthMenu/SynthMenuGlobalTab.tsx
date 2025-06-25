@@ -73,6 +73,7 @@ export default function SynthMenuGlobalTab() {
                     min={0}
                     max={1}
                     step={0.01}
+                    className='w-15 h-2 thumb-w-1 thumb-r-1'
                   />
                 </div>
                 <div className='col-start-2 row-start-2'>
@@ -91,7 +92,9 @@ export default function SynthMenuGlobalTab() {
                     }}
                     min={-1}
                     max={1}
+                    trackCenter={0}
                     step={0.05}
+                    className='w-15 h-2 thumb-w-1 thumb-r-1'
                   />
                 </div>
                 <div className='col-start-4 row-start-1'>
@@ -110,7 +113,9 @@ export default function SynthMenuGlobalTab() {
                     }}
                     min={-15}
                     max={15}
+                    trackCenter={0}
                     step={1}
+                    className='w-15 h-2 thumb-w-1 thumb-r-1'
                   />
                 </div>
                 <div className='col-start-4 row-start-2'>
@@ -130,6 +135,7 @@ export default function SynthMenuGlobalTab() {
                     min={0}
                     max={0.02}
                     step={0.0001}
+                    className='w-15 h-2 thumb-w-1 thumb-r-1'
                   />
                 </div>
                 <div className='row-span-2 col-start-6 row-start-1'>
@@ -178,6 +184,7 @@ export default function SynthMenuGlobalTab() {
             exponential
             minExp={20}
             maxExp={20000}
+            className='w-15 h-2 thumb-w-1 thumb-r-1'
           />
         </div>
         <label className='block mb-0.5'>Lowpass: {lowpassFrequency}Hz</label>
@@ -192,6 +199,7 @@ export default function SynthMenuGlobalTab() {
             exponential
             minExp={20}
             maxExp={20000}
+            className='w-15 h-2 thumb-w-1 thumb-r-1'
           />
         </div>
       </div>
@@ -204,6 +212,7 @@ export default function SynthMenuGlobalTab() {
             min={0}
             max={1}
             step={0.01}
+            className='w-15 h-2 thumb-w-1 thumb-r-1'
           />
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { Envelope } from './envelope'
 import { FilterParameters } from './filterParameters'
+import { Octave } from './octave'
 import { clearPreset } from './synthSettingsPresets.ts/clearPreset'
 import { drawbarOrgans } from './synthSettingsPresets.ts/drawbarOrgans'
 import { simpleBass } from './synthSettingsPresets.ts/simpleBass'
@@ -11,6 +12,7 @@ export type SynthSettingsPreset = {
   volume: number
   highpassFilterFrequency: number
   lowpassFilterFrequency: number
+  octave: Octave
   voices: Voice[]
   globalEnvelope: Envelope
   waveformName: string

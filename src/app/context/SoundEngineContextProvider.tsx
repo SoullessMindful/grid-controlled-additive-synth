@@ -130,7 +130,7 @@ export default function SoundEngineContextProvider({
     setVolume(preset.volume)
     setHighpassFrequency(preset.highpassFilterFrequency)
     setLowpassFrequency(preset.lowpassFilterFrequency)
-    // TODO add octave to preset
+    setOctave(preset.octave)
     setVoices(preset.voices)
     setLevel(preset.globalEnvelope.level)
     setAttack(preset.globalEnvelope.attack)

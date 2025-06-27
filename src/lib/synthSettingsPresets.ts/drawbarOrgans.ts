@@ -24,6 +24,7 @@ export const drawbarOrgans: SynthSettingsPreset = {
   volume: 0.5,
   highpassFilterFrequency: 40,
   lowpassFilterFrequency: 4000,
+  octave: -1,
   voices: [
     {
       level: 0.75,

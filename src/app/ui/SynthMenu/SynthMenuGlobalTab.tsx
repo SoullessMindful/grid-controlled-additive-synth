@@ -10,6 +10,7 @@ import { PlusIcon, StopIcon as StopIconSolid } from '@heroicons/react/24/solid'
 import { StopIcon as StopIconOutline } from '@heroicons/react/24/outline'
 import { TrashIcon } from '@heroicons/react/24/solid'
 import { defaultVoice } from '@/lib/voice'
+import { availableOctaves, displayOctave } from '@/lib/octave'
 
 export default function SynthMenuGlobalTab() {
   const {
@@ -19,6 +20,8 @@ export default function SynthMenuGlobalTab() {
     setHighpassFrequency,
     lowpassFrequency,
     setLowpassFrequency,
+    octave,
+    setOctave,
     voices,
     setVoices,
   } = useContext(SoundEngineContext) as SoundEngineContextType
@@ -151,7 +154,6 @@ export default function SynthMenuGlobalTab() {
                   </div>
                 </div>
               </div>
-
               <span>
                 <div>
                   <span className='mr-1'></span>
@@ -170,6 +172,29 @@ export default function SynthMenuGlobalTab() {
             </div>
           )}
         </div>
+      </div>
+      <div className='mb-2'>
+        <label>Octave </label>
+        <select
+          value={displayOctave(octave)}
+          onChange={(e) => {
+            const selected = availableOctaves.find(
+              (oct) => oct === parseInt(e.target.value)
+            )
+            fetch('/LOG/OCTAVE/'+e.target.value+'/'+selected)
+            if (selected !== undefined) setOctave(selected)
+          }}
+          className='w-12 h-2.5 px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
+        >
+          {availableOctaves.map((oct) => (
+            <option
+              key={displayOctave(oct)}
+              value={displayOctave(oct)}
+            >
+              {displayOctave(oct)}
+            </option>
+          ))}
+        </select>
       </div>
       <div className='mb-2'>
         <label className='block mb-0.5'>Highpass: {highpassFrequency}Hz</label>

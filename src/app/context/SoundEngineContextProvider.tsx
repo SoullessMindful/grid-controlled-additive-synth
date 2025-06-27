@@ -21,6 +21,7 @@ import {
 import { SynthSettingsPreset } from '@/lib/synthSettingsPreset'
 import { defaultVoices, Voice } from '@/lib/voice'
 import { createMixNode, MixNode } from '@/lib/audionodes/MixNode'
+import { defaultOctave, Octave } from '@/lib/octave'
 
 let ctx: AudioContext | undefined = undefined
 let globalHighpassNode: BiquadFilterNode | undefined = undefined
@@ -37,6 +38,8 @@ export type SoundEngineContextType = {
   setHighpassFrequency: (volume: number) => void
   lowpassFrequency: number
   setLowpassFrequency: (volume: number) => void
+  octave: Octave
+  setOctave: React.Dispatch<React.SetStateAction<Octave>>
   level: number
   setLevel: (level: number) => void
   attack: number
@@ -104,6 +107,7 @@ export default function SoundEngineContextProvider({
   const [volume, setVolume] = useState(0.5)
   const [highpassFrequency, setHighpassFrequency] = useState(20)
   const [lowpassFrequency, setLowpassFrequency] = useState(20000)
+  const [octave, setOctave] = useState(defaultOctave)
   const [level, setLevel] = useState(0.5)
   const [attack, setAttack] = useState(0.01)
   const [decay, setDecay] = useState(0.1)
@@ -126,6 +130,7 @@ export default function SoundEngineContextProvider({
     setVolume(preset.volume)
     setHighpassFrequency(preset.highpassFilterFrequency)
     setLowpassFrequency(preset.lowpassFilterFrequency)
+    // TODO add octave to preset
     setVoices(preset.voices)
     setLevel(preset.globalEnvelope.level)
     setAttack(preset.globalEnvelope.attack)
@@ -382,7 +387,7 @@ export default function SoundEngineContextProvider({
             const osc = currentCtx.createOscillator()
             const overtoneIndex = i + 1 // 1st harmonic is fundamental
             const freq =
-              440 * Math.pow(2, (padNode.note - 69) / 12) * overtoneIndex
+              440 * Math.pow(2, (padNode.note - 69) / 12) * overtoneIndex * 2**octave
             if (waveform.__type__ === 'BasicWaveform') {
               osc.type = waveform.waveform
             } else {
@@ -506,6 +511,8 @@ export default function SoundEngineContextProvider({
         setHighpassFrequency,
         lowpassFrequency,
         setLowpassFrequency,
+        octave,
+        setOctave,
         level,
         setLevel,
         attack,

@@ -209,6 +209,7 @@ export default function SynthMenuGlobalTab() {
             exponential
             minExp={20}
             maxExp={20000}
+            trackCenterExp={20000}
             className='w-15 h-2 thumb-w-1 thumb-r-1'
           />
         </div>

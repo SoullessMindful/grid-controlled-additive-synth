@@ -11,6 +11,7 @@ import { StopIcon as StopIconOutline } from '@heroicons/react/24/outline'
 import { TrashIcon } from '@heroicons/react/24/solid'
 import { defaultVoice } from '@/lib/voice'
 import { availableOctaves, displayOctave } from '@/lib/octave'
+import { CheckButton } from '../CheckButton'
 
 export default function SynthMenuGlobalTab() {
   const {
@@ -39,24 +40,17 @@ export default function SynthMenuGlobalTab() {
               <div className='grid grid-cols-[3rem,5rem,15rem,5rem,15rem,auto] grid-rows-2 gap-0.5 items-center'>
                 <div className='row-span-2'>
                   <label>
-                    <input
-                      type='checkbox'
-                      checked={voice.active}
-                      onChange={(e) => {
+                    <CheckButton
+                      value={voice.active}
+                      onChange={(newActive) => {
                         const newVoices = [...voices]
                         const newVoice = { ...newVoices[i] }
 
-                        newVoice.active = e.target.checked
+                        newVoice.active = newActive
                         newVoices[i] = newVoice
                         setVoices(newVoices)
                       }}
-                      className='appearance-none'
                     />
-                    {voice.active ? (
-                      <StopIconOutline className='size-1.5 inline fill-blue-500' />
-                    ) : (
-                      <StopIconSolid className='size-1.5 inline' />
-                    )}
                   </label>
                 </div>
                 <div>

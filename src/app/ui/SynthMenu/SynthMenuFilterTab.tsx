@@ -6,10 +6,8 @@ import {
   SoundEngineContextType,
 } from '@/app/context/SoundEngineContextProvider'
 import { FilterType } from '@/lib/filterParameters'
-import HorizontalSlider from '../HorizontalSlider'
 import VerticalSlider from '../VerticalSlider'
-import { PlayIcon as PlayIconOutline } from '@heroicons/react/24/outline'
-import { PlayIcon as PlayIconSolid } from '@heroicons/react/24/solid'
+import { RadioButton } from '../RadioButton'
 
 export default function SynthMenuFilterTab() {
   const { filterParameters, setFilterParameters } = useContext(
@@ -70,30 +68,19 @@ export default function SynthMenuFilterTab() {
             <div className='min-w-7 flex-1 flex flex-col justify-evenly'>
               <div>
                 <label>
-                  <input
-                    type='radio'
-                    checked={
-                      filterParameters.frequency.modulation === undefined
-                    }
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        const newFilterParameters = { ...filterParameters }
-                        const newFrequency = {
-                          ...newFilterParameters.frequency,
-                        }
-
-                        newFrequency.modulation = undefined
-                        newFilterParameters.frequency = newFrequency
-                        setFilterParameters(newFilterParameters)
+                  <RadioButton
+                    value={filterParameters.frequency.modulation === undefined}
+                    onCheck={() => {
+                      const newFilterParameters = { ...filterParameters }
+                      const newFrequency = {
+                        ...newFilterParameters.frequency,
                       }
+
+                      newFrequency.modulation = undefined
+                      newFilterParameters.frequency = newFrequency
+                      setFilterParameters(newFilterParameters)
                     }}
-                    className='appearance-none'
                   />
-                  {filterParameters.frequency.modulation === undefined ? (
-                    <PlayIconOutline className='size-1.5 inline fill-blue-500' />
-                  ) : (
-                    <PlayIconSolid className='size-1.5 inline fill-gray-700 dark:fill-gray-300' />
-                  )}
                   <span
                     className={
                       filterParameters.frequency.modulation === undefined
@@ -107,36 +94,25 @@ export default function SynthMenuFilterTab() {
               </div>
               <div>
                 <label>
-                  <input
-                    type='radio'
-                    checked={
-                      filterParameters.frequency.modulation !== undefined
-                    }
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        const newFilterParameters = { ...filterParameters }
-                        const newFrequency = {
-                          ...newFilterParameters.frequency,
-                        }
-
-                        newFrequency.modulation = {
-                          level: newFrequency.value,
-                          attack: 0.001,
-                          decay: 0.001,
-                          sustain: newFrequency.value,
-                          release: 0.001,
-                        }
-                        newFilterParameters.frequency = newFrequency
-                        setFilterParameters(newFilterParameters)
+                  <RadioButton
+                    value={filterParameters.frequency.modulation !== undefined}
+                    onCheck={() => {
+                      const newFilterParameters = { ...filterParameters }
+                      const newFrequency = {
+                        ...newFilterParameters.frequency,
                       }
+
+                      newFrequency.modulation = {
+                        level: newFrequency.value,
+                        attack: 0.001,
+                        decay: 0.001,
+                        sustain: newFrequency.value,
+                        release: 0.001,
+                      }
+                      newFilterParameters.frequency = newFrequency
+                      setFilterParameters(newFilterParameters)
                     }}
-                    className='appearance-none'
                   />
-                  {filterParameters.frequency.modulation !== undefined ? (
-                    <PlayIconOutline className='size-1.5 inline fill-blue-500' />
-                  ) : (
-                    <PlayIconSolid className='size-1.5 inline fill-gray-700 dark:fill-gray-300' />
-                  )}
                   <span
                     className={
                       filterParameters.frequency.modulation !== undefined
@@ -302,26 +278,19 @@ export default function SynthMenuFilterTab() {
             <div className='min-w-7 flex-1 flex flex-col justify-evenly'>
               <div>
                 <label>
-                  <input
-                    type='radio'
-                    checked={filterParameters.Q.modulation === undefined}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        const newFilterParameters = { ...filterParameters }
-                        const newQ = { ...newFilterParameters.Q }
-
-                        newQ.modulation = undefined
-                        newFilterParameters.Q = newQ
-                        setFilterParameters(newFilterParameters)
+                  <RadioButton
+                    value={filterParameters.Q.modulation === undefined}
+                    onCheck={() => {
+                      const newFilterParameters = { ...filterParameters }
+                      const newQ = {
+                        ...newFilterParameters.Q,
                       }
+
+                      newQ.modulation = undefined
+                      newFilterParameters.Q = newQ
+                      setFilterParameters(newFilterParameters)
                     }}
-                    className='appearance-none'
                   />
-                  {filterParameters.Q.modulation === undefined ? (
-                    <PlayIconOutline className='size-1.5 inline fill-blue-500' />
-                  ) : (
-                    <PlayIconSolid className='size-1.5 inline fill-gray-700 dark:fill-gray-300' />
-                  )}
                   <span
                     className={
                       filterParameters.Q.modulation === undefined
@@ -335,32 +304,25 @@ export default function SynthMenuFilterTab() {
               </div>
               <div>
                 <label>
-                  <input
-                    type='radio'
-                    checked={filterParameters.Q.modulation !== undefined}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        const newFilterParameters = { ...filterParameters }
-                        const newQ = { ...newFilterParameters.Q }
-
-                        newQ.modulation = {
-                          level: newQ.value,
-                          attack: 0.001,
-                          decay: 0.001,
-                          sustain: newQ.value,
-                          release: 0.001,
-                        }
-                        newFilterParameters.Q = newQ
-                        setFilterParameters(newFilterParameters)
+                  <RadioButton
+                    value={filterParameters.Q.modulation !== undefined}
+                    onCheck={() => {
+                      const newFilterParameters = { ...filterParameters }
+                      const newQ = {
+                        ...newFilterParameters.Q,
                       }
+
+                      newQ.modulation = {
+                        level: newQ.value,
+                        attack: 0.001,
+                        decay: 0.001,
+                        sustain: newQ.value,
+                        release: 0.001,
+                      }
+                      newFilterParameters.Q = newQ
+                      setFilterParameters(newFilterParameters)
                     }}
-                    className='appearance-none'
                   />
-                  {filterParameters.Q.modulation !== undefined ? (
-                    <PlayIconOutline className='size-1.5 inline fill-blue-500' />
-                  ) : (
-                    <PlayIconSolid className='size-1.5 inline fill-gray-700 dark:fill-gray-300' />
-                  )}
                   <span
                     className={
                       filterParameters.Q.modulation !== undefined
@@ -519,26 +481,19 @@ export default function SynthMenuFilterTab() {
             <div className='min-w-7 flex-1 flex flex-col justify-evenly'>
               <div>
                 <label>
-                  <input
-                    type='radio'
-                    checked={filterParameters.mix.modulation === undefined}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        const newFilterParameters = { ...filterParameters }
-                        const newMix = { ...newFilterParameters.mix }
-
-                        newMix.modulation = undefined
-                        newFilterParameters.mix = newMix
-                        setFilterParameters(newFilterParameters)
+                  <RadioButton
+                    value={filterParameters.mix.modulation === undefined}
+                    onCheck={() => {
+                      const newFilterParameters = { ...filterParameters }
+                      const newMix = {
+                        ...newFilterParameters.mix,
                       }
+
+                      newMix.modulation = undefined
+                      newFilterParameters.mix = newMix
+                      setFilterParameters(newFilterParameters)
                     }}
-                    className='appearance-none'
                   />
-                  {filterParameters.mix.modulation === undefined ? (
-                    <PlayIconOutline className='size-1.5 inline fill-blue-500' />
-                  ) : (
-                    <PlayIconSolid className='size-1.5 inline fill-gray-700 dark:fill-gray-300' />
-                  )}
                   <span
                     className={
                       filterParameters.mix.modulation === undefined
@@ -552,32 +507,25 @@ export default function SynthMenuFilterTab() {
               </div>
               <div>
                 <label>
-                  <input
-                    type='radio'
-                    checked={filterParameters.mix.modulation !== undefined}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        const newFilterParameters = { ...filterParameters }
-                        const newMix = { ...newFilterParameters.mix }
-
-                        newMix.modulation = {
-                          level: newMix.value,
-                          attack: 0.001,
-                          decay: 0.001,
-                          sustain: newMix.value,
-                          release: 0.001,
-                        }
-                        newFilterParameters.mix = newMix
-                        setFilterParameters(newFilterParameters)
+                  <RadioButton
+                    value={filterParameters.mix.modulation !== undefined}
+                    onCheck={() => {
+                      const newFilterParameters = { ...filterParameters }
+                      const newMix = {
+                        ...newFilterParameters.mix,
                       }
+
+                      newMix.modulation = {
+                        level: newMix.value,
+                        attack: 0.001,
+                        decay: 0.001,
+                        sustain: newMix.value,
+                        release: 0.001,
+                      }
+                      newFilterParameters.mix = newMix
+                      setFilterParameters(newFilterParameters)
                     }}
-                    className='appearance-none'
                   />
-                  {filterParameters.mix.modulation !== undefined ? (
-                    <PlayIconOutline className='size-1.5 inline fill-blue-500' />
-                  ) : (
-                    <PlayIconSolid className='size-1.5 inline fill-gray-700 dark:fill-gray-300' />
-                  )}
                   <span
                     className={
                       filterParameters.mix.modulation !== undefined

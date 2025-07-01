@@ -129,6 +129,7 @@ export default function SynthMenuWaveTab() {
                             min={0}
                             max={1}
                             step={0.001}
+                            className='h-15 w-2 thumb-h-1 thumb-r-1'
                           />
                           <div
                             className='cursor-pointer'
@@ -178,6 +179,7 @@ export default function SynthMenuWaveTab() {
                           exponential
                           minExp={0.001}
                           maxExp={10}
+                          className='h-15 w-2 thumb-h-1 thumb-r-1'
                         />
                       )
                     case 'decay':
@@ -199,6 +201,7 @@ export default function SynthMenuWaveTab() {
                           exponential
                           minExp={0.001}
                           maxExp={10}
+                          className='h-15 w-2 thumb-h-1 thumb-r-1'
                         />
                       )
                     case 'sustain':
@@ -219,6 +222,7 @@ export default function SynthMenuWaveTab() {
                           min={0}
                           max={1}
                           step={0.01}
+                          className='h-15 w-2 thumb-h-1 thumb-r-1'
                         />
                       )
                     case 'release':
@@ -240,6 +244,7 @@ export default function SynthMenuWaveTab() {
                           exponential
                           minExp={0.001}
                           maxExp={10}
+                          className='h-15 w-2 thumb-h-1 thumb-r-1'
                         />
                       )
                   }
@@ -283,6 +288,7 @@ export default function SynthMenuWaveTab() {
             min={0}
             max={1}
             step={0.01}
+            className='h-15 w-2 thumb-h-1 thumb-r-1'
           />
         </div>
         <div className='w-5 text-center'>
@@ -296,6 +302,7 @@ export default function SynthMenuWaveTab() {
             exponential
             minExp={0.001}
             maxExp={10}
+            className='h-15 w-2 thumb-h-1 thumb-r-1'
           />
         </div>
         <div className='w-5 text-center'>
@@ -309,6 +316,7 @@ export default function SynthMenuWaveTab() {
             exponential
             minExp={0.001}
             maxExp={10}
+            className='h-15 w-2 thumb-h-1 thumb-r-1'
           />
         </div>
         <div className='w-5 text-center'>
@@ -322,6 +330,7 @@ export default function SynthMenuWaveTab() {
             min={0}
             max={1}
             step={0.01}
+            className='h-15 w-2 thumb-h-1 thumb-r-1'
           />
         </div>
         <div className='w-5 text-center'>
@@ -335,6 +344,7 @@ export default function SynthMenuWaveTab() {
             exponential
             minExp={0.001}
             maxExp={10}
+            className='h-15 w-2 thumb-h-1 thumb-r-1'
           />
         </div>
       </div>

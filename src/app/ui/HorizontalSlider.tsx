@@ -1,6 +1,5 @@
 import React from 'react'
 import './horizontalSlider.css'
-import { Bungee_Inline } from 'next/font/google'
 
 type HorizontalSliderProps = {
   value: number
@@ -53,7 +52,7 @@ export default function HorizontalSlider({
 
   return (
     <div className={`relative ${className}`}>
-      <div className='absolute left-0 top-0 h-full w-full bg-gray-100 rounded-xl overflow-clip pointer-events-none'>
+      <div className='absolute left-0 top-0 h-full w-full inset-ring-2 inset-ring-gray-300 bg-gray-100 rounded-xl overflow-clip pointer-events-none'>
         {trackCenterPercent === 0 && (
           <div
             className='absolute left-0  h-full bg-blue-400'

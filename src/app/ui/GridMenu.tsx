@@ -65,7 +65,7 @@ export default function GridMenu({ open, onClose, children }: GridMenuProps) {
             onChange={(e) => setRowsCount(Number(e.target.value))}
             className='w-full px-2 py-1 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
           >
-            {Array.from({ length: 16 - 3 + 1 }, (_, i) => 3 + i).map((n) => (
+            {Array.from({ length: 8 - 3 + 1 }, (_, i) => 3 + i).map((n) => (
               <option
                 key={n}
                 value={n}
@@ -82,7 +82,7 @@ export default function GridMenu({ open, onClose, children }: GridMenuProps) {
             onChange={(e) => setColumnsCount(Number(e.target.value))}
             className='w-full px-2 py-1 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
           >
-            {Array.from({ length: 16 - 5 + 1 }, (_, i) => 5 + i).map((n) => (
+            {Array.from({ length: 13 - 5 + 1 }, (_, i) => 5 + i).map((n) => (
               <option
                 key={n}
                 value={n}

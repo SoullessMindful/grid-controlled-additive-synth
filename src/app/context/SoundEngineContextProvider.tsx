@@ -24,6 +24,7 @@ import { createMixNode, MixNode } from '@/lib/audionodes/MixNode'
 import { defaultOctave, Octave } from '@/lib/octave'
 
 let ctx: AudioContext | undefined = undefined
+let globalLimiterNode: DynamicsCompressorNode | undefined = undefined
 let globalHighpassNode: BiquadFilterNode | undefined = undefined
 let globalLowpassNode: BiquadFilterNode | undefined = undefined
 let globalGainNode: GainNode | undefined = undefined
@@ -155,14 +156,23 @@ export default function SoundEngineContextProvider({
     }
 
     const now = ctx.currentTime
+    
+    if (!globalLimiterNode) {
+      globalLimiterNode = ctx.createDynamicsCompressor()
+      globalLimiterNode.knee.setValueAtTime(0, now)
+      globalLimiterNode.threshold.setValueAtTime(-3, now)
+      globalLimiterNode.attack.setValueAtTime(0.01, now)
+      globalLimiterNode.release.setValueAtTime(0.05, now)
+      globalLimiterNode.ratio.setValueAtTime(20, now)
+      globalLimiterNode.connect(ctx.destination)
+    }
 
     if (!globalHighpassNode) {
       globalHighpassNode = ctx.createBiquadFilter()
       globalHighpassNode.type = 'highpass'
       globalHighpassNode.Q.setValueAtTime(1.4, now)
       globalHighpassNode.frequency.setValueAtTime(20, now)
-      globalHighpassNode.channelCount = 2
-      globalHighpassNode.connect(ctx.destination)
+      globalHighpassNode.connect(globalLimiterNode)
     }
 
     if (!globalLowpassNode) {
@@ -170,14 +180,12 @@ export default function SoundEngineContextProvider({
       globalLowpassNode.type = 'lowpass'
       globalLowpassNode.Q.setValueAtTime(1.4, now)
       globalLowpassNode.frequency.setValueAtTime(20000, now)
-      globalLowpassNode.channelCount = 2
       globalLowpassNode.connect(globalHighpassNode)
     }
 
     if (!globalGainNode) {
       globalGainNode = ctx.createGain()
       globalGainNode.gain.setValueAtTime(volume, ctx.currentTime)
-      globalGainNode.channelCount = 2
       globalGainNode.connect(globalLowpassNode)
     }
 

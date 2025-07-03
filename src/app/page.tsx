@@ -1,5 +1,5 @@
 'use client'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import GridController from './ui/GridController'
 import GridMenu from './ui/GridMenu'
 import SynthMenu from './ui/SynthMenu'
@@ -9,13 +9,9 @@ import {
   BeakerIcon,
   Cog6ToothIcon,
 } from '@heroicons/react/24/solid'
-import { SoundEngineContext, SoundEngineContextType } from './context/SoundEngineContextProvider'
+import GainMeter from './ui/GainMeter'
 
 export default function Home() {
-  const {meter} = useContext(
-    SoundEngineContext
-  ) as SoundEngineContextType
-
   const [isGridMenuOpen, setIsGridMenuOpen] = useState(false)
   const [isSynthMenuOpen, setIsSynthMenuOpen] = useState(false)
 
@@ -46,7 +42,9 @@ export default function Home() {
             <ArrowsPointingInIcon className='size-2' />
           </span>
         </button>
-        <div className={`flex-1/2 text-center ${meter >= 0 ? 'text-red-500' : ''}`}>{meter.toFixed(2)}</div>
+        <div className='flex-1/2'>
+          <GainMeter />
+        </div>
         <button
           className='bg-gray-100 dark:bg-gray-900 p-1 rounded-md cursor-pointer'
           onClick={() => setIsSynthMenuOpen(true)}

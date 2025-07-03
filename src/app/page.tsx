@@ -15,45 +15,51 @@ export default function Home() {
   const [isSynthMenuOpen, setIsSynthMenuOpen] = useState(false)
 
   return (
-    <div className='flex flex-row justify-around items-center w-full h-full relative'>
-      <GridController />
-      <GridMenu
-        open={isGridMenuOpen}
-        onClose={() => setIsGridMenuOpen(false)}
-      />
-      <button
-        className='absolute top-0 left-0 z-29 bg-gray-100 dark:bg-gray-900 p-1 rounded-md'
-        onClick={() => setIsGridMenuOpen(true)}
-      >
-        <Cog6ToothIcon className='size-2' />
-      </button>
+    <div className='relative flex flex-col w-full h-full items-stretch'>
+      <div className='flex flex-row h-4 bg-gray-50 dark:bg-gray-950'>
+        <button
+          className='bg-gray-100 dark:bg-gray-900 p-1 rounded-md cursor-pointer'
+          onClick={() => setIsGridMenuOpen(true)}
+        >
+          <Cog6ToothIcon className='size-2' />
+        </button>
+        <div className='flex-1/2'></div>
+        <button
+          className='bg-gray-100 dark:bg-gray-900 p-1 rounded-md cursor-pointer'
+          onClick={() => {
+            if (document.fullscreenElement !== null) {
+              document.exitFullscreen()
+            } else {
+              document.documentElement.requestFullscreen()
+            }
+          }}
+        >
+          <span className='fullscreen-invisible'>
+            <ArrowsPointingOutIcon className='size-2' />
+          </span>
+          <span className='not-fullscreen-invisible'>
+            <ArrowsPointingInIcon className='size-2' />
+          </span>
+        </button>
+        <div className='flex-1/2'></div>
+        <button
+          className='bg-gray-100 dark:bg-gray-900 p-1 rounded-md cursor-pointer'
+          onClick={() => setIsSynthMenuOpen(true)}
+        >
+          <BeakerIcon className='size-2' />
+        </button>
+      </div>
+      <div className='flex-1 flex flex-column justify-around items-center'>
+        <GridController />
+      </div>
       <SynthMenu
         open={isSynthMenuOpen}
         onClose={() => setIsSynthMenuOpen(false)}
       />
-      <button
-        className='absolute top-0 right-0 z-29 bg-gray-100 dark:bg-gray-900 p-1 rounded-md'
-        onClick={() => setIsSynthMenuOpen(true)}
-      >
-        <BeakerIcon className='size-2' />
-      </button>
-      <button
-        className='absolute top-0 left-1/2 -translate-x-1/2 bg-gray-100 dark:bg-gray-900 p-1 rounded-md'
-        onClick={() => {
-          if (document.fullscreenElement !== null) {
-            document.exitFullscreen()
-          } else {
-            document.documentElement.requestFullscreen()
-          }
-        }}
-      >
-        <span className='fullscreen-invisible'>
-          <ArrowsPointingOutIcon className='size-2' />
-        </span>
-        <span className='not-fullscreen-invisible'>
-          <ArrowsPointingInIcon className='size-2' />
-        </span>
-      </button>
+      <GridMenu
+        open={isGridMenuOpen}
+        onClose={() => setIsGridMenuOpen(false)}
+      />
     </div>
   )
 }

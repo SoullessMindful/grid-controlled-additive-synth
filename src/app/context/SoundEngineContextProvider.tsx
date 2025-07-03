@@ -25,6 +25,7 @@ import { defaultOctave, Octave } from '@/lib/octave'
 
 let ctx: AudioContext | undefined = undefined
 let globalLimiterNode: DynamicsCompressorNode | undefined = undefined
+let globalMeterNode: AnalyserNode | undefined = undefined
 let globalHighpassNode: BiquadFilterNode | undefined = undefined
 let globalLowpassNode: BiquadFilterNode | undefined = undefined
 let globalGainNode: GainNode | undefined = undefined
@@ -63,6 +64,7 @@ export type SoundEngineContextType = {
   setVoices: React.Dispatch<React.SetStateAction<Voice[]>>
   setFilterParameters: React.Dispatch<React.SetStateAction<FilterParameters>>
   setSynthSettings: (synthSettings: SynthSettingsPreset) => void
+  meter: number
 }
 
 export const SoundEngineContext = createContext<
@@ -127,6 +129,8 @@ export default function SoundEngineContextProvider({
   )
   const [voices, setVoices] = useState<Voice[]>(defaultVoices)
 
+  const [meter, setMeter] = useState(-Infinity)
+
   const setSynthSettings = (preset: SynthSettingsPreset) => {
     setVolume(preset.volume)
     setHighpassFrequency(preset.highpassFilterFrequency)
@@ -156,7 +160,7 @@ export default function SoundEngineContextProvider({
     }
 
     const now = ctx.currentTime
-    
+
     if (!globalLimiterNode) {
       globalLimiterNode = ctx.createDynamicsCompressor()
       globalLimiterNode.knee.setValueAtTime(0, now)
@@ -167,12 +171,17 @@ export default function SoundEngineContextProvider({
       globalLimiterNode.connect(ctx.destination)
     }
 
+    if (!globalMeterNode) {
+      globalMeterNode = ctx.createAnalyser()
+    }
+
     if (!globalHighpassNode) {
       globalHighpassNode = ctx.createBiquadFilter()
       globalHighpassNode.type = 'highpass'
       globalHighpassNode.Q.setValueAtTime(1.4, now)
       globalHighpassNode.frequency.setValueAtTime(20, now)
       globalHighpassNode.connect(globalLimiterNode)
+      globalHighpassNode.connect(globalMeterNode)
     }
 
     if (!globalLowpassNode) {
@@ -223,6 +232,24 @@ export default function SoundEngineContextProvider({
 
     globalGainNode.gain.setValueAtTime(volume, ctx.currentTime)
   }, [volume])
+
+  useEffect(() => {
+    const meterAnimate = () => {
+      if (!globalMeterNode) return
+
+      const ftdd = new Float32Array(globalMeterNode.frequencyBinCount)
+      globalMeterNode.getFloatTimeDomainData(ftdd)
+      const absMax = ftdd
+        .map((v) => Math.abs(v))
+        .reduce((max, v) => (max >= v ? max : v))
+      const db = absMax > 0 ? 20 * Math.log10(absMax) : -Infinity
+      setMeter(db)
+
+      requestAnimationFrame(meterAnimate)
+    }
+
+    requestAnimationFrame(meterAnimate)
+  }, [])
 
   useEffect(() => {
     // Cleanup old padNodes
@@ -395,7 +422,10 @@ export default function SoundEngineContextProvider({
             const osc = currentCtx.createOscillator()
             const overtoneIndex = i + 1 // 1st harmonic is fundamental
             const freq =
-              440 * Math.pow(2, (padNode.note - 69) / 12) * overtoneIndex * 2**octave
+              440 *
+              Math.pow(2, (padNode.note - 69) / 12) *
+              overtoneIndex *
+              2 ** octave
             if (waveform.__type__ === 'BasicWaveform') {
               osc.type = waveform.waveform
             } else {
@@ -543,6 +573,7 @@ export default function SoundEngineContextProvider({
         filterParameters,
         setFilterParameters,
         setSynthSettings,
+        meter,
       }}
     >
       {children}

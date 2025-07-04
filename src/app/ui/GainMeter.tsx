@@ -34,7 +34,9 @@ export default function GainMeter() {
           <div
             className='h-full'
             style={{
-              width: `${(meter / 3 + BLOCK_COUNT - filledCount) * 100}%`,
+              width: `${
+                Math.max(0, meter / 3 + BLOCK_COUNT - filledCount) * 100
+              }%`,
               backgroundColor: `hsl(${
                 120 - (filledCount * 90) / (BLOCK_COUNT - 1)
               }, 50%, 50%)`,

@@ -7,7 +7,12 @@ export type Envelope = {
   flipPhase?: boolean
 }
 
-export type EnvelopeProperty = 'level' | 'attack' | 'decay' | 'sustain' | 'release'
+export type EnvelopeProperty =
+  | 'level'
+  | 'attack'
+  | 'decay'
+  | 'sustain'
+  | 'release'
 export const envelopeProperties: EnvelopeProperty[] = [
   'level',
   'attack',
@@ -16,9 +21,7 @@ export const envelopeProperties: EnvelopeProperty[] = [
   'release',
 ] as const
 
-export function envelopePropertyToString(
-  property: EnvelopeProperty
-): string {
+export function envelopePropertyToString(property: EnvelopeProperty): string {
   switch (property) {
     case 'level':
       return 'Level'
@@ -59,14 +62,12 @@ export const defaultFirstOvertoneEnvelope: Envelope = {
   flipPhase: false,
 } as const
 
-export function defaultOvertoneEnvelopes(
-  count: number
-): Envelope[] {
+export function defaultOvertoneEnvelopes(count: number): Envelope[] {
   return Array.from({ length: count }, (_, i) =>
     i === 0 ? defaultFirstOvertoneEnvelope : defaultOvertoneEnvelope
   )
 }
 
-export function phase(env: Envelope): 1 | -1 {
+export function envelopePhase(env: Envelope): 1 | -1 {
   return env.flipPhase === true ? -1 : 1
 }

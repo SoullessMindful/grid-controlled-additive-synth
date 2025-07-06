@@ -12,14 +12,14 @@ import {
   defaultOvertoneEnvelope,
   defaultOvertoneEnvelopes,
   Envelope,
-  phase,
+  envelopePhase,
 } from '@/lib/envelope'
 import {
   defaultFilterParameters,
   FilterParameters,
 } from '@/lib/filterParameters'
 import { SynthSettingsPreset } from '@/lib/synthSettingsPreset'
-import { defaultVoices, Voice } from '@/lib/voice'
+import { defaultVoices, Voice, voicePhase } from '@/lib/voice'
 import { createMixNode, MixNode } from '@/lib/audionodes/MixNode'
 import { defaultOctave, Octave } from '@/lib/octave'
 
@@ -316,8 +316,6 @@ export default function SoundEngineContextProvider({
     const currentCtx = ctx
     const currentGlobalGainNode = globalGainNode
 
-    // Use a consistent time reference
-    // const now = currentCtx.currentTime
     const scheduler: ((now: number) => void)[] = []
     noteOff(row, column)
 
@@ -446,7 +444,10 @@ export default function SoundEngineContextProvider({
                 now + env.attack + env.decay
               )
 
-              flipGain.gain.setValueAtTime(voice.level * phase(env), now)
+              flipGain.gain.setValueAtTime(
+                voice.level * envelopePhase(env) * voicePhase(voice),
+                now
+              )
 
               osc.start(now)
             })

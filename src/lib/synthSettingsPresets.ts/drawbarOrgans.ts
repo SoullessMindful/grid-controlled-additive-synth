@@ -32,6 +32,7 @@ export const drawbarOrgans: SynthSettingsPreset = {
       pan: 0,
       delay: 0,
       active: true,
+      flipPhase: false,
     },
     {
       level: 0.75,
@@ -39,6 +40,7 @@ export const drawbarOrgans: SynthSettingsPreset = {
       pan: 0,
       delay: 0.002,
       active: true,
+      flipPhase: false,
     },
   ],
   globalEnvelope: { ...defaultGlobalEnvelope, level: 0.2 },

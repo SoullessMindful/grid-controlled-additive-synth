@@ -6,7 +6,7 @@ import {
   SoundEngineContextType,
 } from '@/app/context/SoundEngineContextProvider'
 import HorizontalSlider from '../HorizontalSlider'
-import { PlusIcon } from '@heroicons/react/24/solid'
+import { NoSymbolIcon, PlusIcon } from '@heroicons/react/24/solid'
 import { TrashIcon } from '@heroicons/react/24/solid'
 import { defaultVoice, MAX_VOICES_COUNT } from '@/lib/voice'
 import { availableOctaves, displayOctave } from '@/lib/octave'
@@ -54,15 +54,17 @@ export default function SynthMenuGlobalTab() {
                 )}
               </div>
             ))}
-            {voices.length < MAX_VOICES_COUNT && <div className='text-center'>
-              <PlusIcon
-                className='inline size-2.5 p-0.5 cursor-pointer'
-                onClick={() => setVoices([...voices, defaultVoice])}
-              />
-            </div>}
+            {voices.length < MAX_VOICES_COUNT && (
+              <div className='text-center'>
+                <PlusIcon
+                  className='inline size-2.5 p-0.5 cursor-pointer'
+                  onClick={() => setVoices([...voices, defaultVoice])}
+                />
+              </div>
+            )}
           </div>
           <div className='pl-0.5 grid grid-cols-[5rem_15rem] grid-rows-5 items-center gap-0.5'>
-            <div className='col-span-2'>
+            <div>
               <label className='flex flex-row items-center'>
                 <CheckButton
                   value={voices[selectedVoice].active}
@@ -77,6 +79,32 @@ export default function SynthMenuGlobalTab() {
                 />
                 <span>Active</span>
               </label>
+            </div>
+            <div
+              className='cursor-pointer flex flex-row items-center'
+              onClick={() => {
+                const newVoices = [...voices]
+                const newVoice = { ...newVoices[selectedVoice] }
+
+                newVoice.flipPhase = !newVoice.flipPhase
+                newVoices[selectedVoice] = newVoice
+                setVoices(newVoices)
+              }}
+            >
+              <NoSymbolIcon
+                className={`size-1 inline mx-0.5 ${
+                  voices[selectedVoice].flipPhase
+                    ? 'stroke-black dark:stroke-white'
+                    : 'stroke-gray-400 dark:stroke-gray-600'
+                }`}
+              />
+              <span
+                className={`${
+                  voices[selectedVoice].flipPhase
+                    ? ''
+                    : 'text-gray-400 dark:text-gray-600'
+                }`}
+              >Flip Phase</span>
             </div>
             <div>
               <label>Level</label>

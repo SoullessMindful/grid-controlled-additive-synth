@@ -48,7 +48,12 @@ export default function SynthMenuGlobalTab() {
                     className='size-1 cursor-pointer'
                     onClick={(e) => {
                       e.stopPropagation()
+
                       setVoices(voices.filter((_, ii) => i !== ii))
+
+                      if (i < selectedVoice || (i === selectedVoice && i === voices.length - 1)) {
+                        setSelectedVoice(selectedVoice - 1)
+                      }
                     }}
                   />
                 )}
@@ -58,7 +63,10 @@ export default function SynthMenuGlobalTab() {
               <div className='text-center'>
                 <PlusIcon
                   className='inline size-2.5 p-0.5 cursor-pointer'
-                  onClick={() => setVoices([...voices, defaultVoice])}
+                  onClick={() => {
+                    setVoices([...voices, defaultVoice])
+                    setSelectedVoice(voices.length)
+                  }}
                 />
               </div>
             )}
@@ -104,7 +112,9 @@ export default function SynthMenuGlobalTab() {
                     ? ''
                     : 'text-gray-400 dark:text-gray-600'
                 }`}
-              >Flip Phase</span>
+              >
+                Flip Phase
+              </span>
             </div>
             <div>
               <label>Level</label>

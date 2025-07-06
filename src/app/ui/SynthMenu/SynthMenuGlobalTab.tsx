@@ -1,15 +1,14 @@
 'use client'
 
-import { useContext } from 'react'
+import { Fragment, useContext, useState } from 'react'
 import {
   SoundEngineContext,
   SoundEngineContextType,
 } from '@/app/context/SoundEngineContextProvider'
 import HorizontalSlider from '../HorizontalSlider'
-import { PlusIcon, StopIcon as StopIconSolid } from '@heroicons/react/24/solid'
-import { StopIcon as StopIconOutline } from '@heroicons/react/24/outline'
+import { PlusIcon } from '@heroicons/react/24/solid'
 import { TrashIcon } from '@heroicons/react/24/solid'
-import { defaultVoice } from '@/lib/voice'
+import { defaultVoice, MAX_VOICES_COUNT } from '@/lib/voice'
 import { availableOctaves, displayOctave } from '@/lib/octave'
 import { CheckButton } from '../CheckButton'
 
@@ -27,144 +26,141 @@ export default function SynthMenuGlobalTab() {
     setVoices,
   } = useContext(SoundEngineContext) as SoundEngineContextType
 
+  const [selectedVoice, setSelectedVoice] = useState(0)
+
   return (
     <div className='px-1 py-1 flex flex-col items-center justify-center'>
       <div className='mb-2 px-1'>
         <div className='mb-0.5 w-full'>Voices</div>
-        <div className='h-30 p-1 bg-gray-200 dark:bg-gray-800 rounded-2xl'>
-          {voices.map((voice, i) => (
-            <div
-              key={`voice ${i}`}
-              className='mb-1 w-full'
-            >
-              <div className='grid grid-cols-[3rem,5rem,15rem,5rem,15rem,auto] grid-rows-2 gap-0.5 items-center'>
-                <div className='row-span-2'>
-                  <label>
-                    <CheckButton
-                      value={voice.active}
-                      onChange={(newActive) => {
-                        const newVoices = [...voices]
-                        const newVoice = { ...newVoices[i] }
-
-                        newVoice.active = newActive
-                        newVoices[i] = newVoice
-                        setVoices(newVoices)
-                      }}
-                    />
-                  </label>
-                </div>
-                <div>
-                  <label>Level</label>
-                </div>
-                <div>
-                  <HorizontalSlider
-                    value={voice.level}
-                    onChange={(newLevel) => {
-                      const newVoices = [...voices]
-                      const newVoice = { ...newVoices[i] }
-
-                      newVoice.level = newLevel
-                      newVoices[i] = newVoice
-                      setVoices(newVoices)
+        <div className='h-20 p-1 flex flex-row justify-start items-start bg-gray-200 dark:bg-gray-800 rounded-2xl'>
+          <div className='w-8 h-full pr-0.5 border-r-2 overflow-y-auto border-r-gray-700 dark:border-gray-300'>
+            {voices.map((_, i) => (
+              <div
+                key={`voice ${i}`}
+                className={`w-full p-0.5 flex justify-between items-center ${
+                  selectedVoice === i ? 'bg-gray-300 dark:bg-gray-700' : ''
+                } cursor-pointer`}
+                onClick={() => setSelectedVoice(i)}
+              >
+                {i === 0 ? 'Main Voice' : `Voice ${i}`}
+                {i !== 0 && (
+                  <TrashIcon
+                    className='size-1 cursor-pointer'
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setVoices(voices.filter((_, ii) => i !== ii))
                     }}
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    className='w-15 h-2 thumb-w-1 thumb-r-1'
                   />
-                </div>
-                <div className='col-start-2 row-start-2'>
-                  <label>Pan</label>
-                </div>
-                <div className='col-start-3 row-start-2'>
-                  <HorizontalSlider
-                    value={voice.pan}
-                    onChange={(newPan) => {
-                      const newVoices = [...voices]
-                      const newVoice = { ...newVoices[i] }
-
-                      newVoice.pan = newPan
-                      newVoices[i] = newVoice
-                      setVoices(newVoices)
-                    }}
-                    min={-1}
-                    max={1}
-                    trackCenter={0}
-                    step={0.05}
-                    className='w-15 h-2 thumb-w-1 thumb-r-1'
-                  />
-                </div>
-                <div className='col-start-4 row-start-1'>
-                  <label>Detune</label>
-                </div>
-                <div className='col-start-5 row-start-1'>
-                  <HorizontalSlider
-                    value={voice.detune}
-                    onChange={(newDetune) => {
-                      const newVoices = [...voices]
-                      const newVoice = { ...newVoices[i] }
-
-                      newVoice.detune = newDetune
-                      newVoices[i] = newVoice
-                      setVoices(newVoices)
-                    }}
-                    min={-15}
-                    max={15}
-                    trackCenter={0}
-                    step={1}
-                    className='w-15 h-2 thumb-w-1 thumb-r-1'
-                  />
-                </div>
-                <div className='col-start-4 row-start-2'>
-                  <label>Delay</label>
-                </div>
-                <div className='col-start-5 row-start-2'>
-                  <HorizontalSlider
-                    value={voice.delay}
-                    onChange={(newDelay) => {
-                      const newVoices = [...voices]
-                      const newVoice = { ...newVoices[i] }
-
-                      newVoice.delay = newDelay
-                      newVoices[i] = newVoice
-                      setVoices(newVoices)
-                    }}
-                    min={0}
-                    max={0.02}
-                    step={0.0001}
-                    className='w-15 h-2 thumb-w-1 thumb-r-1'
-                  />
-                </div>
-                <div className='row-span-2 col-start-6 row-start-1'>
-                  <div className='size-1.5'>
-                    {i !== 0 && (
-                      <TrashIcon
-                        className='size-1.5 inline cursor-pointer'
-                        onClick={() =>
-                          setVoices(voices.filter((_, ii) => i !== ii))
-                        }
-                      />
-                    )}
-                  </div>
-                </div>
+                )}
               </div>
-              <span>
-                <div>
-                  <span className='mr-1'></span>
-                  <span className='mr-1'></span>
-                </div>
-              </span>
-              <span className='min-w-2'></span>
-            </div>
-          ))}
-          {voices.length < 5 && (
-            <div className='w-full text-center'>
+            ))}
+            {voices.length < MAX_VOICES_COUNT && <div className='text-center'>
               <PlusIcon
-                className='inline size-2 cursor-pointer'
+                className='inline size-2.5 p-0.5 cursor-pointer'
                 onClick={() => setVoices([...voices, defaultVoice])}
               />
+            </div>}
+          </div>
+          <div className='pl-0.5 grid grid-cols-[5rem_15rem] grid-rows-5 items-center gap-0.5'>
+            <div className='col-span-2'>
+              <label className='flex flex-row items-center'>
+                <CheckButton
+                  value={voices[selectedVoice].active}
+                  onChange={(newActive) => {
+                    const newVoices = [...voices]
+                    const newVoice = { ...newVoices[selectedVoice] }
+
+                    newVoice.active = newActive
+                    newVoices[selectedVoice] = newVoice
+                    setVoices(newVoices)
+                  }}
+                />
+                <span>Active</span>
+              </label>
             </div>
-          )}
+            <div>
+              <label>Level</label>
+            </div>
+            <div>
+              <HorizontalSlider
+                value={voices[selectedVoice].level}
+                onChange={(newLevel) => {
+                  const newVoices = [...voices]
+                  const newVoice = { ...newVoices[selectedVoice] }
+
+                  newVoice.level = newLevel
+                  newVoices[selectedVoice] = newVoice
+                  setVoices(newVoices)
+                }}
+                min={0}
+                max={1}
+                step={0.01}
+                className='w-15 h-2 thumb-w-1 thumb-r-1'
+              />
+            </div>
+            <div>
+              <label>Pan</label>
+            </div>
+            <div>
+              <HorizontalSlider
+                value={voices[selectedVoice].pan}
+                onChange={(newPan) => {
+                  const newVoices = [...voices]
+                  const newVoice = { ...newVoices[selectedVoice] }
+
+                  newVoice.pan = newPan
+                  newVoices[selectedVoice] = newVoice
+                  setVoices(newVoices)
+                }}
+                min={-1}
+                max={1}
+                trackCenter={0}
+                step={0.05}
+                className='w-15 h-2 thumb-w-1 thumb-r-1'
+              />
+            </div>
+            <div>
+              <label>Detune</label>
+            </div>
+            <div>
+              <HorizontalSlider
+                value={voices[selectedVoice].detune}
+                onChange={(newDetune) => {
+                  const newVoices = [...voices]
+                  const newVoice = { ...newVoices[selectedVoice] }
+
+                  newVoice.detune = newDetune
+                  newVoices[selectedVoice] = newVoice
+                  setVoices(newVoices)
+                }}
+                min={-15}
+                max={15}
+                trackCenter={0}
+                step={1}
+                className='w-15 h-2 thumb-w-1 thumb-r-1'
+              />
+            </div>
+            <div>
+              <label>Delay</label>
+            </div>
+            <div>
+              <HorizontalSlider
+                value={voices[selectedVoice].delay}
+                onChange={(newDelay) => {
+                  const newVoices = [...voices]
+                  const newVoice = { ...newVoices[selectedVoice] }
+
+                  newVoice.delay = newDelay
+                  newVoices[selectedVoice] = newVoice
+                  setVoices(newVoices)
+                }}
+                min={0}
+                max={0.02}
+                step={0.0001}
+                className='w-15 h-2 thumb-w-1 thumb-r-1'
+              />
+            </div>
+          </div>
         </div>
       </div>
       <div className='mb-2'>
@@ -175,7 +171,7 @@ export default function SynthMenuGlobalTab() {
             const selected = availableOctaves.find(
               (oct) => oct === parseInt(e.target.value)
             )
-            fetch('/LOG/OCTAVE/'+e.target.value+'/'+selected)
+
             if (selected !== undefined) setOctave(selected)
           }}
           className='w-12 h-2.5 px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'

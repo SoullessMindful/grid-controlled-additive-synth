@@ -23,3 +23,5 @@ export const defaultVoice: Voice = {
 }
 
 export const defaultVoices = [defaultFirstVoice]
+
+export const MAX_VOICES_COUNT = 7

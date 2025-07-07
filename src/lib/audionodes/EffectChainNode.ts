@@ -15,6 +15,8 @@ export class EffectChainNode {
     this.outputNode.gain.value = 1
 
     this.effectNodes = []
+
+    this.internallyConnect()
   }
 
   connect(node: AudioNode) {

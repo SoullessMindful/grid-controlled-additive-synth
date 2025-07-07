@@ -48,3 +48,7 @@ export class DelayEffectNode {
     }
   }
 }
+
+export function createDelayEffectNode(ctx: BaseAudioContext): DelayEffectNode {
+  return new DelayEffectNode(ctx)
+}

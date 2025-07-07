@@ -22,6 +22,12 @@ import { SynthSettingsPreset } from '@/lib/synthSettingsPreset'
 import { defaultVoices, Voice, voicePhase } from '@/lib/voice'
 import { createMixNode, MixNode } from '@/lib/audionodes/MixNode'
 import { defaultOctave, Octave } from '@/lib/octave'
+import {
+  createEffectChainNode,
+  EffectChainNode,
+  EffectNode,
+  EffectNodeSettings,
+} from '@/lib/audionodes/EffectChainNode'
 
 let ctx: AudioContext | undefined = undefined
 let globalLimiterNode: DynamicsCompressorNode | undefined = undefined
@@ -29,6 +35,7 @@ let globalMeterNode: AnalyserNode | undefined = undefined
 let globalHighpassNode: BiquadFilterNode | undefined = undefined
 let globalLowpassNode: BiquadFilterNode | undefined = undefined
 let globalGainNode: GainNode | undefined = undefined
+let effectChain: EffectChainNode | undefined = undefined
 
 export type SoundEngineContextType = {
   noteOn: (row: number, column: number) => void
@@ -40,6 +47,11 @@ export type SoundEngineContextType = {
   setHighpassFrequency: (volume: number) => void
   lowpassFrequency: number
   setLowpassFrequency: (volume: number) => void
+  effectSettings: EffectNodeSettings[]
+  updateEffectSettings: () => void
+  addEffect: (createEffectNode: (ctx: BaseAudioContext) => EffectNode, i?: number) => void
+  removeEffect: (i: number) => void
+  switchEffects: (i1: number, i2: number) => void
   octave: Octave
   setOctave: React.Dispatch<React.SetStateAction<Octave>>
   level: number
@@ -111,6 +123,12 @@ export default function SoundEngineContextProvider({
   const [highpassFrequency, setHighpassFrequency] = useState(20)
   const [lowpassFrequency, setLowpassFrequency] = useState(20000)
   const [octave, setOctave] = useState(defaultOctave)
+  const [effectSettings, setEffectSettings] = useState<EffectNodeSettings[]>([])
+  const updateEffectSettings = () => {
+    if (effectChain) {
+      setEffectSettings(effectChain.settings)
+    }
+  }
   const [level, setLevel] = useState(0.5)
   const [attack, setAttack] = useState(0.01)
   const [decay, setDecay] = useState(0.1)
@@ -206,10 +224,15 @@ export default function SoundEngineContextProvider({
       globalLowpassNode.connect(globalHighpassNode)
     }
 
+    if (!effectChain) {
+      effectChain = createEffectChainNode(ctx)
+      effectChain.connect(globalLowpassNode)
+    }
+
     if (!globalGainNode) {
       globalGainNode = ctx.createGain()
       globalGainNode.gain.setValueAtTime(volume, ctx.currentTime)
-      globalGainNode.connect(globalLowpassNode)
+      globalGainNode.connect(effectChain.input)
     }
 
     const processedCustom = customWaveforms.map(
@@ -548,6 +571,22 @@ export default function SoundEngineContextProvider({
         setLowpassFrequency,
         octave,
         setOctave,
+        effectSettings,
+        updateEffectSettings,
+        addEffect: (createEffectNode, i) => {
+          if (!ctx || !effectChain) return
+
+          effectChain.addEffect(createEffectNode(ctx), i)
+          updateEffectSettings()
+        },
+        removeEffect: (i) => {
+          effectChain?.removeEffect(i)
+          updateEffectSettings()
+        },
+        switchEffects: (i1, i2) => {
+          effectChain?.switchEffects(i1, i2)
+          updateEffectSettings()
+        },
         level,
         setLevel,
         attack,

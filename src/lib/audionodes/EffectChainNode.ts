@@ -80,3 +80,7 @@ export class EffectChainNode {
     this.effectNodes[this.effectNodes.length - 1].connect(this.outputNode)
   }
 }
+
+export function createEffectChainNode(ctx: BaseAudioContext): EffectChainNode {
+  return new EffectChainNode(ctx)
+}

@@ -11,6 +11,7 @@ import { TrashIcon } from '@heroicons/react/24/solid'
 import { defaultVoice, MAX_VOICES_COUNT } from '@/lib/voice'
 import { availableOctaves, displayOctave } from '@/lib/octave'
 import { CheckButton } from '../CheckButton'
+import EffectChainControl from './SynthMenuGlobal/EffectChainControl'
 
 export default function SynthMenuGlobalTab() {
   const {
@@ -33,7 +34,7 @@ export default function SynthMenuGlobalTab() {
       <div className='mb-2 px-1'>
         <div className='mb-0.5 w-full'>Voices</div>
         <div className='h-20 p-1 flex flex-row justify-start items-start bg-gray-200 dark:bg-gray-800 rounded-2xl'>
-          <div className='w-8 h-full pr-0.5 border-r-2 overflow-y-auto border-r-gray-700 dark:border-gray-300'>
+          <div className='w-12 h-full pr-0.5 border-r-2 overflow-y-auto border-r-gray-700 dark:border-gray-300'>
             {voices.map((_, i) => (
               <div
                 key={`voice ${i}`}
@@ -201,6 +202,7 @@ export default function SynthMenuGlobalTab() {
           </div>
         </div>
       </div>
+      <EffectChainControl />
       <div className='mb-2'>
         <label>Octave </label>
         <select

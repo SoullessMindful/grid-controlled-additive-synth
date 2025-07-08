@@ -24,16 +24,19 @@ export class EQEffectNode {
     this.lowShelfNode.type = 'lowshelf'
     this.lowShelfNode.Q.value = 1.4
     this.lowShelfNode.gain.value = 0
+    this.lowShelfNode.frequency.value = 200
 
     this.midBandNode = ctx.createBiquadFilter()
     this.midBandNode.type = 'peaking'
     this.midBandNode.Q.value = 1.4
     this.midBandNode.gain.value = 0
+    this.midBandNode.frequency.value = 800
 
     this.highShelfNode = ctx.createBiquadFilter()
     this.highShelfNode.type = 'highshelf'
     this.highShelfNode.Q.value = 1.4
-    this.midBandNode.gain.value = 0
+    this.highShelfNode.gain.value = 0
+    this.highShelfNode.frequency.value = 3200
 
     this.makeupGainNode = ctx.createGain()
     this.makeupGainNode.gain.value = 1
@@ -64,4 +67,8 @@ export class EQEffectNode {
       makeupGain: this.makeupGainNode.gain,
     }
   }
+}
+
+export function createEQEffectNode(ctx: BaseAudioContext): EQEffectNode {
+  return new EQEffectNode(ctx)
 }

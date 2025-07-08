@@ -1,7 +1,9 @@
-import { DelayEffectNode, DelayEffectNodeSettings } from './DelayEffectNode'
+import { createDelayEffectNode, DelayEffectNode, DelayEffectNodeSettings } from './DelayEffectNode'
+import { createEQEffectNode, EQEffectNode, EQEffectNodeSettings } from './EQEffectNode'
 
-export type EffectNode = DelayEffectNode
-export type EffectNodeSettings = DelayEffectNodeSettings
+export type EffectNode = DelayEffectNode | EQEffectNode
+export type EffectNodeType = 'delay' | 'eq'
+export type EffectNodeSettings = DelayEffectNodeSettings | EQEffectNodeSettings
 
 export class EffectChainNode {
   input: GainNode
@@ -27,7 +29,17 @@ export class EffectChainNode {
     this.outputNode.disconnect()
   }
 
-  addEffect(effect: EffectNode, i: number = this.effectNodes.length) {
+  addEffect(effectType: EffectNodeType, i: number = this.effectNodes.length) {
+    let effect: EffectNode
+    switch (effectType) {
+      case 'eq':
+        effect = createEQEffectNode(this.input.context)
+        break
+      case 'delay':
+        effect = createDelayEffectNode(this.input.context)
+        break
+    }
+
     const beforeEffectNodes = this.effectNodes.filter((_, j) => j < i)
     const afterEffectNodes = this.effectNodes.filter((_, j) => j >= i)
 
@@ -43,6 +55,11 @@ export class EffectChainNode {
     this.internallyDisconnect()
     this.effectNodes = [...beforeEffectNodes, ...afterEffectNodes]
     this.internallyConnect()
+  }
+  
+  changeEffect(effectType: EffectNodeType, i: number) {
+    this.removeEffect(i)
+    this.addEffect(effectType, i)
   }
 
   switchEffects(i1: number, i2: number) {

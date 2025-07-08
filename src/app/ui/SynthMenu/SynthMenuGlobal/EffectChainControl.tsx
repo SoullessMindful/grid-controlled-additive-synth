@@ -5,8 +5,9 @@ import {
 import { createDelayEffectNode } from '@/lib/audionodes/DelayEffectNode'
 import { EffectNodeSettings } from '@/lib/audionodes/EffectChainNode'
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/solid'
-import { Fragment, JSX, ReactElement, useContext, useState } from 'react'
+import { Fragment, JSX, useContext, useState } from 'react'
 import HorizontalSlider from '../../HorizontalSlider'
+import { createEQEffectNode } from '@/lib/audionodes/EQEffectNode'
 
 export default function EffectChainControl() {
   const {
@@ -14,6 +15,7 @@ export default function EffectChainControl() {
     updateEffectSettings,
     addEffect,
     removeEffect,
+    changeEffect,
     switchEffects,
   } = useContext(SoundEngineContext) as SoundEngineContextType
 
@@ -22,7 +24,7 @@ export default function EffectChainControl() {
   return (
     <div className='mb-2 px-1'>
       <div className='mb-0.5 w-full'>Effects</div>
-      <div className='h-20 p-1 flex flex-row justify-start items-start bg-gray-200 dark:bg-gray-800 rounded-2xl'>
+      <div className='h-22 p-1 flex flex-row justify-start items-start bg-gray-200 dark:bg-gray-800 rounded-2xl'>
         <div className='w-12 h-full pr-0.5 border-r-2 overflow-y-auto border-r-gray-700 dark:border-gray-300'>
           {effectSettings.map((es, i) => (
             <div
@@ -47,17 +49,44 @@ export default function EffectChainControl() {
             <PlusIcon
               className='inline size-2.5 p-0.5 cursor-pointer'
               onClick={() => {
-                addEffect(createDelayEffectNode)
+                addEffect('delay')
               }}
             />
           </div>
         </div>
-        <div className='pl-0.5 grid grid-cols-[5rem_15rem] grid-rows-5 items-center gap-0.5'>
-          {effectSettings[selectedEffect] &&
-            effectNodeControl(
-              effectSettings[selectedEffect],
-              updateEffectSettings
-            )}
+        <div className='pl-0.5 grid grid-cols-[8rem_15rem] grid-rows-8 items-center gap-0.5'>
+          {effectSettings[selectedEffect] && (
+            <Fragment>
+              <div className='col-span-2'>
+                <select
+                  value={effectSettings[selectedEffect].__type__}
+                  onChange={(e) => {
+                    const newValue = e.target.value
+
+                    if (newValue === effectSettings[selectedEffect].__type__)
+                      return
+
+                    switch (newValue) {
+                      case 'eq':
+                        changeEffect('eq', selectedEffect)
+                        break
+                      case 'delay':
+                        changeEffect('delay', selectedEffect)
+                        break
+                    }
+                  }}
+                  className='w-8 h-2 px-1  rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
+                >
+                  <option value='delay'>Delay</option>
+                  <option value='eq'>Equalizer</option>
+                </select>
+              </div>
+              {effectNodeControl(
+                effectSettings[selectedEffect],
+                updateEffectSettings
+              )}
+            </Fragment>
+          )}
         </div>
       </div>
     </div>
@@ -72,7 +101,6 @@ function effectNodeControl(
     case 'delay':
       return (
         <Fragment>
-          <div className='col-span-2'>{displayEffectName(es)}</div>
           <div>Time</div>
           <div>
             <HorizontalSlider
@@ -120,6 +148,121 @@ function effectNodeControl(
           </div>
         </Fragment>
       )
+    case 'eq':
+      return (
+        <Fragment>
+          <div>Lowshelf</div>
+          <div>
+            <HorizontalSlider
+              value={es.lowShelfGain.value}
+              onChange={(newGain) => {
+                es.lowShelfGain.value = newGain
+
+                updateEffectSettings()
+              }}
+              min={-15}
+              max={15}
+              step={1}
+              trackCenter={0}
+              className='w-15 h-2 thumb-w-1 thumb-r-1'
+            />
+          </div>
+          <div className='pl-1'>frequency</div>
+          <div>
+            <HorizontalSlider
+              value={es.lowShelfFreq.value}
+              onChange={(newFrequency) => {
+                es.lowShelfFreq.value = newFrequency
+
+                updateEffectSettings()
+              }}
+              exponential
+              minExp={20}
+              maxExp={20000}
+              className='w-15 h-2 thumb-w-1 thumb-r-1'
+            />
+          </div>
+          <div>Band</div>
+          <div>
+            <HorizontalSlider
+              value={es.midBandGain.value}
+              onChange={(newGain) => {
+                es.midBandGain.value = newGain
+
+                updateEffectSettings()
+              }}
+              min={-15}
+              max={15}
+              step={1}
+              trackCenter={0}
+              className='w-15 h-2 thumb-w-1 thumb-r-1'
+            />
+          </div>
+          <div className='pl-1'>frequency</div>
+          <div>
+            <HorizontalSlider
+              value={es.midBandFreq.value}
+              onChange={(newFrequency) => {
+                es.midBandFreq.value = newFrequency
+
+                updateEffectSettings()
+              }}
+              exponential
+              minExp={20}
+              maxExp={20000}
+              className='w-15 h-2 thumb-w-1 thumb-r-1'
+            />
+          </div>
+          <div>Highshelf</div>
+          <div>
+            <HorizontalSlider
+              value={es.highShelfGain.value}
+              onChange={(newGain) => {
+                es.highShelfGain.value = newGain
+
+                updateEffectSettings()
+              }}
+              min={-15}
+              max={15}
+              step={1}
+              trackCenter={0}
+              className='w-15 h-2 thumb-w-1 thumb-r-1'
+            />
+          </div>
+          <div className='pl-1'>frequency</div>
+          <div>
+            <HorizontalSlider
+              value={es.highShelfFreq.value}
+              onChange={(newFrequency) => {
+                es.highShelfFreq.value = newFrequency
+
+                updateEffectSettings()
+              }}
+              exponential
+              minExp={20}
+              maxExp={20000}
+              className='w-15 h-2 thumb-w-1 thumb-r-1'
+            />
+          </div>
+          <div>Gain</div>
+          <div>
+            <HorizontalSlider
+              value={20 * Math.log10(es.makeupGain.value)}
+              onChange={(newGainDB) => {
+                const newGain = Math.pow(10, newGainDB * 0.05)
+                es.makeupGain.value = newGain
+
+                updateEffectSettings()
+              }}
+              min={-15}
+              max={15}
+              step={1}
+              trackCenter={0}
+              className='w-15 h-2 thumb-w-1 thumb-r-1'
+            />
+          </div>
+        </Fragment>
+      )
   }
 }
 
@@ -127,5 +270,7 @@ function displayEffectName(es: EffectNodeSettings): string {
   switch (es.__type__) {
     case 'delay':
       return 'Delay'
+    case 'eq':
+      return 'Equalizer'
   }
 }

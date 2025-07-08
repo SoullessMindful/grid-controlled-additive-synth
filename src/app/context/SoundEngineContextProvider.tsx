@@ -27,6 +27,7 @@ import {
   EffectChainNode,
   EffectNode,
   EffectNodeSettings,
+  EffectNodeType,
 } from '@/lib/audionodes/EffectChainNode'
 
 let ctx: AudioContext | undefined = undefined
@@ -49,8 +50,9 @@ export type SoundEngineContextType = {
   setLowpassFrequency: (volume: number) => void
   effectSettings: EffectNodeSettings[]
   updateEffectSettings: () => void
-  addEffect: (createEffectNode: (ctx: BaseAudioContext) => EffectNode, i?: number) => void
+  addEffect: (effectType: EffectNodeType, i?: number) => void
   removeEffect: (i: number) => void
+  changeEffect: (effectType: EffectNodeType, i: number) => void
   switchEffects: (i1: number, i2: number) => void
   octave: Octave
   setOctave: React.Dispatch<React.SetStateAction<Octave>>
@@ -573,14 +575,16 @@ export default function SoundEngineContextProvider({
         setOctave,
         effectSettings,
         updateEffectSettings,
-        addEffect: (createEffectNode, i) => {
-          if (!ctx || !effectChain) return
-
-          effectChain.addEffect(createEffectNode(ctx), i)
+        addEffect: (effectType, i) => {
+          effectChain?.addEffect(effectType, i)
           updateEffectSettings()
         },
         removeEffect: (i) => {
           effectChain?.removeEffect(i)
+          updateEffectSettings()
+        },
+        changeEffect: (effectType, i) => {
+          effectChain?.changeEffect(effectType, i)
           updateEffectSettings()
         },
         switchEffects: (i1, i2) => {

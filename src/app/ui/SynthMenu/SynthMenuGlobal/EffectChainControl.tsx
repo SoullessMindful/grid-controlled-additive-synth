@@ -4,7 +4,12 @@ import {
 } from '@/app/context/SoundEngineContextProvider'
 import { createDelayEffectNode } from '@/lib/audionodes/DelayEffectNode'
 import { EffectNodeSettings } from '@/lib/audionodes/EffectChainNode'
-import { PlusIcon, TrashIcon } from '@heroicons/react/24/solid'
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  PlusIcon,
+  TrashIcon,
+} from '@heroicons/react/24/solid'
 import { Fragment, JSX, useContext, useState } from 'react'
 import HorizontalSlider from '../../HorizontalSlider'
 import { createEQEffectNode } from '@/lib/audionodes/EQEffectNode'
@@ -35,14 +40,38 @@ export default function EffectChainControl() {
               onClick={() => setSelectedEffect(i)}
             >
               {displayEffectName(es)}
-              <TrashIcon
-                className='size-1 cursor-pointer'
-                onClick={(e) => {
-                  e.stopPropagation()
+              <span>
+                <ChevronDownIcon
+                  className='inline size-1.5 cursor-pointer'
+                  onClick={(e) => {
+                    e.stopPropagation()
 
-                  removeEffect(i)
-                }}
-              />
+                    if (i + 1 >= effectSettings.length) return
+
+                    switchEffects(i, i + 1)
+                    setSelectedEffect(i + 1)
+                  }}
+                />
+                <ChevronUpIcon
+                  className='inline size-1.5 cursor-pointer'
+                  onClick={(e) => {
+                    e.stopPropagation()
+
+                    if (i - 1 < 0) return
+
+                    switchEffects(i, i - 1)
+                    setSelectedEffect(i - 1)
+                  }}
+                />
+                <TrashIcon
+                  className='inline size-1 cursor-pointer'
+                  onClick={(e) => {
+                    e.stopPropagation()
+
+                    removeEffect(i)
+                  }}
+                />
+              </span>
             </div>
           ))}
           <div className='text-center'>
@@ -77,7 +106,12 @@ export default function EffectChainControl() {
                   }}
                   className='w-8 h-2 px-1  rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
                 >
-                  <option value='default' hidden>Default</option>
+                  <option
+                    value='default'
+                    hidden
+                  >
+                    Default
+                  </option>
                   <option value='delay'>Delay</option>
                   <option value='eq'>Equalizer</option>
                 </select>

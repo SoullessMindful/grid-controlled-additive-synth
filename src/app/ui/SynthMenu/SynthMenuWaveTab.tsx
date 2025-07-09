@@ -11,12 +11,10 @@ import {
   envelopePropertyToString,
 } from '@/lib/envelope'
 import VerticalSlider from '../VerticalSlider'
-import { NoSymbolIcon } from '@heroicons/react/24/solid'
+import { MinusIcon, NoSymbolIcon, PlusIcon } from '@heroicons/react/24/solid'
 
 export default function SynthMenuWaveTab() {
   const {
-    volume,
-    setVolume,
     level,
     setLevel,
     attack,
@@ -62,18 +60,22 @@ export default function SynthMenuWaveTab() {
             <label className='block p-1'>Overtones</label>
             <button
               type='button'
-              className={`px-0.5 py-0.25 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 cursor-pointer ${
-                overtonesCount <= 1 ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className='px-0.75 py-0.25 h-full cursor-pointer'
               onClick={() => setOvertonesCount(Math.max(1, overtonesCount - 1))}
               aria-label='Decrease overtones'
             >
-              –
+              <MinusIcon
+                className={`size-1 ${
+                  overtonesCount <= 1
+                    ? 'stroke-gray-500'
+                    : 'stroke-black dark:stroke-white'
+                }`}
+              />
             </button>
             <select
               value={overtonesCount}
               onChange={(e) => setOvertonesCount(Number(e.target.value))}
-              className='px-0.25 py-0.5 mx-0.5 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-center cursor-pointer'
+              className='px-0.25 py-0.5 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-center cursor-pointer'
             >
               {overtoneOptions.map((n) => (
                 <option
@@ -86,15 +88,19 @@ export default function SynthMenuWaveTab() {
             </select>
             <button
               type='button'
-              className={`px-0.5 py-0.25 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 cursor-pointer ${
-                overtonesCount >= 64 ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className='px-0.75 py-0.25 h-full cursor-pointer'
               onClick={() =>
                 setOvertonesCount(Math.min(64, overtonesCount + 1))
               }
               aria-label='Increase overtones'
             >
-              +
+              <PlusIcon
+                className={`size-1 ${
+                  overtonesCount >= 64
+                    ? 'stroke-gray-500'
+                    : 'stroke-black dark:stroke-white'
+                }`}
+              />
             </button>
           </div>
         </div>

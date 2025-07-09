@@ -1,9 +1,10 @@
+import { createDefaultEffectNode, DefaultEffectNode, DefaultEffectNodeSettings } from './DefaultEffectNode'
 import { createDelayEffectNode, DelayEffectNode, DelayEffectNodeSettings } from './DelayEffectNode'
 import { createEQEffectNode, EQEffectNode, EQEffectNodeSettings } from './EQEffectNode'
 
-export type EffectNode = DelayEffectNode | EQEffectNode
-export type EffectNodeType = 'delay' | 'eq'
-export type EffectNodeSettings = DelayEffectNodeSettings | EQEffectNodeSettings
+export type EffectNode = DefaultEffectNode | DelayEffectNode | EQEffectNode
+export type EffectNodeType = 'default' | 'delay' | 'eq'
+export type EffectNodeSettings = DefaultEffectNodeSettings | DelayEffectNodeSettings | EQEffectNodeSettings
 
 export class EffectChainNode {
   input: GainNode
@@ -29,9 +30,12 @@ export class EffectChainNode {
     this.outputNode.disconnect()
   }
 
-  addEffect(effectType: EffectNodeType, i: number = this.effectNodes.length) {
+  addEffect(effectType: EffectNodeType = 'default', i: number = this.effectNodes.length) {
     let effect: EffectNode
     switch (effectType) {
+      case 'default':
+        effect = createDefaultEffectNode(this.input.context)
+        break
       case 'eq':
         effect = createEQEffectNode(this.input.context)
         break

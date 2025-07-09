@@ -49,7 +49,7 @@ export default function EffectChainControl() {
             <PlusIcon
               className='inline size-2.5 p-0.5 cursor-pointer'
               onClick={() => {
-                addEffect('delay')
+                addEffect('default')
               }}
             />
           </div>
@@ -77,6 +77,7 @@ export default function EffectChainControl() {
                   }}
                   className='w-8 h-2 px-1  rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
                 >
+                  <option value='default' hidden>Default</option>
                   <option value='delay'>Delay</option>
                   <option value='eq'>Equalizer</option>
                 </select>
@@ -98,6 +99,8 @@ function effectNodeControl(
   updateEffectSettings: () => void
 ): JSX.Element {
   switch (es.__type__) {
+    case 'default':
+      return <Fragment></Fragment>
     case 'delay':
       return (
         <Fragment>
@@ -268,6 +271,8 @@ function effectNodeControl(
 
 function displayEffectName(es: EffectNodeSettings): string {
   switch (es.__type__) {
+    case 'default':
+      return 'Default'
     case 'delay':
       return 'Delay'
     case 'eq':

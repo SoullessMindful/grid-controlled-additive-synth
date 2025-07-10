@@ -19,10 +19,13 @@ export type EffectNode = {
   active: boolean
 }
 export type EffectNodeType = 'default' | 'delay' | 'eq'
-export type EffectNodeSettings =
+export type EffectNodeSettings = (
   | DefaultEffectNodeSettings
   | DelayEffectNodeSettings
   | EQEffectNodeSettings
+) & {
+  active: boolean
+}
 
 export class EffectChainNode {
   input: GainNode
@@ -95,11 +98,11 @@ export class EffectChainNode {
     this.removeEffect(i)
     this.addEffect(effectType, i)
   }
-  
+
   setEffectActive(active: boolean, i: number) {
     this.internallyDisconnect()
     this.effectNodes[i].active = active
-    this.internallyDisconnect()
+    this.internallyConnect()
   }
 
   switchEffects(i1: number, i2: number) {
@@ -113,7 +116,10 @@ export class EffectChainNode {
   }
 
   get settings(): EffectNodeSettings[] {
-    return this.effectNodes.map((effect) => effect.node.settings)
+    return this.effectNodes.map((effect) => ({
+      ...effect.node.settings,
+      active: effect.active,
+    }))
   }
 
   private internallyDisconnect() {
@@ -138,7 +144,9 @@ export class EffectChainNode {
       activeEffectNodes[i].node.connect(activeEffectNodes[i + 1].node.input)
     }
 
-    activeEffectNodes[this.effectNodes.length - 1].node.connect(this.outputNode)
+    activeEffectNodes[activeEffectNodes.length - 1].node.connect(
+      this.outputNode
+    )
   }
 }
 

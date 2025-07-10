@@ -13,6 +13,7 @@ import {
 import { Fragment, JSX, useContext, useState } from 'react'
 import HorizontalSlider from '../../HorizontalSlider'
 import { createEQEffectNode } from '@/lib/audionodes/EQEffectNode'
+import { CheckButton } from '../../CheckButton'
 
 export default function EffectChainControl() {
   const {
@@ -22,6 +23,7 @@ export default function EffectChainControl() {
     removeEffect,
     changeEffect,
     switchEffects,
+    setEffectActive,
   } = useContext(SoundEngineContext) as SoundEngineContextType
 
   const [selectedEffect, setSelectedEffect] = useState<number>(0)
@@ -86,7 +88,17 @@ export default function EffectChainControl() {
         <div className='pl-0.5 grid grid-cols-[8rem_15rem] grid-rows-8 items-center gap-0.5'>
           {effectSettings[selectedEffect] && (
             <Fragment>
-              <div className='col-span-2'>
+                
+              <label className='flex flex-row items-center'>
+                <CheckButton
+                  value={effectSettings[selectedEffect].active}
+                  onChange={(newActive) => {
+                    setEffectActive(newActive, selectedEffect)
+                  }}
+                />
+                <span>Active</span>
+              </label>
+              <div>
                 <select
                   value={effectSettings[selectedEffect].__type__}
                   onChange={(e) => {

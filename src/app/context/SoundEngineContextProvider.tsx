@@ -54,6 +54,7 @@ export type SoundEngineContextType = {
   removeEffect: (i: number) => void
   changeEffect: (effectType: EffectNodeType, i: number) => void
   switchEffects: (i1: number, i2: number) => void
+  setEffectActive: (active: boolean, i: number) => void
   octave: Octave
   setOctave: React.Dispatch<React.SetStateAction<Octave>>
   level: number
@@ -589,6 +590,10 @@ export default function SoundEngineContextProvider({
         },
         switchEffects: (i1, i2) => {
           effectChain?.switchEffects(i1, i2)
+          updateEffectSettings()
+        },
+        setEffectActive: (active, i) => {
+          effectChain?.setEffectActive(active, i)
           updateEffectSettings()
         },
         level,

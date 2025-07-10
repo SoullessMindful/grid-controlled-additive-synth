@@ -23,6 +23,8 @@ export class DefaultEffectNode {
       __type__: 'default',
     }
   }
+
+  setSettings(newSettings: DefaultEffectNodeSettings) {}
 }
 
 export function createDefaultEffectNode(ctx: BaseAudioContext): DefaultEffectNode {

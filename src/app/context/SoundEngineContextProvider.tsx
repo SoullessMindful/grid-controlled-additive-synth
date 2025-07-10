@@ -49,7 +49,7 @@ export type SoundEngineContextType = {
   lowpassFrequency: number
   setLowpassFrequency: (volume: number) => void
   effectSettings: EffectNodeSettings[]
-  updateEffectSettings: () => void
+  setEffectSettings: (newSettings: EffectNodeSettings, i: number) => void
   addEffect: (effectType: EffectNodeType, i?: number) => void
   removeEffect: (i: number) => void
   changeEffect: (effectType: EffectNodeType, i: number) => void
@@ -575,7 +575,10 @@ export default function SoundEngineContextProvider({
         octave,
         setOctave,
         effectSettings,
-        updateEffectSettings,
+        setEffectSettings: (newSettings, i) => {
+          effectChain?.setSettings(newSettings, i)
+          updateEffectSettings()
+        },
         addEffect: (effectType, i) => {
           effectChain?.addEffect(effectType, i)
           updateEffectSettings()

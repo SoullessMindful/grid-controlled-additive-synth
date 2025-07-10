@@ -16,7 +16,7 @@ import { CheckButton } from '../../CheckButton'
 export default function EffectChainControl() {
   const {
     effectSettings,
-    updateEffectSettings,
+    setEffectSettings,
     addEffect,
     removeEffect,
     changeEffect,
@@ -130,7 +130,7 @@ export default function EffectChainControl() {
               </div>
               {effectNodeControl(
                 effectSettings[selectedEffect],
-                updateEffectSettings
+                (newSettings) => setEffectSettings(newSettings, selectedEffect)
               )}
             </Fragment>
           )}
@@ -142,7 +142,7 @@ export default function EffectChainControl() {
 
 function effectNodeControl(
   es: EffectNodeSettings,
-  updateEffectSettings: () => void
+  setEffectSettings: (newSettings: EffectNodeSettings) => void
 ): JSX.Element {
   switch (es.__type__) {
     case 'default':
@@ -153,11 +153,12 @@ function effectNodeControl(
           <div>Time</div>
           <div>
             <HorizontalSlider
-              value={es.time.value}
+              value={es.time}
               onChange={(newTime) => {
-                es.time.value = newTime
-
-                updateEffectSettings()
+                setEffectSettings({
+                  ...es,
+                  time: newTime,
+                })
               }}
               min={0}
               max={1}
@@ -169,11 +170,12 @@ function effectNodeControl(
           <div>Feedback</div>
           <div>
             <HorizontalSlider
-              value={es.feedback.value}
+              value={es.feedback}
               onChange={(newFeedback) => {
-                es.feedback.value = newFeedback
-
-                updateEffectSettings()
+                setEffectSettings({
+                  ...es,
+                  feedback: newFeedback,
+                })
               }}
               min={0}
               max={1}
@@ -185,11 +187,12 @@ function effectNodeControl(
           <div>Mix</div>
           <div>
             <HorizontalSlider
-              value={es.mix.value}
+              value={es.mix}
               onChange={(newMix) => {
-                es.mix.value = newMix
-
-                updateEffectSettings()
+                setEffectSettings({
+                  ...es,
+                  mix: newMix,
+                })
               }}
               min={0}
               max={1}
@@ -206,11 +209,12 @@ function effectNodeControl(
           <div>Lowshelf</div>
           <div>
             <HorizontalSlider
-              value={es.lowShelfGain.value}
+              value={es.lowShelfGain}
               onChange={(newGain) => {
-                es.lowShelfGain.value = newGain
-
-                updateEffectSettings()
+                setEffectSettings({
+                  ...es,
+                  lowShelfGain: newGain,
+                })
               }}
               min={-15}
               max={15}
@@ -223,11 +227,12 @@ function effectNodeControl(
           <div className='pl-1'>frequency</div>
           <div>
             <HorizontalSlider
-              value={es.lowShelfFreq.value}
+              value={es.lowShelfFreq}
               onChange={(newFrequency) => {
-                es.lowShelfFreq.value = Math.round(newFrequency)
-
-                updateEffectSettings()
+                setEffectSettings({
+                  ...es,
+                  lowShelfFreq: Math.round(newFrequency),
+                })
               }}
               exponential
               minExp={50}
@@ -239,11 +244,12 @@ function effectNodeControl(
           <div>Band</div>
           <div>
             <HorizontalSlider
-              value={es.midBandGain.value}
+              value={es.midBandGain}
               onChange={(newGain) => {
-                es.midBandGain.value = newGain
-
-                updateEffectSettings()
+                setEffectSettings({
+                  ...es,
+                  highShelfGain: newGain,
+                })
               }}
               min={-15}
               max={15}
@@ -256,11 +262,12 @@ function effectNodeControl(
           <div className='pl-1'>frequency</div>
           <div>
             <HorizontalSlider
-              value={es.midBandFreq.value}
+              value={es.midBandFreq}
               onChange={(newFrequency) => {
-                es.midBandFreq.value = Math.round(newFrequency)
-
-                updateEffectSettings()
+                setEffectSettings({
+                  ...es,
+                  midBandFreq: Math.round(newFrequency),
+                })
               }}
               exponential
               minExp={50}
@@ -272,11 +279,12 @@ function effectNodeControl(
           <div>Highshelf</div>
           <div>
             <HorizontalSlider
-              value={es.highShelfGain.value}
+              value={es.highShelfGain}
               onChange={(newGain) => {
-                es.highShelfGain.value = newGain
-
-                updateEffectSettings()
+                setEffectSettings({
+                  ...es,
+                  highShelfGain: newGain,
+                })
               }}
               min={-15}
               max={15}
@@ -289,11 +297,12 @@ function effectNodeControl(
           <div className='pl-1'>frequency</div>
           <div>
             <HorizontalSlider
-              value={es.highShelfFreq.value}
+              value={es.highShelfFreq}
               onChange={(newFrequency) => {
-                es.highShelfFreq.value = Math.round(newFrequency)
-
-                updateEffectSettings()
+                setEffectSettings({
+                  ...es,
+                  highShelfFreq: Math.round(newFrequency)
+                })
               }}
               exponential
               minExp={50}
@@ -305,12 +314,14 @@ function effectNodeControl(
           <div>Gain</div>
           <div>
             <HorizontalSlider
-              value={20 * Math.log10(es.makeupGain.value)}
+              value={20 * Math.log10(es.makeupGain)}
               onChange={(newGainDB) => {
                 const newGain = Math.pow(10, newGainDB * 0.05)
-                es.makeupGain.value = newGain
-
-                updateEffectSettings()
+                
+                setEffectSettings({
+                  ...es,
+                  makeupGain: newGain,
+                })
               }}
               min={-15}
               max={15}

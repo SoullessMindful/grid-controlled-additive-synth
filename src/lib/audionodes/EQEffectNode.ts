@@ -1,12 +1,12 @@
 export type EQEffectNodeSettings = {
   __type__: 'eq'
-  lowShelfGain: AudioParam
-  lowShelfFreq: AudioParam
-  midBandGain: AudioParam
-  midBandFreq: AudioParam
-  highShelfGain: AudioParam
-  highShelfFreq: AudioParam
-  makeupGain: AudioParam
+  lowShelfGain: number
+  lowShelfFreq: number
+  midBandGain: number
+  midBandFreq: number
+  highShelfGain: number
+  highShelfFreq: number
+  makeupGain: number
 }
 
 export class EQEffectNode {
@@ -58,13 +58,45 @@ export class EQEffectNode {
   get settings(): EQEffectNodeSettings {
     return {
       __type__: 'eq',
-      lowShelfFreq: this.lowShelfNode.frequency,
-      lowShelfGain: this.lowShelfNode.gain,
-      midBandFreq: this.midBandNode.frequency,
-      midBandGain: this.midBandNode.gain,
-      highShelfFreq: this.highShelfNode.frequency,
-      highShelfGain: this.highShelfNode.gain,
-      makeupGain: this.makeupGainNode.gain,
+      lowShelfFreq: this.lowShelfNode.frequency.value,
+      lowShelfGain: this.lowShelfNode.gain.value,
+      midBandFreq: this.midBandNode.frequency.value,
+      midBandGain: this.midBandNode.gain.value,
+      highShelfFreq: this.highShelfNode.frequency.value,
+      highShelfGain: this.highShelfNode.gain.value,
+      makeupGain: this.makeupGainNode.gain.value,
+    }
+  }
+  
+  setSettings(newSettings: EQEffectNodeSettings) {
+    const settings = this.settings
+
+    if (settings.lowShelfFreq !== newSettings.lowShelfFreq && newSettings.lowShelfFreq >= 50 && newSettings.lowShelfFreq <= 12800) {
+      this.lowShelfNode.frequency.value = newSettings.lowShelfFreq
+    }
+
+    if (settings.lowShelfGain !== newSettings.lowShelfGain && newSettings.lowShelfGain >= -15 && newSettings.lowShelfGain <= 15) {
+      this.lowShelfNode.gain.value = newSettings.lowShelfGain
+    }
+
+    if (settings.midBandFreq !== newSettings.midBandFreq && newSettings.midBandFreq >= 50 && newSettings.midBandFreq <= 12800) {
+      this.midBandNode.frequency.value = newSettings.midBandFreq
+    }
+
+    if (settings.midBandGain !== newSettings.midBandGain && newSettings.midBandGain >= -15 && newSettings.midBandGain <= 15) {
+      this.midBandNode.gain.value = newSettings.midBandGain
+    }
+
+    if (settings.highShelfFreq !== newSettings.highShelfFreq && newSettings.highShelfFreq >= 50 && newSettings.highShelfFreq <= 12800) {
+      this.highShelfNode.frequency.value = newSettings.highShelfFreq
+    }
+
+    if (settings.highShelfGain !== newSettings.highShelfGain && newSettings.highShelfGain >= -15 && newSettings.highShelfGain <= 15) {
+      this.highShelfNode.gain.value = newSettings.highShelfGain
+    }
+
+    if (settings.makeupGain !== newSettings.makeupGain && newSettings.makeupGain > 0) {
+      this.makeupGainNode.gain.value = newSettings.makeupGain
     }
   }
 }

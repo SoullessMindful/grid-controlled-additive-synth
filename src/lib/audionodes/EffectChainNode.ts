@@ -122,6 +122,22 @@ export class EffectChainNode {
     }))
   }
 
+  setSettings(newSettings: EffectNodeSettings, i: number) {
+    const effectNode = this.effectNodes[i]
+    const settings = effectNode.node.settings
+
+    if (settings.__type__ === newSettings.__type__) {
+      switch(newSettings.__type__) {
+        case 'delay':
+          (effectNode.node as DelayEffectNode).setSettings(newSettings)
+          break
+        case 'eq':
+          (effectNode.node as EQEffectNode).setSettings(newSettings)
+          break
+      }
+    }
+  }
+
   private internallyDisconnect() {
     this.input.disconnect()
     this.effectNodes.forEach((effect) => {

@@ -52,7 +52,10 @@ export default function SynthMenuGlobalTab() {
 
                       setVoices(voices.filter((_, ii) => i !== ii))
 
-                      if (i < selectedVoice || (i === selectedVoice && i === voices.length - 1)) {
+                      if (
+                        i < selectedVoice ||
+                        (i === selectedVoice && i === voices.length - 1)
+                      ) {
                         setSelectedVoice(selectedVoice - 1)
                       }
                     }}
@@ -134,6 +137,7 @@ export default function SynthMenuGlobalTab() {
                 min={0}
                 max={1}
                 step={0.01}
+                tooltip={(v) => `${(v * 100).toFixed(0)}%`}
                 className='w-15 h-2 thumb-w-1 thumb-r-1'
               />
             </div>
@@ -155,6 +159,9 @@ export default function SynthMenuGlobalTab() {
                 max={1}
                 trackCenter={0}
                 step={0.05}
+                tooltip={(v) =>
+                  v === 0 ? 'Center' : `${v.toFixed(2)}${v < 0 ? 'L' : 'R'}`
+                }
                 className='w-15 h-2 thumb-w-1 thumb-r-1'
               />
             </div>
@@ -176,6 +183,7 @@ export default function SynthMenuGlobalTab() {
                 max={15}
                 trackCenter={0}
                 step={1}
+                tooltip
                 className='w-15 h-2 thumb-w-1 thumb-r-1'
               />
             </div>
@@ -196,6 +204,7 @@ export default function SynthMenuGlobalTab() {
                 min={0}
                 max={0.02}
                 step={0.0001}
+                tooltip={(v) => `${(v * 1000).toFixed(1)}ms`}
                 className='w-15 h-2 thumb-w-1 thumb-r-1'
               />
             </div>
@@ -232,7 +241,14 @@ export default function SynthMenuGlobalTab() {
           <HorizontalSlider
             value={highpassFrequency}
             onChange={(v) => {
-              if (v > 20000 || v > lowpassFrequency) return
+              if (v > 20000) {
+                setHighpassFrequency(20000)
+                return
+              }
+              if (v > lowpassFrequency) {
+                setHighpassFrequency(lowpassFrequency)
+                return
+              }
 
               setHighpassFrequency(Math.round(v))
             }}
@@ -240,6 +256,7 @@ export default function SynthMenuGlobalTab() {
             minExp={20}
             maxExp={20000}
             trackCenterExp={20000}
+            tooltip={(v) => `${v}Hz`}
             className='w-15 h-2 thumb-w-1 thumb-r-1'
           />
         </div>
@@ -248,13 +265,21 @@ export default function SynthMenuGlobalTab() {
           <HorizontalSlider
             value={lowpassFrequency}
             onChange={(v) => {
-              if (v < 20 || v < highpassFrequency) return
+              if (v < 20) {
+                setLowpassFrequency(20)
+                return
+              }
+              if (v < highpassFrequency) {
+                setLowpassFrequency(highpassFrequency)
+                return
+              }
 
               setLowpassFrequency(Math.round(v))
             }}
             exponential
             minExp={20}
             maxExp={20000}
+            tooltip={(v) => `${v}Hz`}
             className='w-15 h-2 thumb-w-1 thumb-r-1'
           />
         </div>
@@ -269,6 +294,7 @@ export default function SynthMenuGlobalTab() {
             max={1}
             step={0.01}
             className='w-15 h-2 thumb-w-1 thumb-r-1'
+            tooltip={(v) => `${(v * 100).toFixed(0)}%`}
           />
         </div>
       </div>

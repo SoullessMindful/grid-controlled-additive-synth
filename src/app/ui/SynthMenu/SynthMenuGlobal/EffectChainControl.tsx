@@ -148,8 +148,9 @@ function effectNodeControl(
                 updateEffectSettings()
               }}
               min={0}
-              max={2}
+              max={1}
               step={0.001}
+              tooltip={(v) => `${(v * 1000).toFixed(0)}ms`}
               className='w-15 h-2 thumb-w-1 thumb-r-1'
             />
           </div>
@@ -165,6 +166,7 @@ function effectNodeControl(
               min={0}
               max={1}
               step={0.01}
+              tooltip={(v) => `${(v * 100).toFixed(0)}%`}
               className='w-15 h-2 thumb-w-1 thumb-r-1'
             />
           </div>
@@ -180,6 +182,7 @@ function effectNodeControl(
               min={0}
               max={1}
               step={0.01}
+              tooltip={(v) => `${(v * 100).toFixed(0)}%`}
               className='w-15 h-2 thumb-w-1 thumb-r-1'
             />
           </div>
@@ -201,6 +204,7 @@ function effectNodeControl(
               max={15}
               step={1}
               trackCenter={0}
+              tooltip={(v) => `${v}dB`}
               className='w-15 h-2 thumb-w-1 thumb-r-1'
             />
           </div>
@@ -216,6 +220,7 @@ function effectNodeControl(
               exponential
               minExp={20}
               maxExp={20000}
+              tooltip={(v) => `${v}Hz`}
               className='w-15 h-2 thumb-w-1 thumb-r-1'
             />
           </div>
@@ -232,6 +237,7 @@ function effectNodeControl(
               max={15}
               step={1}
               trackCenter={0}
+              tooltip={(v) => `${v}dB`}
               className='w-15 h-2 thumb-w-1 thumb-r-1'
             />
           </div>
@@ -247,6 +253,7 @@ function effectNodeControl(
               exponential
               minExp={20}
               maxExp={20000}
+              tooltip={(v) => `${v}Hz`}
               className='w-15 h-2 thumb-w-1 thumb-r-1'
             />
           </div>
@@ -263,6 +270,7 @@ function effectNodeControl(
               max={15}
               step={1}
               trackCenter={0}
+              tooltip={(v) => `${v}dB`}
               className='w-15 h-2 thumb-w-1 thumb-r-1'
             />
           </div>
@@ -278,6 +286,7 @@ function effectNodeControl(
               exponential
               minExp={20}
               maxExp={20000}
+              tooltip={(v) => `${v}Hz`}
               className='w-15 h-2 thumb-w-1 thumb-r-1'
             />
           </div>
@@ -295,6 +304,7 @@ function effectNodeControl(
               max={15}
               step={1}
               trackCenter={0}
+              tooltip={(v) => `${v}dB`}
               className='w-15 h-2 thumb-w-1 thumb-r-1'
             />
           </div>

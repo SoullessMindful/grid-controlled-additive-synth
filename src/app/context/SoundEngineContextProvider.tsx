@@ -25,7 +25,6 @@ import { defaultOctave, Octave } from '@/lib/octave'
 import {
   createEffectChainNode,
   EffectChainNode,
-  EffectNode,
   EffectNodeSettings,
   EffectNodeType,
 } from '@/lib/audionodes/EffectChainNode'
@@ -39,9 +38,10 @@ let globalGainNode: GainNode | undefined = undefined
 let effectChain: EffectChainNode | undefined = undefined
 
 export type SoundEngineContextType = {
-  noteOn: (row: number, column: number) => void
-  noteOff: (row: number, column: number) => void
-  noteOnOff: (on: boolean, row: number, column: number) => void
+  padNoteOn: (row: number, column: number) => void
+  padNoteOff: (row: number, column: number) => void
+  mouseNoteOn: (row: number, column: number) => void
+  mouseNoteOff: () => void
   volume: number
   setVolume: (volume: number) => void
   highpassFrequency: number
@@ -102,7 +102,7 @@ type VoiceNode = {
   filterMixNode?: MixNode
 }
 
-type PadNode = {
+type NoteNode = {
   note: number
   voiceNodes?: VoiceNode[]
 }
@@ -119,7 +119,8 @@ export default function SoundEngineContextProvider({
   const [availableWaveforms, setAvailableWaveforms] =
     useState<ProcessedWaveform[]>(basicWaveforms)
 
-  const [padNodes, setPadNodes] = useState<PadNode[][]>([])
+  const [padNodes, setPadNodes] = useState<NoteNode[][]>([])
+  const [mouseNode, setMouseNode] = useState<NoteNode | undefined>(undefined)
 
   // Synth settings begin
   const [volume, setVolume] = useState(0.5)
@@ -336,16 +337,14 @@ export default function SoundEngineContextProvider({
     })
   }, [overtonesCount])
 
-  const noteOn = (row: number, column: number) => {
+  const noteOn = (noteNode: NoteNode) => {
     if (!ctx || !globalGainNode) return
 
     const currentCtx = ctx
     const currentGlobalGainNode = globalGainNode
 
     const scheduler: ((now: number) => void)[] = []
-    noteOff(row, column)
-
-    const padNode = padNodes[row][column]
+    noteOff(noteNode)
 
     const voiceNodes: VoiceNode[] = voices
       .filter(({ active }) => active)
@@ -443,7 +442,7 @@ export default function SoundEngineContextProvider({
             const overtoneIndex = i + 1 // 1st harmonic is fundamental
             const freq =
               440 *
-              Math.pow(2, (padNode.note - 69) / 12) *
+              Math.pow(2, (noteNode.note - 69) / 12) *
               overtoneIndex *
               2 ** octave
             if (waveform.__type__ === 'BasicWaveform') {
@@ -496,19 +495,18 @@ export default function SoundEngineContextProvider({
 
     const now = currentCtx.currentTime
     scheduler.forEach((cb) => cb(now))
-    padNode.voiceNodes = voiceNodes
+    noteNode.voiceNodes = voiceNodes
   }
 
-  const noteOff = (row: number, column: number) => {
+  const noteOff = (noteNode: NoteNode) => {
     if (!ctx || !globalGainNode) return
 
-    const padNode = padNodes[row][column]
-    if (!padNode.voiceNodes) return
+    if (!noteNode.voiceNodes) return
 
     const now = ctx.currentTime
     const releaseEnd = now + release
 
-    padNode.voiceNodes.forEach(
+    noteNode.voiceNodes.forEach(
       ({
         overtones,
         panNode,
@@ -549,23 +547,30 @@ export default function SoundEngineContextProvider({
       }
     )
 
-    padNode.voiceNodes = undefined
-  }
-
-  const noteOnOff = (on: boolean, row: number, column: number) => {
-    if (on) {
-      return noteOn(row, column)
-    } else {
-      return noteOff(row, column)
-    }
+    noteNode.voiceNodes = undefined
   }
 
   return (
     <SoundEngineContext.Provider
       value={{
-        noteOn,
-        noteOff,
-        noteOnOff,
+        padNoteOn: (row, column) => noteOn(padNodes[row][column]),
+        padNoteOff: (row, column) => noteOff(padNodes[row][column]),
+        mouseNoteOn: (row, column) => {
+          if (noteOffset === undefined) return
+
+          const newMouseNode = {
+            ...mouseNode,
+            note: noteOffset + row * 5 + column,
+          }
+          noteOn(newMouseNode)
+          setMouseNode(newMouseNode)
+        },
+        mouseNoteOff: () => {
+          if (mouseNode) {
+            noteOff(mouseNode)
+            setMouseNode(undefined)
+          }
+        },
         volume,
         setVolume,
         highpassFrequency,

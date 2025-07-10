@@ -6,7 +6,6 @@ import {
   MainAppContextType,
 } from '../context/MainAppContextProvider'
 import { range2dFlat } from '@/lib/range'
-import useStatePrev from '@/hooks/useStatePrev'
 import {
   SoundEngineContext,
   SoundEngineContextType,
@@ -26,12 +25,16 @@ export default function GridController() {
     displayNoteLetter,
   } = useContext(MainAppContext) as MainAppContextType
 
-  const { noteOn, noteOff } = useContext(
+  const { padNoteOn, padNoteOff, mouseNoteOn, mouseNoteOff } = useContext(
     SoundEngineContext
   ) as SoundEngineContextType
 
   const [touches, setTouches] = useState<Touch[]>([])
-  const [isPadPressed, _isPadPressedPrev, setIsPadPressed] = useStatePrev<
+  const [clickedPad, setClickedPad] = useState<
+    { row: number; column: number } | undefined
+  >(undefined)
+  const [mousePressed, setMousePressed] = useState<boolean>(false)
+  const [isPadPressed, setIsPadPressed] = useState<
     boolean[][]
   >([...Array(rowsCount)].map(() => Array(columnsCount).fill(false)))
 
@@ -89,9 +92,9 @@ export default function GridController() {
           const isPressed = updatedIsPadPressed[row][column]
           const canPlay = isNoteInScale(note, scale, scaleRoot) || !lockToScale
           if (isPressed && canPlay) {
-            noteOn(row, column)
+            padNoteOn(row, column)
           } else {
-            noteOff(row, column)
+            padNoteOff(row, column)
           }
         }
       }
@@ -101,6 +104,34 @@ export default function GridController() {
       setIsPadPressed(updatedIsPadPressed)
     }
   }, [touches])
+
+  useEffect(() => {
+    if (!initialized) return
+
+    if (clickedPad) {
+      const { row, column } = clickedPad
+      const note = noteOffset + row * 5 + column
+      const canPlay = isNoteInScale(note, scale, scaleRoot) || !lockToScale
+
+      if (canPlay) {
+        mouseNoteOn(row, column)
+      }
+    } else {
+      mouseNoteOff()
+    }
+  }, [clickedPad])
+
+  const handleNoteOff = () => {
+    setMousePressed(false)
+    setClickedPad(undefined)
+    mouseNoteOff()
+  }
+
+  useEffect(() => {
+    if (!mousePressed) return
+    window.addEventListener('mouseup', handleNoteOff)
+    return () => window.removeEventListener('mouseup', handleNoteOff)
+  }, [mousePressed])
 
   return (
     initialized && (
@@ -152,10 +183,46 @@ export default function GridController() {
             setTouches(updatedTouches)
           }
         }}
+        onMouseDown={(e) => {
+          e.preventDefault()
+
+          setMousePressed(true)
+
+          if (!initialized) return
+
+          const self = selfRef.current
+          if (!self) return
+
+          const row = Math.floor(
+            ((self.getBoundingClientRect().bottom - e.pageY) /
+              self.clientHeight) *
+              rowsCount
+          )
+          const column = Math.floor(
+            ((e.pageX - self.getBoundingClientRect().left) / self.clientWidth) *
+              columnsCount
+          )
+
+          setClickedPad({ row, column })
+        }}
+        onMouseUp={(e) => {
+          e.preventDefault()
+          handleNoteOff()
+        }}
+        onMouseOut={(e) => {
+          e.preventDefault()
+          handleNoteOff()
+        }}
+        onMouseLeave={(e) => {
+          e.preventDefault()
+          handleNoteOff()
+        }}
       >
         {range2dFlat([0, rowsCount], [0, columnsCount]).map(([row, column]) => {
           const note = noteOffset + row * 5 + column
-          const isPressed = isPadPressed[row]?.[column] ?? false
+          const isPressed =
+            (clickedPad?.row === row && clickedPad.column === column) ||
+            (isPadPressed[row]?.[column] ?? false)
 
           const isInScale = isNoteInScale(note, scale, scaleRoot)
           const isGreyed = !isInScale && (!isPressed || lockToScale)

@@ -2,7 +2,6 @@ import {
   SoundEngineContext,
   SoundEngineContextType,
 } from '@/app/context/SoundEngineContextProvider'
-import { createDelayEffectNode } from '@/lib/audionodes/DelayEffectNode'
 import { EffectNodeSettings } from '@/lib/audionodes/EffectChainNode'
 import {
   ChevronDownIcon,
@@ -12,7 +11,6 @@ import {
 } from '@heroicons/react/24/solid'
 import { Fragment, JSX, useContext, useState } from 'react'
 import HorizontalSlider from '../../HorizontalSlider'
-import { createEQEffectNode } from '@/lib/audionodes/EQEffectNode'
 import { CheckButton } from '../../CheckButton'
 
 export default function EffectChainControl() {
@@ -38,10 +36,12 @@ export default function EffectChainControl() {
               key={`${es.__type__} ${i}`}
               className={`w-full p-0.5 flex justify-between items-center ${
                 selectedEffect === i ? 'bg-gray-300 dark:bg-gray-700' : ''
+              } ${
+                es.active ? '' : 'text-gray-600 dark:text-gray-400'
               } cursor-pointer`}
               onClick={() => setSelectedEffect(i)}
             >
-              {displayEffectName(es)}
+              {displayEffectShortName(es)}
               <span>
                 <ChevronDownIcon
                   className='inline size-1.5 cursor-pointer'
@@ -81,6 +81,7 @@ export default function EffectChainControl() {
               className='inline size-2.5 p-0.5 cursor-pointer'
               onClick={() => {
                 addEffect('default')
+                setSelectedEffect(effectSettings.length)
               }}
             />
           </div>
@@ -88,7 +89,6 @@ export default function EffectChainControl() {
         <div className='pl-0.5 grid grid-cols-[8rem_15rem] grid-rows-8 items-center gap-0.5'>
           {effectSettings[selectedEffect] && (
             <Fragment>
-                
               <label className='flex flex-row items-center'>
                 <CheckButton
                   value={effectSettings[selectedEffect].active}
@@ -116,7 +116,7 @@ export default function EffectChainControl() {
                         break
                     }
                   }}
-                  className='w-8 h-2 px-1  rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
+                  className='w-full h-2 px-1  rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
                 >
                   <option
                     value='default'
@@ -125,7 +125,7 @@ export default function EffectChainControl() {
                     Default
                   </option>
                   <option value='delay'>Delay</option>
-                  <option value='eq'>Equalizer</option>
+                  <option value='eq'>Parametric Equalizer</option>
                 </select>
               </div>
               {effectNodeControl(
@@ -225,13 +225,13 @@ function effectNodeControl(
             <HorizontalSlider
               value={es.lowShelfFreq.value}
               onChange={(newFrequency) => {
-                es.lowShelfFreq.value = newFrequency
+                es.lowShelfFreq.value = Math.round(newFrequency)
 
                 updateEffectSettings()
               }}
               exponential
-              minExp={20}
-              maxExp={20000}
+              minExp={50}
+              maxExp={12800}
               tooltip={(v) => `${v}Hz`}
               className='w-15 h-2 thumb-w-1 thumb-r-1'
             />
@@ -258,13 +258,13 @@ function effectNodeControl(
             <HorizontalSlider
               value={es.midBandFreq.value}
               onChange={(newFrequency) => {
-                es.midBandFreq.value = newFrequency
+                es.midBandFreq.value = Math.round(newFrequency)
 
                 updateEffectSettings()
               }}
               exponential
-              minExp={20}
-              maxExp={20000}
+              minExp={50}
+              maxExp={12800}
               tooltip={(v) => `${v}Hz`}
               className='w-15 h-2 thumb-w-1 thumb-r-1'
             />
@@ -291,13 +291,13 @@ function effectNodeControl(
             <HorizontalSlider
               value={es.highShelfFreq.value}
               onChange={(newFrequency) => {
-                es.highShelfFreq.value = newFrequency
+                es.highShelfFreq.value = Math.round(newFrequency)
 
                 updateEffectSettings()
               }}
               exponential
-              minExp={20}
-              maxExp={20000}
+              minExp={50}
+              maxExp={12800}
               tooltip={(v) => `${v}Hz`}
               className='w-15 h-2 thumb-w-1 thumb-r-1'
             />
@@ -325,13 +325,13 @@ function effectNodeControl(
   }
 }
 
-function displayEffectName(es: EffectNodeSettings): string {
+function displayEffectShortName(es: EffectNodeSettings): string {
   switch (es.__type__) {
     case 'default':
       return 'Default'
     case 'delay':
       return 'Delay'
     case 'eq':
-      return 'Equalizer'
+      return 'PEQ'
   }
 }

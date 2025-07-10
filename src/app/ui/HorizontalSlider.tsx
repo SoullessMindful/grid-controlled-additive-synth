@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './horizontalSlider.css'
 
 type HorizontalSliderProps = {
@@ -12,6 +12,7 @@ type HorizontalSliderProps = {
   minExp?: number
   maxExp?: number
   trackCenterExp?: number
+  tooltip?: boolean | ((value: number) => string)
   className: string
 }
 
@@ -26,8 +27,11 @@ export default function HorizontalSlider({
   minExp = 0.001,
   maxExp = 1,
   trackCenterExp = minExp,
+  tooltip,
   className,
 }: HorizontalSliderProps) {
+  const [isActive, setIsActive] = useState(false)
+
   const toSlider = (v: number) =>
     exponential ? Math.log(v / minExp) / Math.log(maxExp / minExp) : v
   const fromSlider = (s: number) =>
@@ -85,6 +89,24 @@ export default function HorizontalSlider({
           ></div>
         </div>
       </div>
+      <div
+        className='absolute h-full'
+        style={{
+          left: 'calc(var(--thumb-width)/2)',
+          width: 'calc(100% - var(--thumb-width))',
+        }}
+      >
+        {tooltip && isActive && (
+          <div
+            className='absolute -top-full rounded px-0.5 py-0.25 bg-gray-50 dark:bg-gray-950 -translate-x-1/2 -translate-y-0.25 pointer-events-none whitespace-nowrap'
+            style={{
+              left: `${percent}%`,
+            }}
+          >
+            {tooltip === true ? value : tooltip(value)}
+          </div>
+        )}
+      </div>
       <input
         type='range'
         min={sliderMin}
@@ -95,6 +117,11 @@ export default function HorizontalSlider({
           const v = parseFloat(e.target.value)
           onChange(fromSlider(v))
         }}
+        onMouseDown={() => setIsActive(true)}
+        onMouseUp={() => setIsActive(false)}
+        onTouchStart={() => setIsActive(true)}
+        onTouchEnd={() => setIsActive(false)}
+        onBlur={() => setIsActive(false)}
         className={`horizontal-slider h-full w-full`}
       />
     </div>

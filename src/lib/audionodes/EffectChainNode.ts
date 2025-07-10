@@ -1,10 +1,28 @@
-import { createDefaultEffectNode, DefaultEffectNode, DefaultEffectNodeSettings } from './DefaultEffectNode'
-import { createDelayEffectNode, DelayEffectNode, DelayEffectNodeSettings } from './DelayEffectNode'
-import { createEQEffectNode, EQEffectNode, EQEffectNodeSettings } from './EQEffectNode'
+import {
+  createDefaultEffectNode,
+  DefaultEffectNode,
+  DefaultEffectNodeSettings,
+} from './DefaultEffectNode'
+import {
+  createDelayEffectNode,
+  DelayEffectNode,
+  DelayEffectNodeSettings,
+} from './DelayEffectNode'
+import {
+  createEQEffectNode,
+  EQEffectNode,
+  EQEffectNodeSettings,
+} from './EQEffectNode'
 
-export type EffectNode = DefaultEffectNode | DelayEffectNode | EQEffectNode
+export type EffectNode = {
+  node: DefaultEffectNode | DelayEffectNode | EQEffectNode
+  active: boolean
+}
 export type EffectNodeType = 'default' | 'delay' | 'eq'
-export type EffectNodeSettings = DefaultEffectNodeSettings | DelayEffectNodeSettings | EQEffectNodeSettings
+export type EffectNodeSettings =
+  | DefaultEffectNodeSettings
+  | DelayEffectNodeSettings
+  | EQEffectNodeSettings
 
 export class EffectChainNode {
   input: GainNode
@@ -30,17 +48,29 @@ export class EffectChainNode {
     this.outputNode.disconnect()
   }
 
-  addEffect(effectType: EffectNodeType = 'default', i: number = this.effectNodes.length) {
+  addEffect(
+    effectType: EffectNodeType = 'default',
+    i: number = this.effectNodes.length
+  ) {
     let effect: EffectNode
     switch (effectType) {
       case 'default':
-        effect = createDefaultEffectNode(this.input.context)
+        effect = {
+          node: createDefaultEffectNode(this.input.context),
+          active: true,
+        }
         break
       case 'eq':
-        effect = createEQEffectNode(this.input.context)
+        effect = {
+          node: createEQEffectNode(this.input.context),
+          active: true,
+        }
         break
       case 'delay':
-        effect = createDelayEffectNode(this.input.context)
+        effect = {
+          node: createDelayEffectNode(this.input.context),
+          active: true,
+        }
         break
     }
 
@@ -60,10 +90,16 @@ export class EffectChainNode {
     this.effectNodes = [...beforeEffectNodes, ...afterEffectNodes]
     this.internallyConnect()
   }
-  
+
   changeEffect(effectType: EffectNodeType, i: number) {
     this.removeEffect(i)
     this.addEffect(effectType, i)
+  }
+  
+  setEffectActive(active: boolean, i: number) {
+    this.internallyDisconnect()
+    this.effectNodes[i].active = active
+    this.internallyDisconnect()
   }
 
   switchEffects(i1: number, i2: number) {
@@ -75,32 +111,34 @@ export class EffectChainNode {
 
     this.internallyConnect()
   }
-  
+
   get settings(): EffectNodeSettings[] {
-    return this.effectNodes.map((effect) => effect.settings)
+    return this.effectNodes.map((effect) => effect.node.settings)
   }
 
   private internallyDisconnect() {
     this.input.disconnect()
     this.effectNodes.forEach((effect) => {
-      effect.disconnect()
+      effect.node.disconnect()
     })
   }
 
   private internallyConnect() {
-    if (this.effectNodes.length === 0) {
+    const activeEffectNodes = this.effectNodes.filter((en) => en.active)
+
+    if (activeEffectNodes.length === 0) {
       this.input.connect(this.outputNode)
 
       return
     }
 
-    this.input.connect(this.effectNodes[0].input)
+    this.input.connect(activeEffectNodes[0].node.input)
 
-    for (let i = 0; i + 1 < this.effectNodes.length; i++) {
-      this.effectNodes[i].connect(this.effectNodes[i + 1].input)
+    for (let i = 0; i + 1 < activeEffectNodes.length; i++) {
+      activeEffectNodes[i].node.connect(activeEffectNodes[i + 1].node.input)
     }
 
-    this.effectNodes[this.effectNodes.length - 1].connect(this.outputNode)
+    activeEffectNodes[this.effectNodes.length - 1].node.connect(this.outputNode)
   }
 }
 

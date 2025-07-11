@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './verticalSlider.css'
 
 type VerticalSliderProps = {
@@ -12,6 +12,7 @@ type VerticalSliderProps = {
   minExp?: number
   maxExp?: number
   trackCenterExp?: number
+  tooltip?: boolean | ((value: number) => string)
   className?: string
 }
 
@@ -26,8 +27,11 @@ export default function VerticalSlider({
   minExp = 0.001,
   maxExp = 1,
   trackCenterExp = minExp,
+  tooltip,
   className = '',
 }: VerticalSliderProps) {
+  const [isActive, setIsActive] = useState(false)
+
   const toSlider = (v: number) =>
     exponential ? Math.log(v / minExp) / Math.log(maxExp / minExp) : v
   const fromSlider = (s: number) =>
@@ -85,6 +89,24 @@ export default function VerticalSlider({
           ></div>
         </div>
       </div>
+      <div
+        className='absolute w-full'
+        style={{
+          top: 'calc(var(--thumb-height)/2)',
+          height: 'calc(100% - var(--thumb-height))',
+        }}
+      >
+        {tooltip && isActive && (
+          <div
+            className='absolute left-1/2 rounded px-0.5 py-0.25 bg-gray-50 dark:bg-gray-950 -translate-x-1/2 pointer-events-none whitespace-nowrap'
+            style={{
+              bottom: `calc(${percent}% + var(--thumb-height))`,
+            }}
+          >
+            {tooltip === true ? value : tooltip(value)}
+          </div>
+        )}
+      </div>
       <input
         type='range'
         min={sliderMin}
@@ -95,6 +117,11 @@ export default function VerticalSlider({
           const v = parseFloat(e.target.value)
           onChange(fromSlider(v))
         }}
+        onMouseDown={() => setIsActive(true)}
+        onMouseUp={() => setIsActive(false)}
+        onTouchStart={() => setIsActive(true)}
+        onTouchEnd={() => setIsActive(false)}
+        onBlur={() => setIsActive(false)}
         className={`vertical-slider w-full ${className}`}
       />
     </div>

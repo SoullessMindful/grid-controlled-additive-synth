@@ -135,6 +135,7 @@ export default function SynthMenuWaveTab() {
                             min={0}
                             max={1}
                             step={0.001}
+                            tooltip={(v) => v.toFixed(3)}
                             className='h-15 w-2 thumb-h-1 thumb-r-1'
                           />
                           <div
@@ -185,6 +186,7 @@ export default function SynthMenuWaveTab() {
                           exponential
                           minExp={0.001}
                           maxExp={10}
+                          tooltip={(v) => `${v * 1000}ms`}
                           className='h-15 w-2 thumb-h-1 thumb-r-1'
                         />
                       )
@@ -207,6 +209,7 @@ export default function SynthMenuWaveTab() {
                           exponential
                           minExp={0.001}
                           maxExp={10}
+                          tooltip={(v) => `${v * 1000}ms`}
                           className='h-15 w-2 thumb-h-1 thumb-r-1'
                         />
                       )
@@ -228,6 +231,7 @@ export default function SynthMenuWaveTab() {
                           min={0}
                           max={1}
                           step={0.01}
+                          tooltip={(v) => v.toFixed(3)}
                           className='h-15 w-2 thumb-h-1 thumb-r-1'
                         />
                       )
@@ -250,6 +254,7 @@ export default function SynthMenuWaveTab() {
                           exponential
                           minExp={0.001}
                           maxExp={10}
+                          tooltip={(v) => `${v * 1000}ms`}
                           className='h-15 w-2 thumb-h-1 thumb-r-1'
                         />
                       )
@@ -294,6 +299,7 @@ export default function SynthMenuWaveTab() {
             min={0}
             max={1}
             step={0.01}
+            tooltip={(v) => v.toFixed(2)}
             className='h-15 w-2 thumb-h-1 thumb-r-1'
           />
         </div>
@@ -309,6 +315,7 @@ export default function SynthMenuWaveTab() {
             minExp={0.001}
             maxExp={10}
             className='h-15 w-2 thumb-h-1 thumb-r-1'
+            tooltip={(v) => `${v * 1000}ms`}
           />
         </div>
         <div className='w-5 text-center'>
@@ -323,6 +330,7 @@ export default function SynthMenuWaveTab() {
             minExp={0.001}
             maxExp={10}
             className='h-15 w-2 thumb-h-1 thumb-r-1'
+            tooltip={(v) => `${v * 1000}ms`}
           />
         </div>
         <div className='w-5 text-center'>
@@ -336,6 +344,7 @@ export default function SynthMenuWaveTab() {
             min={0}
             max={1}
             step={0.01}
+            tooltip={(v) => v.toFixed(2)}
             className='h-15 w-2 thumb-h-1 thumb-r-1'
           />
         </div>
@@ -351,6 +360,7 @@ export default function SynthMenuWaveTab() {
             minExp={0.001}
             maxExp={10}
             className='h-15 w-2 thumb-h-1 thumb-r-1'
+            tooltip={(v) => `${v * 1000}ms`}
           />
         </div>
       </div>

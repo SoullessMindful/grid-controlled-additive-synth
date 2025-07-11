@@ -62,6 +62,7 @@ export default function SynthMenuFilterTab() {
                   minExp={20}
                   maxExp={20000}
                   exponential
+                  tooltip={(v) => `${v}Hz`}
                   className='h-15 w-2 thumb-h-1 thumb-r-1'
                 />
               </div>
@@ -149,6 +150,7 @@ export default function SynthMenuFilterTab() {
                     minExp={20}
                     maxExp={20000}
                     exponential
+                    tooltip={(v) => `${v}Hz`}
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
@@ -175,6 +177,7 @@ export default function SynthMenuFilterTab() {
                     exponential
                     minExp={0.001}
                     maxExp={10}
+                    tooltip={(v) => `${v * 1000}ms`}
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
@@ -201,6 +204,7 @@ export default function SynthMenuFilterTab() {
                     exponential
                     minExp={0.001}
                     maxExp={10}
+                    tooltip={(v) => `${v * 1000}ms`}
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
@@ -225,6 +229,7 @@ export default function SynthMenuFilterTab() {
                     minExp={20}
                     maxExp={20000}
                     exponential
+                    tooltip={(v) => `${v}Hz`}
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
@@ -251,6 +256,7 @@ export default function SynthMenuFilterTab() {
                     exponential
                     minExp={0.001}
                     maxExp={10}
+                    tooltip={(v) => `${v * 1000}ms`}
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
@@ -278,6 +284,7 @@ export default function SynthMenuFilterTab() {
                   min={0.1}
                   max={7}
                   step={0.1}
+                  tooltip={(v) => v.toFixed(1)}
                   className='h-15 w-2 thumb-h-1 thumb-r-1'
                 />
               </div>
@@ -365,6 +372,7 @@ export default function SynthMenuFilterTab() {
                     min={0.1}
                     max={7}
                     step={0.1}
+                    tooltip={(v) => v.toFixed(1)}
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
@@ -389,6 +397,7 @@ export default function SynthMenuFilterTab() {
                     exponential
                     minExp={0.001}
                     maxExp={10}
+                    tooltip={(v) => `${v * 1000}ms`}
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
@@ -413,6 +422,7 @@ export default function SynthMenuFilterTab() {
                     exponential
                     minExp={0.001}
                     maxExp={10}
+                    tooltip={(v) => `${v * 1000}ms`}
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
@@ -437,6 +447,7 @@ export default function SynthMenuFilterTab() {
                     min={0.1}
                     max={7}
                     step={0.1}
+                    tooltip={(v) => v.toFixed(1)}
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
@@ -461,6 +472,7 @@ export default function SynthMenuFilterTab() {
                     exponential
                     minExp={0.001}
                     maxExp={10}
+                    tooltip={(v) => `${v * 1000}ms`}
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
@@ -487,6 +499,7 @@ export default function SynthMenuFilterTab() {
                   min={0}
                   max={1}
                   step={0.01}
+                  tooltip={(v) => `${(v * 100).toFixed(0)}%`}
                   className='h-15 w-2 thumb-h-1 thumb-r-1'
                 />
               </div>
@@ -574,6 +587,7 @@ export default function SynthMenuFilterTab() {
                     min={0}
                     max={1}
                     step={0.01}
+                    tooltip={(v) => `${(v * 100).toFixed(0)}%`}
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
@@ -598,6 +612,7 @@ export default function SynthMenuFilterTab() {
                     exponential
                     minExp={0.001}
                     maxExp={10}
+                    tooltip={(v) => `${v * 1000}ms`}
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
@@ -622,6 +637,7 @@ export default function SynthMenuFilterTab() {
                     exponential
                     minExp={0.001}
                     maxExp={10}
+                    tooltip={(v) => `${v * 1000}ms`}
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
@@ -646,6 +662,7 @@ export default function SynthMenuFilterTab() {
                     min={0}
                     max={1}
                     step={0.01}
+                    tooltip={(v) => `${(v * 100).toFixed(0)}%`}
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
@@ -672,6 +689,7 @@ export default function SynthMenuFilterTab() {
                     exponential
                     minExp={0.001}
                     maxExp={10}
+                    tooltip={(v) => `${v * 1000}ms`}
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>

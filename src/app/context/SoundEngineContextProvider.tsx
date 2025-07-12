@@ -28,6 +28,10 @@ import {
   EffectNodeSettings,
   EffectNodeType,
 } from '@/lib/audionodes/EffectChainNode'
+import {
+  createFilteredNoiseNode,
+  FilteredNoiseNode,
+} from '@/lib/audionodes/FilteredNoiseNode'
 
 let ctx: AudioContext | undefined = undefined
 let globalLimiterNode: DynamicsCompressorNode | undefined = undefined
@@ -88,7 +92,7 @@ export const SoundEngineContext = createContext<
 
 type OvertoneOsc = {
   overtoneIndex: number
-  osc: OscillatorNode
+  osc: OscillatorNode | FilteredNoiseNode
   gain: GainNode
   flipGain: GainNode
 }
@@ -438,17 +442,26 @@ export default function SoundEngineContextProvider({
           .map((env, i) => ({ env, i }))
           .filter(({ env }) => env.level !== 0)
           .map(({ env, i }) => {
-            const osc = currentCtx.createOscillator()
+            let osc
             const overtoneIndex = i + 1 // 1st harmonic is fundamental
             const freq =
               440 *
               Math.pow(2, (noteNode.note - 69) / 12) *
               overtoneIndex *
               2 ** octave
-            if (waveform.__type__ === 'BasicWaveform') {
-              osc.type = waveform.waveform
-            } else {
-              osc.setPeriodicWave(waveform.waveform)
+            switch (waveform.__type__) {
+              case 'BasicWaveform':
+                osc = currentCtx.createOscillator()
+                osc.type = waveform.waveform
+                break
+              case 'CustomWaveform':
+                osc = currentCtx.createOscillator()
+                osc.setPeriodicWave(waveform.waveform)
+                break
+              case 'NoiseWaveform':
+                osc = createFilteredNoiseNode(currentCtx, waveform.noiseType)
+                osc.Q.value = waveform.Q
+                osc.gain.value = 3*Math.pow(waveform.Q, 0.6)
             }
 
             const gain = currentCtx.createGain()

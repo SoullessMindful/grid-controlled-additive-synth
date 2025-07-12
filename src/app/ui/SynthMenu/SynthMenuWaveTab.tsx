@@ -12,6 +12,7 @@ import {
 } from '@/lib/envelope'
 import VerticalSlider from '../VerticalSlider'
 import { MinusIcon, NoSymbolIcon, PlusIcon } from '@heroicons/react/24/solid'
+import HorizontalSlider from '../HorizontalSlider'
 
 export default function SynthMenuWaveTab() {
   const {
@@ -266,7 +267,7 @@ export default function SynthMenuWaveTab() {
         </div>
       </div>
       <div className='mb-2'>
-        <label>Waveform </label>
+        <label className='w-7 inline-block'>Waveform </label>
         <select
           value={waveform.name}
           onChange={(e) => {
@@ -275,7 +276,7 @@ export default function SynthMenuWaveTab() {
             )
             if (selected) setWaveform(selected)
           }}
-          className='w-12 h-2.5 px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
+          className='w-15 h-2.5 px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
         >
           {availableWaveforms.map((wf) => (
             <option
@@ -286,6 +287,25 @@ export default function SynthMenuWaveTab() {
             </option>
           ))}
         </select>
+        {waveform.__type__ === 'NoiseWaveform' && (
+          <div className='flex flex-row mt-0.5 items-center'>
+            <label className='w-7'>Filter Q </label>
+            <HorizontalSlider
+              value={waveform.Q}
+              onChange={(newQ) =>
+                setWaveform({
+                  ...waveform,
+                  Q: newQ,
+                })
+              }
+              min={0.1}
+              max={20}
+              step={0.1}
+              tooltip={(v) => v.toFixed(1)}
+              className='w-15 h-2 thumb-w-1 thumb-r-1'
+            />
+          </div>
+        )}
       </div>
       <div className='flex flex-row justify-center items-center w-full mb-2'>
         <div className='w-5 text-center'>

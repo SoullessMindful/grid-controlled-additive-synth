@@ -168,9 +168,16 @@ export default function SoundEngineContextProvider({
     setDecay(preset.globalEnvelope.decay)
     setSustain(preset.globalEnvelope.sustain)
     setRelease(preset.globalEnvelope.release)
-    setWaveform(
+    const foundWaveform =
       availableWaveforms.find((wf) => wf.name === preset.waveformName) ??
-        availableWaveforms[0]
+      availableWaveforms[0]
+    setWaveform(
+      preset.waveformQ && foundWaveform.__type__ === 'NoiseWaveform'
+        ? {
+            ...foundWaveform,
+            Q: preset.waveformQ,
+          }
+        : foundWaveform
     )
     setOvertonesCount(preset.overtoneEnvelopes.length)
     setOvertoneEnvelopes(preset.overtoneEnvelopes)
@@ -461,7 +468,7 @@ export default function SoundEngineContextProvider({
               case 'NoiseWaveform':
                 osc = createFilteredNoiseNode(currentCtx, waveform.noiseType)
                 osc.Q.value = waveform.Q
-                osc.gain.value = 3*Math.pow(waveform.Q, 0.6)
+                osc.gain.value = 3 * Math.pow(waveform.Q, 0.6)
             }
 
             const gain = currentCtx.createGain()

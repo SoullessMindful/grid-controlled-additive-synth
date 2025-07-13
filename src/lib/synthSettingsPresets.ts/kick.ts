@@ -1,5 +1,4 @@
 import { defaultFirstOvertoneEnvelope } from '../envelope'
-import { defaultFilterParameters } from '../filterParameters'
 import { defaultOctave } from '../octave'
 import { SynthSettingsPreset } from '../synthSettingsPreset'
 import { defaultVoices } from '../voice'
@@ -35,11 +34,11 @@ export const kick: SynthSettingsPreset = {
     },
     Q: {
       value: 1.4,
-      modulation: undefined
+      modulation: undefined,
     },
     mix: {
       value: 1,
       modulation: undefined,
-    }
+    },
   },
 }

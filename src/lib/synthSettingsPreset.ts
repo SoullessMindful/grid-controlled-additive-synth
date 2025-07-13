@@ -7,6 +7,7 @@ import { harshRythm } from './synthSettingsPresets.ts/harshRythm'
 import { kick } from './synthSettingsPresets.ts/kick'
 import { simpleBass } from './synthSettingsPresets.ts/simpleBass'
 import { simpleOrgans } from './synthSettingsPresets.ts/simpleOrgans'
+import { simplePercussive } from './synthSettingsPresets.ts/simplePercussive'
 import { Voice } from './voice'
 
 export type SynthSettingsPreset = {
@@ -30,4 +31,5 @@ export const availablePresets = [
   drawbarOrgans,
   harshRythm,
   kick,
+  simplePercussive,
 ]

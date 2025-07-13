@@ -182,6 +182,8 @@ export default function SoundEngineContextProvider({
     setOvertonesCount(preset.overtoneEnvelopes.length)
     setOvertoneEnvelopes(preset.overtoneEnvelopes)
     setFilterParameters(preset.filterParameters)
+    effectChain?.recreateEffectChain(preset.effectChainSettings)
+    updateEffectSettings()
   }
   // Synth settings end
 

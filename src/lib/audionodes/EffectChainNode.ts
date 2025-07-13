@@ -137,6 +137,49 @@ export class EffectChainNode {
       }
     }
   }
+  
+  recreateEffectChain(newSettings: EffectNodeSettings[]) {
+    this.internallyDisconnect()
+
+    this.effectNodes = newSettings.map((es) => {
+      let en: EffectNode
+      let node
+      const active = es.active
+
+      switch (es.__type__) {
+        case 'default':
+          node = createDefaultEffectNode(this.input.context)
+          en = {
+            node,
+            active,
+          }
+          node.setSettings(es)
+          break;
+
+        case 'delay':
+          node = createDelayEffectNode(this.input.context)
+          en = {
+            node,
+            active,
+          }
+          node.setSettings(es)
+          break;
+
+        case 'eq':
+          node = createEQEffectNode(this.input.context)
+          en = {
+            node,
+            active,
+          }
+          node.setSettings(es)
+          break;
+      }
+
+      return en
+    })
+
+    this.internallyConnect()
+  }
 
   private internallyDisconnect() {
     this.input.disconnect()

@@ -1,3 +1,4 @@
+import { EffectNodeSettings } from './audionodes/EffectChainNode'
 import { Envelope } from './envelope'
 import { FilterParameters } from './filterParameters'
 import { Octave } from './octave'
@@ -22,6 +23,7 @@ export type SynthSettingsPreset = {
   waveformQ?: number
   overtoneEnvelopes: Envelope[]
   filterParameters: FilterParameters
+  effectChainSettings: EffectNodeSettings[]
 }
 
 export const availablePresets = [

@@ -23,4 +23,5 @@ export const simpleOrgans: SynthSettingsPreset = {
     { level: 0.2, attack: 0.001, decay: 0.001, sustain: 1, release: 10 },
   ],
   filterParameters: defaultFilterParameters,
+  effectChainSettings: [],
 }

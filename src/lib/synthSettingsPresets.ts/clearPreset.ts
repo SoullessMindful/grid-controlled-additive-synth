@@ -18,4 +18,5 @@ export const clearPreset: SynthSettingsPreset = {
   waveformName: 'Sine',
   overtoneEnvelopes: [defaultFirstOvertoneEnvelope],
   filterParameters: defaultFilterParameters,
+  effectChainSettings: [],
 }

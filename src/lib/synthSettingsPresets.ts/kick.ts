@@ -41,4 +41,17 @@ export const kick: SynthSettingsPreset = {
       modulation: undefined,
     },
   },
+  effectChainSettings: [
+    {
+      __type__: 'eq',
+      active: true,
+      lowShelfFreq: 200,
+      lowShelfGain: 15,
+      midBandFreq: 800,
+      midBandGain: 0,
+      highShelfFreq: 3200,
+      highShelfGain: 9,
+      makeupGain: 3,
+    }
+  ],
 }

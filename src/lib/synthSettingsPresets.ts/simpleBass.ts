@@ -152,4 +152,5 @@ export const simpleBass: SynthSettingsPreset = {
       modulation: undefined,
     },
   },
+  effectChainSettings: [],
 }

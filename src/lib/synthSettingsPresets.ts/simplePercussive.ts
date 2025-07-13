@@ -22,4 +22,17 @@ export const simplePercussive: SynthSettingsPreset = {
   waveformQ: 1.4,
   overtoneEnvelopes: [defaultFirstOvertoneEnvelope],
   filterParameters: defaultFilterParameters,
+  effectChainSettings: [
+    {
+      __type__: 'eq',
+      active: true,
+      lowShelfFreq: 200,
+      lowShelfGain: 9,
+      midBandFreq: 800,
+      midBandGain: 0,
+      highShelfFreq: 3200,
+      highShelfGain: 3,
+      makeupGain: 0,
+    }
+  ],
 }

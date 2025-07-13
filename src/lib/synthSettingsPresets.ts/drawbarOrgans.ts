@@ -64,4 +64,5 @@ export const drawbarOrgans: SynthSettingsPreset = {
     defaultFirstOvertoneEnvelope, // 16
   ],
   filterParameters: defaultFilterParameters,
+  effectChainSettings: [],
 }

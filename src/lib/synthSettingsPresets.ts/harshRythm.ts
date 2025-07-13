@@ -82,7 +82,8 @@ export const harshRythm: SynthSettingsPreset = {
         decay: 0.321,
         sustain: 10000,
         release: 0.001,
-      }
-    }
-  }
+      },
+    },
+  },
+  effectChainSettings: [],
 }

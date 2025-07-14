@@ -9,6 +9,7 @@ import {
   ProcessedWaveform,
 } from '@/lib/waveform'
 import {
+  defaultGlobalEnvelope,
   defaultOvertoneEnvelope,
   defaultOvertoneEnvelopes,
   Envelope,
@@ -137,11 +138,20 @@ export default function SoundEngineContextProvider({
       setEffectSettings(effectChain.settings)
     }
   }
-  const [level, setLevel] = useState(0.5)
-  const [attack, setAttack] = useState(0.01)
-  const [decay, setDecay] = useState(0.1)
-  const [sustain, setSustain] = useState(0.5)
-  const [release, setRelease] = useState(0.01)
+  const [globalEnvelope, setGlobalEnvelope] = useState<Envelope>(
+    defaultGlobalEnvelope
+  )
+  const { level, attack, decay, sustain, release } = globalEnvelope
+  const setLevel = (level: number) =>
+    setGlobalEnvelope((ge) => ({ ...ge, level }))
+  const setAttack = (attack: number) =>
+    setGlobalEnvelope((ge) => ({ ...ge, attack }))
+  const setDecay = (decay: number) =>
+    setGlobalEnvelope((ge) => ({ ...ge, decay }))
+  const setSustain = (sustain: number) =>
+    setGlobalEnvelope((ge) => ({ ...ge, sustain }))
+  const setRelease = (release: number) =>
+    setGlobalEnvelope((ge) => ({ ...ge, release }))
 
   const [filterParameters, setFilterParameters] = useState<FilterParameters>(
     defaultFilterParameters
@@ -163,11 +173,7 @@ export default function SoundEngineContextProvider({
     setLowpassFrequency(preset.lowpassFilterFrequency)
     setOctave(preset.octave)
     setVoices(preset.voices)
-    setLevel(preset.globalEnvelope.level)
-    setAttack(preset.globalEnvelope.attack)
-    setDecay(preset.globalEnvelope.decay)
-    setSustain(preset.globalEnvelope.sustain)
-    setRelease(preset.globalEnvelope.release)
+    setGlobalEnvelope(preset.globalEnvelope)
     const foundWaveform =
       availableWaveforms.find((wf) => wf.name === preset.waveformName) ??
       availableWaveforms[0]

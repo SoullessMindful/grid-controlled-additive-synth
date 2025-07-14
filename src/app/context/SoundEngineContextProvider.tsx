@@ -33,6 +33,8 @@ import {
   createFilteredNoiseNode,
   FilteredNoiseNode,
 } from '@/lib/audionodes/FilteredNoiseNode'
+import { clearPreset } from '@/lib/synthSettingsPresets.ts/clearPreset'
+import { afterDo } from '@/lib/afterDo'
 
 let ctx: AudioContext | undefined = undefined
 let globalLimiterNode: DynamicsCompressorNode | undefined = undefined
@@ -47,6 +49,7 @@ export type SoundEngineContextType = {
   padNoteOff: (row: number, column: number) => void
   mouseNoteOn: (row: number, column: number) => void
   mouseNoteOff: () => void
+  presetName: string | undefined
   volume: number
   setVolume: (volume: number) => void
   highpassFrequency: number
@@ -128,6 +131,8 @@ export default function SoundEngineContextProvider({
   const [mouseNode, setMouseNode] = useState<NoteNode | undefined>(undefined)
 
   // Synth settings begin
+  const [presetName, setPresetName] = useState<string | undefined>(undefined)
+  const unsetPresetName = () => setPresetName(undefined)
   const [volume, setVolume] = useState(0.5)
   const [highpassFrequency, setHighpassFrequency] = useState(20)
   const [lowpassFrequency, setLowpassFrequency] = useState(20000)
@@ -168,6 +173,7 @@ export default function SoundEngineContextProvider({
   const [meter, setMeter] = useState(-Infinity)
 
   const setSynthSettings = (preset: SynthSettingsPreset) => {
+    setPresetName(preset.name)
     setVolume(preset.volume)
     setHighpassFrequency(preset.highpassFilterFrequency)
     setLowpassFrequency(preset.lowpassFilterFrequency)
@@ -191,6 +197,10 @@ export default function SoundEngineContextProvider({
     effectChain?.recreateEffectChain(preset.effectChainSettings)
     updateEffectSettings()
   }
+
+  useEffect(() => {
+    setSynthSettings(clearPreset)
+  }, [])
   // Synth settings end
 
   useEffect(() => {
@@ -599,60 +609,67 @@ export default function SoundEngineContextProvider({
             setMouseNode(undefined)
           }
         },
+        presetName,
         volume,
-        setVolume,
+        setVolume: afterDo(setVolume, unsetPresetName),
         highpassFrequency,
-        setHighpassFrequency,
+        setHighpassFrequency: afterDo(setHighpassFrequency, unsetPresetName),
         lowpassFrequency,
-        setLowpassFrequency,
+        setLowpassFrequency: afterDo(setLowpassFrequency, unsetPresetName),
         octave,
-        setOctave,
+        setOctave: afterDo(setOctave, unsetPresetName),
         effectSettings,
         setEffectSettings: (newSettings, i) => {
           effectChain?.setSettings(newSettings, i)
           updateEffectSettings()
+          unsetPresetName()
         },
         addEffect: (effectType, i) => {
           effectChain?.addEffect(effectType, i)
           updateEffectSettings()
+          unsetPresetName()
         },
         removeEffect: (i) => {
           effectChain?.removeEffect(i)
           updateEffectSettings()
+          unsetPresetName()
         },
         changeEffect: (effectType, i) => {
           effectChain?.changeEffect(effectType, i)
           updateEffectSettings()
+          unsetPresetName()
         },
         switchEffects: (i1, i2) => {
           effectChain?.switchEffects(i1, i2)
           updateEffectSettings()
+          unsetPresetName()
         },
         setEffectActive: (active, i) => {
           effectChain?.setEffectActive(active, i)
           updateEffectSettings()
+          unsetPresetName()
         },
         level,
-        setLevel,
+        setLevel: afterDo(setLevel, unsetPresetName),
         attack,
-        setAttack,
+        setAttack: afterDo(setAttack, unsetPresetName),
         decay,
-        setDecay,
+        setDecay: afterDo(setDecay, unsetPresetName),
         sustain,
-        setSustain,
+        setSustain: afterDo(setSustain, unsetPresetName),
         release,
-        setRelease,
+        setRelease: afterDo(setRelease, unsetPresetName),
         waveform,
-        setWaveform,
+        setWaveform: afterDo(setWaveform, unsetPresetName),
         availableWaveforms,
         overtonesCount,
-        setOvertonesCount,
+        setOvertonesCount: afterDo(setOvertonesCount, unsetPresetName),
         overtoneEnvelopes,
-        setOvertoneEnvelopes,
+        setOvertoneEnvelopes: afterDo(setOvertoneEnvelopes, unsetPresetName),
         voices,
-        setVoices,
+        setVoices: afterDo(setVoices, unsetPresetName),
         filterParameters,
-        setFilterParameters,
+        setFilterParameters: afterDo(setFilterParameters, unsetPresetName),
         setSynthSettings,
         meter,
       }}

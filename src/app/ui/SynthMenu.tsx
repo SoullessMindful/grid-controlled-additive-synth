@@ -19,7 +19,7 @@ type SynthMenuProps = {
 type Tab = 'wave' | 'filter' | 'global'
 
 export default function SynthMenu({ open, onClose }: SynthMenuProps) {
-  const { setSynthSettings } = useContext(
+  const { presetName, setSynthSettings } = useContext(
     SoundEngineContext
   ) as SoundEngineContextType
   const [tab, setTab] = useState<Tab>('wave')
@@ -91,6 +91,11 @@ export default function SynthMenu({ open, onClose }: SynthMenuProps) {
             </option>
           </select>
         </div>
+      </div>
+      <div className='w-full h-2 py-0.5 text-center'>
+        <span className='text-left inline-block w-30'>
+          Preset: {presetName ?? '<Custom>'}
+        </span>
       </div>
       <div className='flex-1 min-h-0 overflow-y-auto mb-1'>
         {(() => {

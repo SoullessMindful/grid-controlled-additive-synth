@@ -1,4 +1,9 @@
 import { NoiseType } from './audioNodes/NoiseNode'
+import { additiveOctavesWaveform } from './waveforms/additiveOctaves'
+import { harshTriangleWaveform } from './waveforms/harshTriangle'
+import { imperfectSineWaveform } from './waveforms/imperfectSine'
+import { mildSawtoothWaveform } from './waveforms/mildSawtooth'
+import { mildSquareWaveform } from './waveforms/mildSquare'
 
 export type CustomWaveform = {
   name: string
@@ -25,43 +30,11 @@ export type ProcessedWaveform =
       Q: number
     }
 
-const additiveOctaves = (n: number): CustomWaveform => ({
-  name: 'Additive Octaves ' + n,
-  data: [
-    new Float32Array(
-      [...Array(2 ** (n - 1) + 1)].map((_, i) =>
-        Math.log2(i) % 1 === 0 ? (1 - 1 / (2 ** n - 1)) / i : 0
-      )
-    ),
-    new Float32Array(Array(2 ** (n - 1) + 1).fill(0)),
-  ],
-})
-
-const imperfectSine: CustomWaveform = {
-  name: 'Imperfect Sine',
-  data: [
-    new Float32Array(Array(33).fill(0)),
-    new Float32Array([
-      0,
-      1,
-      ...Array.from(
-        { length: 31 },
-        (_, i) => (-1) ** (i + 1) / ((i + 2) * (i + 2) * 64)
-      ),
-    ]),
-  ],
-}
-
 export const basicWaveforms: ProcessedWaveform[] = [
   {
     __type__: 'BasicWaveform',
     name: 'Sine',
     waveform: 'sine',
-  },
-  {
-    __type__: 'BasicWaveform',
-    name: 'Square',
-    waveform: 'square',
   },
   {
     __type__: 'BasicWaveform',
@@ -72,6 +45,11 @@ export const basicWaveforms: ProcessedWaveform[] = [
     __type__: 'BasicWaveform',
     name: 'Sawtooth',
     waveform: 'sawtooth',
+  },
+  {
+    __type__: 'BasicWaveform',
+    name: 'Square',
+    waveform: 'square',
   },
   {
     __type__: 'NoiseWaveform',
@@ -88,8 +66,11 @@ export const basicWaveforms: ProcessedWaveform[] = [
 ]
 
 export const customWaveforms: CustomWaveform[] = [
-  imperfectSine,
-  additiveOctaves(3),
-  additiveOctaves(4),
-  additiveOctaves(5),
+  imperfectSineWaveform,
+  harshTriangleWaveform,
+  mildSawtoothWaveform,
+  mildSquareWaveform,
+  additiveOctavesWaveform(3),
+  additiveOctavesWaveform(4),
+  additiveOctavesWaveform(5),
 ]

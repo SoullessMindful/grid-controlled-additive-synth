@@ -2,7 +2,7 @@ import {
   SoundEngineContext,
   SoundEngineContextType,
 } from '@/app/context/SoundEngineContextProvider'
-import { EffectNodeSettings } from '@/lib/audionodes/EffectChainNode'
+import { EffectNodeSettings } from '@/lib/audioNodes/EffectChainNode'
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -114,6 +114,9 @@ export default function EffectChainControl() {
                       case 'delay':
                         changeEffect('delay', selectedEffect)
                         break
+                      case 'compressor':
+                        changeEffect('compressor', selectedEffect)
+                        break
                     }
                   }}
                   className='w-full h-2 px-1  rounded bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700'
@@ -126,6 +129,7 @@ export default function EffectChainControl() {
                   </option>
                   <option value='delay'>Delay</option>
                   <option value='eq'>Parametric Equalizer</option>
+                  <option value='compressor'>Compressor</option>
                 </select>
               </div>
               {effectNodeControl(
@@ -301,7 +305,7 @@ function effectNodeControl(
               onChange={(newFrequency) => {
                 setEffectSettings({
                   ...es,
-                  highShelfFreq: Math.round(newFrequency)
+                  highShelfFreq: Math.round(newFrequency),
                 })
               }}
               exponential
@@ -317,7 +321,7 @@ function effectNodeControl(
               value={Math.round(20 * Math.log10(es.makeupGain))}
               onChange={(newGainDB) => {
                 const newGain = Math.pow(10, newGainDB * 0.05)
-                
+
                 setEffectSettings({
                   ...es,
                   makeupGain: newGain,
@@ -328,6 +332,116 @@ function effectNodeControl(
               step={1}
               trackCenter={0}
               tooltip={(v) => `${v}dB`}
+              className='w-15 h-2 thumb-w-1 thumb-r-1'
+            />
+          </div>
+        </Fragment>
+      )
+    case 'compressor':
+      return (
+        <Fragment>
+          <div>Threshold</div>
+          <div>
+            <HorizontalSlider
+              value={es.threshold}
+              onChange={(newThreshold) => {
+                setEffectSettings({
+                  ...es,
+                  threshold: Math.round(newThreshold * 10) * 0.1,
+                })
+              }}
+              min={-30}
+              max={0}
+              step={0.1}
+              tooltip={(v) => `${v.toFixed(1)}dB`}
+              className='w-15 h-2 thumb-w-1 thumb-r-1'
+            />
+          </div>
+          <div>Ratio</div>
+          <div>
+            <HorizontalSlider
+              value={es.ratio}
+              onChange={(newRatio) => {
+                setEffectSettings({
+                  ...es,
+                  ratio: newRatio,
+                })
+              }}
+              min={1}
+              max={20}
+              step={1}
+              tooltip
+              className='w-15 h-2 thumb-w-1 thumb-r-1'
+            />
+          </div>
+          <div>Attack</div>
+          <div>
+            <HorizontalSlider
+              value={es.attack}
+              onChange={(newAttack) => {
+                setEffectSettings({
+                  ...es,
+                  attack: Math.round(newAttack * 1000) / 1000,
+                })
+              }}
+              exponential
+              minExp={0.001}
+              maxExp={1}
+              tooltip={(v) => `${(v * 1000).toFixed(0)}ms`}
+              className='w-15 h-2 thumb-w-1 thumb-r-1'
+            />
+          </div>
+          <div>Release</div>
+          <div>
+            <HorizontalSlider
+              value={es.release}
+              onChange={(newRelease) => {
+                setEffectSettings({
+                  ...es,
+                  release: Math.round(newRelease * 1000) / 1000,
+                })
+              }}
+              exponential
+              minExp={0.001}
+              maxExp={1}
+              tooltip={(v) => `${(v * 1000).toFixed(0)}ms`}
+              className='w-15 h-2 thumb-w-1 thumb-r-1'
+            />
+          </div>
+          <div>Gain</div>
+          <div>
+            <HorizontalSlider
+              value={Math.round(20 * Math.log10(es.makeupGain))}
+              onChange={(newGainDB) => {
+                const newGain = Math.pow(10, newGainDB * 0.05)
+
+                setEffectSettings({
+                  ...es,
+                  makeupGain: newGain,
+                })
+              }}
+              min={-30}
+              max={0}
+              step={0.1}
+              trackCenter={0}
+              tooltip={(v) => `${v}dB`}
+              className='w-15 h-2 thumb-w-1 thumb-r-1'
+            />
+          </div>
+          <div>Mix</div>
+          <div>
+            <HorizontalSlider
+              value={es.mix}
+              onChange={(newMix) => {
+                setEffectSettings({
+                  ...es,
+                  mix: newMix,
+                })
+              }}
+              min={0}
+              max={1}
+              step={0.01}
+              tooltip={(v) => `${(v * 100).toFixed(0)}%`}
               className='w-15 h-2 thumb-w-1 thumb-r-1'
             />
           </div>
@@ -344,5 +458,7 @@ function displayEffectShortName(es: EffectNodeSettings): string {
       return 'Delay'
     case 'eq':
       return 'PEQ'
+    case 'compressor':
+      return 'Compressor'
   }
 }

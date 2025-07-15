@@ -1,3 +1,4 @@
+import { CompressorEffectNode, CompressorEffectNodeSettings, createCompressorEffectNode } from './CompressorEffectNode'
 import {
   createDefaultEffectNode,
   DefaultEffectNode,
@@ -15,14 +16,15 @@ import {
 } from './EQEffectNode'
 
 export type EffectNode = {
-  node: DefaultEffectNode | DelayEffectNode | EQEffectNode
+  node: DefaultEffectNode | DelayEffectNode | EQEffectNode | CompressorEffectNode
   active: boolean
 }
-export type EffectNodeType = 'default' | 'delay' | 'eq'
+export type EffectNodeType = 'default' | 'delay' | 'eq' | 'compressor'
 export type EffectNodeSettings = (
   | DefaultEffectNodeSettings
   | DelayEffectNodeSettings
   | EQEffectNodeSettings
+  | CompressorEffectNodeSettings
 ) & {
   active: boolean
 }
@@ -63,15 +65,24 @@ export class EffectChainNode {
           active: true,
         }
         break
+
       case 'eq':
         effect = {
           node: createEQEffectNode(this.input.context),
           active: true,
         }
         break
+
       case 'delay':
         effect = {
           node: createDelayEffectNode(this.input.context),
+          active: true,
+        }
+        break
+
+      case 'compressor':
+        effect = {
+          node: createCompressorEffectNode(this.input.context),
           active: true,
         }
         break
@@ -131,8 +142,13 @@ export class EffectChainNode {
         case 'delay':
           (effectNode.node as DelayEffectNode).setSettings(newSettings)
           break
+
         case 'eq':
           (effectNode.node as EQEffectNode).setSettings(newSettings)
+          break
+
+        case 'compressor':
+          (effectNode.node as CompressorEffectNode).setSettings(newSettings)
           break
       }
     }
@@ -167,6 +183,15 @@ export class EffectChainNode {
 
         case 'eq':
           node = createEQEffectNode(this.input.context)
+          en = {
+            node,
+            active,
+          }
+          node.setSettings(es)
+          break;
+
+        case 'compressor':
+          node = createCompressorEffectNode(this.input.context)
           en = {
             node,
             active,

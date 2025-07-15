@@ -1,4 +1,4 @@
-import { NoiseType } from './audionodes/NoiseNode'
+import { NoiseType } from './audioNodes/NoiseNode'
 
 export type CustomWaveform = {
   name: string

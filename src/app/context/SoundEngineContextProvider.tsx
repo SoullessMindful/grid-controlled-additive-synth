@@ -21,19 +21,19 @@ import {
 } from '@/lib/filterParameters'
 import { SynthSettingsPreset } from '@/lib/synthSettingsPreset'
 import { defaultVoices, Voice, voicePhase } from '@/lib/voice'
-import { createMixNode, MixNode } from '@/lib/audionodes/MixNode'
+import { createMixNode, MixNode } from '@/lib/audioNodes/MixNode'
 import { defaultOctave, Octave } from '@/lib/octave'
 import {
   createEffectChainNode,
   EffectChainNode,
   EffectNodeSettings,
   EffectNodeType,
-} from '@/lib/audionodes/EffectChainNode'
+} from '@/lib/audioNodes/EffectChainNode'
 import {
   createFilteredNoiseNode,
   FilteredNoiseNode,
-} from '@/lib/audionodes/FilteredNoiseNode'
-import { clearPreset } from '@/lib/synthSettingsPresets.ts/clearPreset'
+} from '@/lib/audioNodes/FilteredNoiseNode'
+import { clearPreset } from '@/lib/synthSettingsPresets/clearPreset'
 import { afterDo } from '@/lib/afterDo'
 
 let ctx: AudioContext | undefined = undefined

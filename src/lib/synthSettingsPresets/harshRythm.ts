@@ -6,7 +6,7 @@ import { defaultFilterParameters } from '../filterParameters'
 import { defaultOctave } from '../octave'
 import { SynthSettingsPreset } from '../synthSettingsPreset'
 
-export const harshRythm: SynthSettingsPreset = {
+export const harshRythmPreset: SynthSettingsPreset = {
   name: 'Harsh Rhythm',
   volume: 0.5,
   highpassFilterFrequency: 80,

@@ -4,7 +4,7 @@ import { defaultOctave } from '../octave'
 import { SynthSettingsPreset } from '../synthSettingsPreset'
 import { defaultVoices } from '../voice'
 
-export const simplePercussive: SynthSettingsPreset = {
+export const simplePercussivePreset: SynthSettingsPreset = {
   name: 'Simple Percussive',
   volume: 0.8,
   highpassFilterFrequency: 20,
@@ -33,6 +33,6 @@ export const simplePercussive: SynthSettingsPreset = {
       highShelfFreq: 3200,
       highShelfGain: 3,
       makeupGain: 0,
-    }
+    },
   ],
 }

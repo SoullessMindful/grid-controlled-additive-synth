@@ -3,7 +3,7 @@ import { defaultOctave } from '../octave'
 import { SynthSettingsPreset } from '../synthSettingsPreset'
 import { defaultVoices } from '../voice'
 
-export const kick: SynthSettingsPreset = {
+export const kickPreset: SynthSettingsPreset = {
   name: 'Kick',
   volume: 1,
   highpassFilterFrequency: 20,
@@ -52,6 +52,6 @@ export const kick: SynthSettingsPreset = {
       highShelfFreq: 3200,
       highShelfGain: 9,
       makeupGain: 3,
-    }
+    },
   ],
 }

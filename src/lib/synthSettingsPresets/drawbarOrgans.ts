@@ -19,7 +19,7 @@ const halfOfDefaultFirstOvertoneEnvelope: Envelope = {
   level: 0.5,
 }
 
-export const drawbarOrgans: SynthSettingsPreset = {
+export const drawbarOrgansPreset: SynthSettingsPreset = {
   name: 'Drawbar Organs',
   volume: 0.5,
   highpassFilterFrequency: 40,

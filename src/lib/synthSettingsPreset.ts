@@ -3,12 +3,12 @@ import { Envelope } from './envelope'
 import { FilterParameters } from './filterParameters'
 import { Octave } from './octave'
 import { clearPreset } from './synthSettingsPresets/clearPreset'
-import { drawbarOrgans } from './synthSettingsPresets/drawbarOrgans'
-import { harshRythm } from './synthSettingsPresets/harshRythm'
-import { kick } from './synthSettingsPresets/kick'
-import { simpleBass } from './synthSettingsPresets/simpleBass'
-import { simpleOrgans } from './synthSettingsPresets/simpleOrgans'
-import { simplePercussive } from './synthSettingsPresets/simplePercussive'
+import { drawbarOrgansPreset } from './synthSettingsPresets/drawbarOrgans'
+import { harshRythmPreset } from './synthSettingsPresets/harshRythm'
+import { kickPreset } from './synthSettingsPresets/kick'
+import { simpleBassPreset } from './synthSettingsPresets/simpleBass'
+import { simpleOrgansPreset } from './synthSettingsPresets/simpleOrgans'
+import { simplePercussivePreset } from './synthSettingsPresets/simplePercussive'
 import { Voice } from './voice'
 
 export type SynthSettingsPreset = {
@@ -28,10 +28,10 @@ export type SynthSettingsPreset = {
 
 export const availablePresets = [
   clearPreset,
-  simpleBass,
-  simpleOrgans,
-  drawbarOrgans,
-  harshRythm,
-  kick,
-  simplePercussive,
+  simpleBassPreset,
+  simpleOrgansPreset,
+  drawbarOrgansPreset,
+  harshRythmPreset,
+  kickPreset,
+  simplePercussivePreset,
 ]

@@ -2,7 +2,7 @@ import { defaultOctave } from '../octave'
 import { SynthSettingsPreset } from '../synthSettingsPreset'
 import { defaultVoices } from '../voice'
 
-export const simpleBass: SynthSettingsPreset = {
+export const simpleBassPreset: SynthSettingsPreset = {
   name: 'Simple Bass',
   volume: 0.5,
   highpassFilterFrequency: 20,

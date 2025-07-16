@@ -318,10 +318,8 @@ function effectNodeControl(
           <div>Gain</div>
           <div>
             <HorizontalSlider
-              value={Math.round(20 * Math.log10(es.makeupGain))}
-              onChange={(newGainDB) => {
-                const newGain = Math.pow(10, newGainDB * 0.05)
-
+              value={es.makeupGain}
+              onChange={(newGain) => {
                 setEffectSettings({
                   ...es,
                   makeupGain: newGain,
@@ -411,10 +409,8 @@ function effectNodeControl(
           <div>Gain</div>
           <div>
             <HorizontalSlider
-              value={Math.round(20 * Math.log10(es.makeupGain))}
-              onChange={(newGainDB) => {
-                const newGain = Math.pow(10, newGainDB * 0.05)
-
+              value={es.makeupGain}
+              onChange={(newGain) => {
                 setEffectSettings({
                   ...es,
                   makeupGain: newGain,
@@ -422,7 +418,7 @@ function effectNodeControl(
               }}
               min={-30}
               max={0}
-              step={0.1}
+              step={1}
               trackCenter={0}
               tooltip={(v) => `${v}dB`}
               className='w-15 h-2 thumb-w-1 thumb-r-1'

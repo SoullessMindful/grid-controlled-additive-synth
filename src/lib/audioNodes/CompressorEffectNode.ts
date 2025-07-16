@@ -1,4 +1,4 @@
-import { createMixNode, MixNode } from "./MixNode"
+import { createMixNode, MixNode } from './MixNode'
 
 export type CompressorEffectNodeSettings = {
   __type__: 'compressor'
@@ -16,14 +16,14 @@ export class CompressorEffectNode {
   private makeupGainNode: GainNode
   private mixNode: MixNode
 
-  constructor (ctx: BaseAudioContext) {
+  constructor(ctx: BaseAudioContext) {
     this.input = ctx.createGain()
     this.input.gain.value = 1
 
     this.compressorNode = ctx.createDynamicsCompressor()
     this.compressorNode.threshold.value = 0
     this.compressorNode.ratio.value = 5
-    
+
     this.makeupGainNode = ctx.createGain()
     this.makeupGainNode.gain.value = 1
 
@@ -32,7 +32,8 @@ export class CompressorEffectNode {
 
     this.input.connect(this.compressorNode)
     this.input.connect(this.mixNode.dry)
-    this.compressorNode.connect(this.mixNode.wet)
+    this.compressorNode.connect(this.makeupGainNode)
+    this.makeupGainNode.connect(this.mixNode.wet)
   }
 
   connect(node: AudioNode) {
@@ -44,6 +45,9 @@ export class CompressorEffectNode {
   }
 
   get settings(): CompressorEffectNodeSettings {
+    const makeupGain = Math.round(
+      20 * Math.log10(this.makeupGainNode.gain.value)
+    )
     return {
       __type__: 'compressor',
       mix: this.mixNode.mix.value,
@@ -51,35 +55,62 @@ export class CompressorEffectNode {
       attack: this.compressorNode.attack.value,
       release: this.compressorNode.release.value,
       threshold: this.compressorNode.threshold.value,
-      makeupGain: this.makeupGainNode.gain.value,
+      makeupGain: makeupGain,
     }
   }
 
   setSettings(newSettings: CompressorEffectNodeSettings) {
     const settings = this.settings
 
-    if (settings.mix !== newSettings.mix && newSettings.mix >= 0 && newSettings.mix <= 1) {
+    if (
+      settings.mix !== newSettings.mix &&
+      newSettings.mix >= 0 &&
+      newSettings.mix <= 1
+    ) {
       this.mixNode.mix.value = newSettings.mix
     }
 
-    if (settings.ratio !== newSettings.ratio && newSettings.ratio >= 1 && newSettings.ratio <= 20) {
+    if (
+      settings.ratio !== newSettings.ratio &&
+      newSettings.ratio >= 1 &&
+      newSettings.ratio <= 20
+    ) {
       this.compressorNode.ratio.value = newSettings.ratio
     }
 
-    if (settings.attack !== newSettings.attack && newSettings.attack >= 0 && newSettings.attack <= 1) {
+    if (
+      settings.attack !== newSettings.attack &&
+      newSettings.attack >= 0 &&
+      newSettings.attack <= 1
+    ) {
       this.compressorNode.attack.value = newSettings.attack
     }
 
-    if (settings.release !== newSettings.release && newSettings.release >= 0 && newSettings.release <= 1) {
+    if (
+      settings.release !== newSettings.release &&
+      newSettings.release >= 0 &&
+      newSettings.release <= 1
+    ) {
       this.compressorNode.release.value = newSettings.release
     }
 
-    if (settings.threshold !== newSettings.threshold && newSettings.threshold >= -60 && newSettings.threshold <= 0) {
+    if (
+      settings.threshold !== newSettings.threshold &&
+      newSettings.threshold >= -60 &&
+      newSettings.threshold <= 0
+    ) {
       this.compressorNode.threshold.value = newSettings.threshold
     }
 
-    if (settings.makeupGain !== newSettings.makeupGain && newSettings.makeupGain >= 0 && newSettings.makeupGain <= 1) {
-      this.makeupGainNode.gain.value = newSettings.makeupGain
+    if (
+      settings.makeupGain !== newSettings.makeupGain &&
+      newSettings.makeupGain >= -30 &&
+      newSettings.makeupGain <= 0
+    ) {
+      this.makeupGainNode.gain.value = Math.pow(
+        10,
+        newSettings.makeupGain * 0.05
+      )
     }
   }
 }

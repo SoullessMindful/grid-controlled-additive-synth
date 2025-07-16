@@ -16,7 +16,7 @@ export const simpleBassPreset: SynthSettingsPreset = {
     sustain: 0.25,
     release: 0.01,
   },
-  waveformName: 'Sine',
+  waveformName: 'Imperfect Sine',
   overtoneEnvelopes: [
     {
       level: 0.5,
@@ -152,5 +152,17 @@ export const simpleBassPreset: SynthSettingsPreset = {
       modulation: undefined,
     },
   },
-  effectChainSettings: [],
+  effectChainSettings: [
+    {
+      __type__: 'eq',
+      active: true,
+      lowShelfFreq: 200,
+      lowShelfGain: 6,
+      midBandFreq: 1200,
+      midBandGain: -3,
+      highShelfFreq: 3200,
+      highShelfGain: 0,
+      makeupGain: -2,
+    },
+  ],
 }

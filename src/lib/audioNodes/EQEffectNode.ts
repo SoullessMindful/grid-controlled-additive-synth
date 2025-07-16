@@ -40,7 +40,7 @@ export class EQEffectNode {
 
     this.makeupGainNode = ctx.createGain()
     this.makeupGainNode.gain.value = 1
-    
+
     this.input.connect(this.lowShelfNode)
     this.lowShelfNode.connect(this.midBandNode)
     this.midBandNode.connect(this.highShelfNode)
@@ -56,6 +56,9 @@ export class EQEffectNode {
   }
 
   get settings(): EQEffectNodeSettings {
+    const makeupGain = Math.round(
+      20 * Math.log10(this.makeupGainNode.gain.value)
+    )
     return {
       __type__: 'eq',
       lowShelfFreq: this.lowShelfNode.frequency.value,
@@ -64,39 +67,70 @@ export class EQEffectNode {
       midBandGain: this.midBandNode.gain.value,
       highShelfFreq: this.highShelfNode.frequency.value,
       highShelfGain: this.highShelfNode.gain.value,
-      makeupGain: this.makeupGainNode.gain.value,
+      makeupGain: makeupGain,
     }
   }
-  
+
   setSettings(newSettings: EQEffectNodeSettings) {
     const settings = this.settings
 
-    if (settings.lowShelfFreq !== newSettings.lowShelfFreq && newSettings.lowShelfFreq >= 50 && newSettings.lowShelfFreq <= 12800) {
+    if (
+      settings.lowShelfFreq !== newSettings.lowShelfFreq &&
+      newSettings.lowShelfFreq >= 50 &&
+      newSettings.lowShelfFreq <= 12800
+    ) {
       this.lowShelfNode.frequency.value = newSettings.lowShelfFreq
     }
 
-    if (settings.lowShelfGain !== newSettings.lowShelfGain && newSettings.lowShelfGain >= -15 && newSettings.lowShelfGain <= 15) {
+    if (
+      settings.lowShelfGain !== newSettings.lowShelfGain &&
+      newSettings.lowShelfGain >= -15 &&
+      newSettings.lowShelfGain <= 15
+    ) {
       this.lowShelfNode.gain.value = newSettings.lowShelfGain
     }
 
-    if (settings.midBandFreq !== newSettings.midBandFreq && newSettings.midBandFreq >= 50 && newSettings.midBandFreq <= 12800) {
+    if (
+      settings.midBandFreq !== newSettings.midBandFreq &&
+      newSettings.midBandFreq >= 50 &&
+      newSettings.midBandFreq <= 12800
+    ) {
       this.midBandNode.frequency.value = newSettings.midBandFreq
     }
 
-    if (settings.midBandGain !== newSettings.midBandGain && newSettings.midBandGain >= -15 && newSettings.midBandGain <= 15) {
+    if (
+      settings.midBandGain !== newSettings.midBandGain &&
+      newSettings.midBandGain >= -15 &&
+      newSettings.midBandGain <= 15
+    ) {
       this.midBandNode.gain.value = newSettings.midBandGain
     }
 
-    if (settings.highShelfFreq !== newSettings.highShelfFreq && newSettings.highShelfFreq >= 50 && newSettings.highShelfFreq <= 12800) {
+    if (
+      settings.highShelfFreq !== newSettings.highShelfFreq &&
+      newSettings.highShelfFreq >= 50 &&
+      newSettings.highShelfFreq <= 12800
+    ) {
       this.highShelfNode.frequency.value = newSettings.highShelfFreq
     }
 
-    if (settings.highShelfGain !== newSettings.highShelfGain && newSettings.highShelfGain >= -15 && newSettings.highShelfGain <= 15) {
+    if (
+      settings.highShelfGain !== newSettings.highShelfGain &&
+      newSettings.highShelfGain >= -15 &&
+      newSettings.highShelfGain <= 15
+    ) {
       this.highShelfNode.gain.value = newSettings.highShelfGain
     }
 
-    if (settings.makeupGain !== newSettings.makeupGain && newSettings.makeupGain > 0) {
-      this.makeupGainNode.gain.value = newSettings.makeupGain
+    if (
+      settings.makeupGain !== newSettings.makeupGain &&
+      newSettings.makeupGain >= -15 &&
+      newSettings.makeupGain <= 15
+    ) {
+      this.makeupGainNode.gain.value = Math.pow(
+        10,
+        newSettings.makeupGain * 0.05
+      )
     }
   }
 }

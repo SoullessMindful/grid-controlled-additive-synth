@@ -18,6 +18,7 @@ import {
   EQEffectNode,
   EQEffectNodeSettings,
 } from './effectNodes/EQEffectNode'
+import { createOverdriveEffectNode, OverdriveEffectNode, OverdriveEffectNodeSettings } from './effectNodes/OverdriveEffectNode'
 
 export type EffectNode = {
   node:
@@ -25,14 +26,16 @@ export type EffectNode = {
     | DelayEffectNode
     | EQEffectNode
     | CompressorEffectNode
+    | OverdriveEffectNode
   active: boolean
 }
-export type EffectNodeType = 'default' | 'delay' | 'eq' | 'compressor'
+export type EffectNodeType = 'default' | 'delay' | 'eq' | 'compressor' | 'overdrive'
 export type EffectNodeSettings = (
   | DefaultEffectNodeSettings
   | DelayEffectNodeSettings
   | EQEffectNodeSettings
   | CompressorEffectNodeSettings
+  | OverdriveEffectNodeSettings
 ) & {
   active: boolean
 }
@@ -91,6 +94,13 @@ export class EffectChainNode {
       case 'compressor':
         effect = {
           node: createCompressorEffectNode(this.input.context),
+          active: true,
+        }
+        break
+
+      case 'overdrive':
+        effect = {
+          node: createOverdriveEffectNode(this.input.context),
           active: true,
         }
         break
@@ -158,6 +168,10 @@ export class EffectChainNode {
         case 'compressor':
           ;(effectNode.node as CompressorEffectNode).setSettings(newSettings)
           break
+
+        case 'overdrive':
+          ;(effectNode.node as OverdriveEffectNode).setSettings(newSettings)
+          break
       }
     }
   }
@@ -200,6 +214,15 @@ export class EffectChainNode {
 
         case 'compressor':
           node = createCompressorEffectNode(this.input.context)
+          en = {
+            node,
+            active,
+          }
+          node.setSettings(es)
+          break
+
+        case 'overdrive':
+          node = createOverdriveEffectNode(this.input.context)
           en = {
             node,
             active,

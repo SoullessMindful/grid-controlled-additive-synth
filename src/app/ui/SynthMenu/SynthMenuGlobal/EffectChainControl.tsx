@@ -109,13 +109,10 @@ export default function EffectChainControl() {
 
                     switch (newValue) {
                       case 'eq':
-                        changeEffect('eq', selectedEffect)
-                        break
                       case 'delay':
-                        changeEffect('delay', selectedEffect)
-                        break
                       case 'compressor':
-                        changeEffect('compressor', selectedEffect)
+                      case 'overdrive':
+                        changeEffect(newValue, selectedEffect)
                         break
                     }
                   }}
@@ -130,6 +127,7 @@ export default function EffectChainControl() {
                   <option value='delay'>Delay</option>
                   <option value='eq'>Parametric Equalizer</option>
                   <option value='compressor'>Compressor</option>
+                  <option value='overdrive'>Overdrive</option>
                 </select>
               </div>
               {effectNodeControl(
@@ -443,6 +441,47 @@ function effectNodeControl(
           </div>
         </Fragment>
       )
+    case 'overdrive':
+      return (
+        <Fragment>
+          <div>Gain</div>
+          <div>
+            <HorizontalSlider
+              value={es.gain}
+              onChange={(newGain) => {
+                setEffectSettings({
+                  ...es,
+                  gain: newGain,
+                })
+              }}
+              min={-15}
+              max={15}
+              step={1}
+              trackCenter={0}
+              tooltip={(v) => `${v}dB`}
+              className='w-15 h-2 thumb-w-1 thumb-r-1'
+            />
+          </div>
+          <div>Volume</div>
+          <div>
+            <HorizontalSlider
+              value={es.volume}
+              onChange={(newGain) => {
+                setEffectSettings({
+                  ...es,
+                  volume: newGain,
+                })
+              }}
+              min={-30}
+              max={0}
+              step={1}
+              trackCenter={0}
+              tooltip={(v) => `${v}dB`}
+              className='w-15 h-2 thumb-w-1 thumb-r-1'
+            />
+          </div>
+        </Fragment>
+      )
   }
 }
 
@@ -456,5 +495,7 @@ function displayEffectShortName(es: EffectNodeSettings): string {
       return 'PEQ'
     case 'compressor':
       return 'Compressor'
+    case 'overdrive':
+      return 'Overdrive'
   }
 }

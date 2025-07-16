@@ -1,4 +1,4 @@
-import { createMixNode, MixNode } from './MixNode'
+import { createMixNode, MixNode } from '../MixNode'
 
 export type CompressorEffectNodeSettings = {
   __type__: 'compressor'

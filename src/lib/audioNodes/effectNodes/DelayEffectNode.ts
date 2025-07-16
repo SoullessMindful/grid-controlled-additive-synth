@@ -1,4 +1,4 @@
-import { createMixNode, MixNode } from './MixNode'
+import { createMixNode, MixNode } from '../MixNode'
 
 export type DelayEffectNodeSettings = {
   __type__: 'delay'
@@ -51,15 +51,27 @@ export class DelayEffectNode {
   setSettings(newSettings: DelayEffectNodeSettings) {
     const settings = this.settings
 
-    if (settings.mix !== newSettings.mix && newSettings.mix >= 0 && newSettings.mix <= 1) {
+    if (
+      settings.mix !== newSettings.mix &&
+      newSettings.mix >= 0 &&
+      newSettings.mix <= 1
+    ) {
       this.mixNode.mix.value = newSettings.mix
     }
 
-    if (settings.time !== newSettings.time && newSettings.time >= 0 && newSettings.time <= 1) {
+    if (
+      settings.time !== newSettings.time &&
+      newSettings.time >= 0 &&
+      newSettings.time <= 1
+    ) {
       this.delayNode.delayTime.value = newSettings.time
     }
 
-    if (settings.feedback !== newSettings.feedback && newSettings.feedback >= 0 && newSettings.feedback <= 1) {
+    if (
+      settings.feedback !== newSettings.feedback &&
+      newSettings.feedback >= 0 &&
+      newSettings.feedback <= 1
+    ) {
       this.feedbackNode.gain.value = newSettings.feedback
     }
   }

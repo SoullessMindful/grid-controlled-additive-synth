@@ -1,22 +1,30 @@
-import { CompressorEffectNode, CompressorEffectNodeSettings, createCompressorEffectNode } from './CompressorEffectNode'
+import {
+  CompressorEffectNode,
+  CompressorEffectNodeSettings,
+  createCompressorEffectNode,
+} from './effectNodes/CompressorEffectNode'
 import {
   createDefaultEffectNode,
   DefaultEffectNode,
   DefaultEffectNodeSettings,
-} from './DefaultEffectNode'
+} from './effectNodes/DefaultEffectNode'
 import {
   createDelayEffectNode,
   DelayEffectNode,
   DelayEffectNodeSettings,
-} from './DelayEffectNode'
+} from './effectNodes/DelayEffectNode'
 import {
   createEQEffectNode,
   EQEffectNode,
   EQEffectNodeSettings,
-} from './EQEffectNode'
+} from './effectNodes/EQEffectNode'
 
 export type EffectNode = {
-  node: DefaultEffectNode | DelayEffectNode | EQEffectNode | CompressorEffectNode
+  node:
+    | DefaultEffectNode
+    | DelayEffectNode
+    | EQEffectNode
+    | CompressorEffectNode
   active: boolean
 }
 export type EffectNodeType = 'default' | 'delay' | 'eq' | 'compressor'
@@ -138,22 +146,22 @@ export class EffectChainNode {
     const settings = effectNode.node.settings
 
     if (settings.__type__ === newSettings.__type__) {
-      switch(newSettings.__type__) {
+      switch (newSettings.__type__) {
         case 'delay':
-          (effectNode.node as DelayEffectNode).setSettings(newSettings)
+          ;(effectNode.node as DelayEffectNode).setSettings(newSettings)
           break
 
         case 'eq':
-          (effectNode.node as EQEffectNode).setSettings(newSettings)
+          ;(effectNode.node as EQEffectNode).setSettings(newSettings)
           break
 
         case 'compressor':
-          (effectNode.node as CompressorEffectNode).setSettings(newSettings)
+          ;(effectNode.node as CompressorEffectNode).setSettings(newSettings)
           break
       }
     }
   }
-  
+
   recreateEffectChain(newSettings: EffectNodeSettings[]) {
     this.internallyDisconnect()
 
@@ -170,7 +178,7 @@ export class EffectChainNode {
             active,
           }
           node.setSettings(es)
-          break;
+          break
 
         case 'delay':
           node = createDelayEffectNode(this.input.context)
@@ -179,7 +187,7 @@ export class EffectChainNode {
             active,
           }
           node.setSettings(es)
-          break;
+          break
 
         case 'eq':
           node = createEQEffectNode(this.input.context)
@@ -188,7 +196,7 @@ export class EffectChainNode {
             active,
           }
           node.setSettings(es)
-          break;
+          break
 
         case 'compressor':
           node = createCompressorEffectNode(this.input.context)
@@ -197,7 +205,7 @@ export class EffectChainNode {
             active,
           }
           node.setSettings(es)
-          break;
+          break
       }
 
       return en

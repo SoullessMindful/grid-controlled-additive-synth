@@ -35,6 +35,7 @@ import {
 } from '@/lib/audioNodes/FilteredNoiseNode'
 import { clearPreset } from '@/lib/synthSettingsPresets/clearPreset'
 import { afterDo } from '@/lib/afterDo'
+import MidiEngineContextProvider from './MidiEngineContextProvider'
 
 let ctx: AudioContext | undefined = undefined
 let globalLimiterNode: DynamicsCompressorNode | undefined = undefined
@@ -49,6 +50,8 @@ export type SoundEngineContextType = {
   padNoteOff: (row: number, column: number) => void
   mouseNoteOn: (row: number, column: number) => void
   mouseNoteOff: () => void
+  midiNoteOn: (note: number) => void
+  midiNoteOff: (note: number) => void
   presetName: string | undefined
   volume: number
   setVolume: (volume: number) => void
@@ -129,6 +132,7 @@ export default function SoundEngineContextProvider({
 
   const [padNodes, setPadNodes] = useState<NoteNode[][]>([])
   const [mouseNode, setMouseNode] = useState<NoteNode | undefined>(undefined)
+  const [midiNodes, setMidiNodes] = useState<NoteNode[]>([])
 
   // Synth settings begin
   const [presetName, setPresetName] = useState<string | undefined>(undefined)
@@ -609,6 +613,24 @@ export default function SoundEngineContextProvider({
             setMouseNode(undefined)
           }
         },
+        midiNoteOn: (note) => {
+          const existingMidiNode = midiNodes.find((node) => node.note === note)
+          const midiNode = existingMidiNode ?? { note }
+
+          noteOn(midiNode)
+
+          if (existingMidiNode === undefined) {
+            setMidiNodes([...midiNodes, midiNode])
+          }
+        },
+        midiNoteOff: (note) => {
+          const midiNode = midiNodes.find((node) => node.note === note)
+
+          if (midiNode !== undefined) {
+            noteOff(midiNode)
+            setMidiNodes(midiNodes.filter((node) => node !== midiNode))
+          }
+        },
         presetName,
         volume,
         setVolume: afterDo(setVolume, unsetPresetName),
@@ -674,7 +696,7 @@ export default function SoundEngineContextProvider({
         meter,
       }}
     >
-      {children}
+      <MidiEngineContextProvider>{children}</MidiEngineContextProvider>
     </SoundEngineContext.Provider>
   )
 }

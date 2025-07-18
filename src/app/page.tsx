@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import GridController from './ui/GridController'
-import GridMenu from './ui/GridMenu'
+import SettingsMenu from './ui/SettingsMenu'
 import SynthMenu from './ui/SynthMenu'
 import {
   ArrowsPointingInIcon,
@@ -59,7 +59,7 @@ export default function Home() {
         open={isSynthMenuOpen}
         onClose={() => setIsSynthMenuOpen(false)}
       />
-      <GridMenu
+      <SettingsMenu
         open={isGridMenuOpen}
         onClose={() => setIsGridMenuOpen(false)}
       />

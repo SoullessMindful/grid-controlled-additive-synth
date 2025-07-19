@@ -24,7 +24,7 @@ export type MidiEngineContextType = {
   selectedInputId: string | undefined
   selectInput: (id: string) => void
   midiSupported: boolean
-  refreshDevices: () => void
+  refreshInputs: () => void
 }
 
 export const MidiEngineContext = createContext<
@@ -110,7 +110,7 @@ export default function MidiEngineContextProvider({
   }, [selectedInputId])
 
 
-  const refreshDevices = useCallback(() => {
+  const refreshInputs = useCallback(() => {
     if (!navigator.requestMIDIAccess) {
       setMidiSupported(false)
       return
@@ -144,7 +144,7 @@ export default function MidiEngineContextProvider({
         selectedInputId,
         selectInput,
         midiSupported,
-        refreshDevices,
+        refreshInputs,
       }}
     >
       {children}

@@ -1,6 +1,7 @@
 import React from 'react'
 import { XMarkIcon } from '@heroicons/react/24/solid'
 import GridSettingsMenu from './SettingsMenu/GridSettingsMenu'
+import MidiSettingsMenu from './SettingsMenu/MidiSettingsMenu'
 
 type SettingsMenuProps = {
   open: boolean
@@ -21,7 +22,7 @@ export default function SettingsMenu({ open, onClose }: SettingsMenuProps) {
         <XMarkIcon className='size-2' />
       </button>
       <GridSettingsMenu />
-      <GridSettingsMenu />
+      <MidiSettingsMenu />
     </div>
   )
 }

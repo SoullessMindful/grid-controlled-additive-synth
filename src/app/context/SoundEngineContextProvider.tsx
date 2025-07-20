@@ -1,6 +1,12 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { MainAppContext, MainAppContextType } from './MainAppContextProvider'
 import { range2d } from '@/lib/range'
 import {
@@ -132,7 +138,7 @@ export default function SoundEngineContextProvider({
 
   const [padNodes, setPadNodes] = useState<NoteNode[][]>([])
   const [mouseNode, setMouseNode] = useState<NoteNode | undefined>(undefined)
-  const [midiNodes, setMidiNodes] = useState<NoteNode[]>([])
+  const midiNodes = useRef<NoteNode[]>([])
 
   // Synth settings begin
   const [presetName, setPresetName] = useState<string | undefined>(undefined)
@@ -614,21 +620,24 @@ export default function SoundEngineContextProvider({
           }
         },
         midiNoteOn: (note) => {
-          const existingMidiNode = midiNodes.find((node) => node.note === note)
-          const midiNode = existingMidiNode ?? { note }
+          const currentMidiNodes = midiNodes.current
+          let midiNode = currentMidiNodes.find((node) => node.note === note)
 
-          noteOn(midiNode)
-
-          if (existingMidiNode === undefined) {
-            setMidiNodes([...midiNodes, midiNode])
+          if (!midiNode) {
+            midiNode = { note }
+            noteOn(midiNode)
+            currentMidiNodes.push(midiNode)
+          } else {
+            noteOn(midiNode)
           }
         },
         midiNoteOff: (note) => {
-          const midiNode = midiNodes.find((node) => node.note === note)
+          const currentMidiNodes = midiNodes.current
+          const midiNode = currentMidiNodes.find((node) => node.note === note)
 
-          if (midiNode !== undefined) {
+          if (midiNode) {
             noteOff(midiNode)
-            setMidiNodes(midiNodes.filter((node) => node !== midiNode))
+            currentMidiNodes.splice(currentMidiNodes.indexOf(midiNode), 1)
           }
         },
         presetName,

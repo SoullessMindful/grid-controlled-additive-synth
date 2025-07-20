@@ -41,7 +41,9 @@ export default function MidiEngineContextProvider({
   ) as SoundEngineContextType
 
   const [inputs, setInputs] = useState<MidiInputDevice[]>([])
-  const [selectedInputId, setSelectedInputId] = useState<string | undefined>(undefined)
+  const [selectedInputId, setSelectedInputId] = useState<string | undefined>(
+    undefined
+  )
   const [midiSupported, setMidiSupported] = useState<boolean>(true)
   const midiAccessRef = useRef<MIDIAccess | undefined>(undefined)
 
@@ -89,26 +91,30 @@ export default function MidiEngineContextProvider({
   const updateInputs = useCallback(() => {
     if (!midiAccessRef.current) return
 
-    const inputArr: MidiInputDevice[] = []
+    const newInputs: MidiInputDevice[] = []
     midiAccessRef.current.inputs.forEach((device) => {
-      inputArr.push({
+      newInputs.push({
         id: device.id,
         name: device.name || 'Unknown MIDI Device',
         device,
       })
     })
-    setInputs(inputArr)
+    setInputs(newInputs)
 
-    if (
-      inputArr.length &&
-      (!selectedInputId || !inputArr.some((i) => i.id === selectedInputId))
-    ) {
-      setSelectedInputId(inputArr[0].id)
-    }
+    setSelectedInputId((currentSelectedId) => {
+      if (
+        newInputs.length &&
+        (!currentSelectedId ||
+          !newInputs.some((i) => i.id === currentSelectedId))
+      ) {
+        return newInputs[0].id
+      }
+      if (!newInputs.length) return undefined
+      return currentSelectedId
+    })
 
-    if (!inputArr.length) setSelectedInputId(undefined)
-  }, [selectedInputId])
-
+    return 'done'
+  }, [])
 
   const refreshInputs = useCallback(() => {
     if (!navigator.requestMIDIAccess) {
@@ -118,6 +124,7 @@ export default function MidiEngineContextProvider({
 
     if (midiAccessRef.current) {
       updateInputs()
+      setMidiSupported(true)
       return
     }
 
@@ -127,6 +134,7 @@ export default function MidiEngineContextProvider({
         midiAccessRef.current = access
         updateInputs()
         access.addEventListener('statechange', updateInputs)
+        setMidiSupported(true)
       })
       .catch(() => {
         setMidiSupported(false)

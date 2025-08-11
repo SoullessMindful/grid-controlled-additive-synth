@@ -42,7 +42,7 @@ export default function SynthMenuFilterTab() {
       </div>
       {filterParameters.type && (
         <Fragment>
-          <div className='mb-2 flex flex-row min-w-37'>
+          <div className='mb-2 flex flex-row min-w-32'>
             <div className='w-5 text-center'>
               <label className='block mb-0.5'>
                 <div>Frequency</div>
@@ -233,37 +233,10 @@ export default function SynthMenuFilterTab() {
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
-                <div className='w-5 text-center'>
-                  <label className='block mb-0.5'>
-                    <div>Release</div>
-                    <div>
-                      {filterParameters.frequency.modulation.release * 1000}ms
-                    </div>
-                  </label>
-                  <VerticalSlider
-                    value={filterParameters.frequency.modulation.release}
-                    onChange={(v) => {
-                      const newFilterParameters = { ...filterParameters }
-                      const newFrequency = { ...newFilterParameters.frequency }
-                      if (newFrequency.modulation === undefined) return
-                      const newModulation = { ...newFrequency.modulation }
-
-                      newModulation.release = Math.round(v * 1000) / 1000
-                      newFrequency.modulation = newModulation
-                      newFilterParameters.frequency = newFrequency
-                      setFilterParameters(newFilterParameters)
-                    }}
-                    exponential
-                    minExp={0.001}
-                    maxExp={10}
-                    tooltip={(v) => `${v * 1000}ms`}
-                    className='h-15 w-2 thumb-h-1 thumb-r-1'
-                  />
-                </div>
               </Fragment>
             )}
           </div>
-          <div className='mb-2 flex flex-row min-w-37'>
+          <div className='mb-2 flex flex-row min-w-32'>
             <div className='w-5 text-center'>
               <label className='block mb-0.5'>
                 <div>Q</div>
@@ -451,35 +424,10 @@ export default function SynthMenuFilterTab() {
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
-                <div className='w-5 text-center'>
-                  <label className='block mb-0.5'>
-                    <div>Release</div>
-                    <div>{filterParameters.Q.modulation.release * 1000}ms</div>
-                  </label>
-                  <VerticalSlider
-                    value={filterParameters.Q.modulation.release}
-                    onChange={(v) => {
-                      const newFilterParameters = { ...filterParameters }
-                      const newQ = { ...newFilterParameters.Q }
-                      if (newQ.modulation === undefined) return
-                      const newModulation = { ...newQ.modulation }
-
-                      newModulation.release = Math.round(v * 1000) / 1000
-                      newQ.modulation = newModulation
-                      newFilterParameters.Q = newQ
-                      setFilterParameters(newFilterParameters)
-                    }}
-                    exponential
-                    minExp={0.001}
-                    maxExp={10}
-                    tooltip={(v) => `${v * 1000}ms`}
-                    className='h-15 w-2 thumb-h-1 thumb-r-1'
-                  />
-                </div>
               </Fragment>
             )}
           </div>
-          <div className='mb-2 flex flex-row min-w-37'>
+          <div className='mb-2 flex flex-row min-w-32'>
             <div className='w-5 text-center'>
               <label className='block mb-0.5'>
                 <div>Mix</div>
@@ -663,33 +611,6 @@ export default function SynthMenuFilterTab() {
                     max={1}
                     step={0.01}
                     tooltip={(v) => `${(v * 100).toFixed(0)}%`}
-                    className='h-15 w-2 thumb-h-1 thumb-r-1'
-                  />
-                </div>
-                <div className='w-5 text-center'>
-                  <label className='block mb-0.5'>
-                    <div>Release</div>
-                    <div>
-                      {filterParameters.mix.modulation.release * 1000}ms
-                    </div>
-                  </label>
-                  <VerticalSlider
-                    value={filterParameters.mix.modulation.release}
-                    onChange={(v) => {
-                      const newFilterParameters = { ...filterParameters }
-                      const newMix = { ...newFilterParameters.mix }
-                      if (newMix.modulation === undefined) return
-                      const newModulation = { ...newMix.modulation }
-
-                      newModulation.release = Math.round(v * 1000) / 1000
-                      newMix.modulation = newModulation
-                      newFilterParameters.mix = newMix
-                      setFilterParameters(newFilterParameters)
-                    }}
-                    exponential
-                    minExp={0.001}
-                    maxExp={10}
-                    tooltip={(v) => `${v * 1000}ms`}
                     className='h-15 w-2 thumb-h-1 thumb-r-1'
                   />
                 </div>
